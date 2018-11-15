@@ -88,12 +88,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /*This function takes 3 songs from the current playlist and randomly puts them on the
-    4 buttons, for this it just starts and pauses a playlist and saves the songs. The last song
-    will continue playing as this is the correct song (also indiated by the 1 in the object array)
-
-    Super ugly  code btw we should do it in an array like this maybe Object[][] and then not copy
-    paste code but work through it with loops
+    /*Not working properly and rubbish code
     */
     public void initQuiz (String playlist){
         int random = (int) (Math.random() * 4) +1;
