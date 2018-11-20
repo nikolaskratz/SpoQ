@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="SongButtonColor">#B3E5FC</color>
+    <color name="SongButtonColorCorrect">#42f44e</color>
+
 </resources>
