@@ -5,8 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.provider.MediaStore;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -58,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
     private static MainActivity ins;
     private String authToken;
     private boolean playing=false;
+    String playlistID="37i9dQZF1DX0XUsuxWHRQd";
+    String playlistUser="spotify";
     String playlistTrap = "spotify:user:spotify:playlist:37i9dQZF1DX0XUsuxWHRQd";
     String playlistSchlager= "spotify:user:1146468343:playlist:3rT1Fcx6X9fhyMof5Za2NN";
     final List<Quiz> quizList = new ArrayList<>();
@@ -133,30 +139,25 @@ public class MainActivity extends AppCompatActivity {
                 mSpotifyAppRemote.getPlayerApi().skipNext();
             }
         });
-        final Button trapButton = (Button) findViewById(R.id.TrapButton);
-        trapButton.setOnClickListener(new View.OnClickListener(){
+        final Button startQuiz = (Button) findViewById(R.id.startQuiz);
+        startQuiz.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                initQuiz(playlistTrap);
+                initQuiz(playlistID,playlistUser);
             }
         });
-        final Button schlagerButton = (Button) findViewById(R.id.SchlagerButton);
-        schlagerButton.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                mSpotifyAppRemote.getPlayerApi().play(playlistSchlager);
-            }
-        });
+
     }
 
 
     //quiz initilization, using authentication token for getting playlist tracks
-    public void initQuiz (String playlist) {
+    public void initQuiz (String playlistID, String playlistUser) {
         resetButtonColor();
         final List<String> playlistTracks = new ArrayList<>();
         final List<String> playlistTracksIDs = new ArrayList<>();
         SpotifyApi api = new SpotifyApi();
         api.setAccessToken(authToken);
         SpotifyService spotify = api.getService();
-        spotify.getPlaylistTracks("spotify", "37i9dQZF1DX0XUsuxWHRQd", new Callback<Pager<PlaylistTrack>>() {
+        spotify.getPlaylistTracks(playlistUser, playlistID, new Callback<Pager<PlaylistTrack>>() {
             @Override
             public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
 //                Log.e("TEST123", "GOT the tracks in playlist");
@@ -239,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                 setLastTimer(minutes,seconds);
                 if (button==3) {
                     songAButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                }
+                } else wrongAnswer();
                 mSpotifyAppRemote.getPlayerApi().pause();
             }
         });
@@ -250,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
                 setLastTimer(minutes,seconds);
                 if (button==2) {
                     songBButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                }
+                } else wrongAnswer();
                 mSpotifyAppRemote.getPlayerApi().pause();
             }
         });
@@ -261,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                 setLastTimer(minutes,seconds);
                 if (button==1) {
                     songCButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                }
+                } else wrongAnswer();
                 mSpotifyAppRemote.getPlayerApi().pause();
             }
         });
@@ -272,10 +273,30 @@ public class MainActivity extends AppCompatActivity {
                 setLastTimer(minutes,seconds);
                 if (button==0) {
                     songDButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                }
+                } else wrongAnswer();
                 mSpotifyAppRemote.getPlayerApi().pause();
             }
         });
+    }
+
+    //reaction to wrong answer
+    public void wrongAnswer(){
+        getWindow().getDecorView().setBackgroundColor(Color.RED);
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+// Vibrate for 500 milliseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            //deprecated in API 26
+            v.vibrate(500);
+        }
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+            }
+        }, 500);
     }
 
     void setPPButtonPlay(){
@@ -319,15 +340,15 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onEvent(PlayerState playerState) {
                         final Track track = playerState.track;
-                        if (track != null) {
-                            Log.d("MainActivity", track.name + " by " + track.artist.name);
-                            final TextView songName = (TextView) findViewById(R.id.SongName);
-                            songName.setText(track.name);
-                            trackName=track.name;
-//                            Log.d("MainActivity", "meinTest: "+track.name);
-                            final TextView artistName = (TextView) findViewById(R.id.ArtistName);
-                            artistName.setText(track.artist.name);
-                        }
+//                        if (track != null) {
+//                            Log.d("MainActivity", track.name + " by " + track.artist.name);
+//                            final TextView songName = (TextView) findViewById(R.id.SongName);
+//                            songName.setText(track.name);
+//                            trackName=track.name;
+////                            Log.d("MainActivity", "meinTest: "+track.name);
+//                            final TextView artistName = (TextView) findViewById(R.id.ArtistName);
+//                            artistName.setText(track.artist.name);
+//                        }
                     }
         });
     }
@@ -366,10 +387,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void selectPlaylist(View view){
+        Intent intent = new Intent(MainActivity.this, PlaylistSelect.class);
+        startActivity(intent);
+    }
+
     void setLastTimer (int minutes, int seconds){
         TextView finalTimer = (TextView) findViewById(R.id.timerLast);
         finalTimer.setText(String.format("%d:%02d", minutes, seconds));
     }
+
 
     void resetButtonColor(){
         final Button songAButton = (Button) findViewById(R.id.songAButton);
@@ -382,6 +409,10 @@ public class MainActivity extends AppCompatActivity {
         songDButton.setBackgroundResource(R.color.SongButtonColor);
     }
 
+    public void setCurrentPlaylistText(String playlist){
+        final TextView currentPlaylistButton = (TextView) findViewById(R.id.currentPlaylist);
+        currentPlaylistButton.setText(playlist);
+    }
     public static MainActivity  getInstace(){
         return ins;
     }
@@ -397,5 +428,11 @@ public class MainActivity extends AppCompatActivity {
     }
     public void setPlaying(boolean playing) {
         this.playing = playing;
+    }
+    public void setPlaylistID(String playlistID) {
+        this.playlistID = playlistID;
+    }
+    public void setPlaylistUser(String playlistUser) {
+        this.playlistUser = playlistUser;
     }
 }
