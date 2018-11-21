@@ -1,50 +1,30 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Quiz {
-    private QuizQuestion track1;
-    private QuizQuestion track2;
-    private QuizQuestion track3;
-    private QuizQuestion track4Correct;
+    private int randomButtonNumber;
+    private List<QuizQuestion> questionList = new ArrayList<>();
 
-    public Quiz(QuizQuestion track1, QuizQuestion track2, QuizQuestion track3, QuizQuestion track4Correct) {
-        this.track1 = track1;
-        this.track2 = track2;
-        this.track3 = track3;
-        this.track4Correct = track4Correct;
+    public Quiz(int randomButtonNumber, List<QuizQuestion> questionList) {
+        this.randomButtonNumber = randomButtonNumber;
+        this.questionList = questionList;
     }
 
-    public QuizQuestion getTrack1() {
-        return track1;
+    public int getRandomButtonNumber() {
+        return randomButtonNumber;
     }
 
-    public void setTrack1(QuizQuestion track1) {
-        this.track1 = track1;
+    public void setRandomButtonNumber(int randomButtonNumber) {
+        this.randomButtonNumber = randomButtonNumber;
     }
 
-    public QuizQuestion getTrack2() {
-        return track2;
+    public List<QuizQuestion> getQuestionList() {
+        return questionList;
     }
 
-    public void setTrack2(QuizQuestion track2) {
-        this.track2 = track2;
+    public void setQuestionList(List<QuizQuestion> questionList) {
+        this.questionList = questionList;
     }
-
-    public QuizQuestion getTrack3() {
-        return track3;
-    }
-
-    public void setTrack3(QuizQuestion track3) {
-        this.track3 = track3;
-    }
-
-    public QuizQuestion getTrack4Correct() {
-        return track4Correct;
-    }
-
-    public void setTrack4Correct(QuizQuestion track4Correct) {
-        this.track4Correct = track4Correct;
-    }
-
-
-
 }

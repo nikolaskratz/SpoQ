@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private static MainActivity ins;
     private String authToken;
     private boolean playing=false;
-    String playlistTrap = "spotify:user:1146468343:playlist:7bub4LVEY7HIL4m27h3ZXE";
+    String playlistTrap = "spotify:user:spotify:playlist:37i9dQZF1DX0XUsuxWHRQd";
     String playlistSchlager= "spotify:user:1146468343:playlist:3rT1Fcx6X9fhyMof5Za2NN";
     final List<Quiz> quizList = new ArrayList<>();
 
@@ -66,12 +67,35 @@ public class MainActivity extends AppCompatActivity {
     String trackName = "";
     String trackNameTemp = "";
 
+    int minutes;
+    int seconds;
+
+    //timer set up
+    TextView timerTextView;
+    long startTime = 0;
+    Handler timerHandler = new Handler();
+    Runnable timerRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            long millis = System.currentTimeMillis() - startTime;
+            seconds = (int) (millis / 1000);
+            minutes = seconds / 60;
+            seconds = seconds % 60;
+            timerTextView.setText(String.format("%d:%02d", minutes, seconds));
+            timerHandler.postDelayed(this, 500);
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         ins=this;
         setContentView(R.layout.activity_main);
+
+        timerTextView = (TextView) findViewById(R.id.timer);
 
         //Authentication starts here
         AuthenticationRequest.Builder builder =
@@ -124,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    //quiz initilization, using authentication token for getting playlist tracks
     public void initQuiz (String playlist) {
         resetButtonColor();
         final List<String> playlistTracks = new ArrayList<>();
@@ -132,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         SpotifyApi api = new SpotifyApi();
         api.setAccessToken(authToken);
         SpotifyService spotify = api.getService();
-        spotify.getPlaylistTracks("1146468343", "7bub4LVEY7HIL4m27h3ZXE", new Callback<Pager<PlaylistTrack>>() {
+        spotify.getPlaylistTracks("spotify", "37i9dQZF1DX0XUsuxWHRQd", new Callback<Pager<PlaylistTrack>>() {
             @Override
             public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
 //                Log.e("TEST123", "GOT the tracks in playlist");
@@ -152,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //actually building the quiz with questions etc, for the 1st player
     public void createQuiz(List<String> playlistTracks, List<String> playlistTracksIDs){
 
         final List<QuizQuestion> questionsList = new ArrayList<>();
@@ -170,11 +195,29 @@ public class MainActivity extends AppCompatActivity {
         questionsList.add(q3);
         questionsList.add(q4);
 
-        Quiz quiz = new Quiz(q1,q2,q3,q4);
-        quizList.add(quiz);
         int randomButton = (int) (Math.random() * 4) ;
+        Quiz quiz = new Quiz(randomButton,questionsList);
+        quizList.add(quiz);
         Log.e("TEST123", "n: "+randomButton+"//"+q1.getTrackName()+"  "+q2.getTrackName()+"  " +
                         ""+q3.getTrackName()+" "+q4.getTrackName());
+        setSongsOnButtons(randomButton,questionsList);
+        mSpotifyAppRemote.getPlayerApi().play("spotify:track:"+q4.getTrackID());
+
+        Log.e("TEST123", "true track: "+q4.getTrackName()+"  trackID: "+q4.getTrackID());
+        playQuiz(quiz,randomButton);
+    }
+
+    //receiving quiz
+    public void receiveQuiz(Quiz quiz){
+        //now i am passing a quiz object for this method but later i would not pass this one but
+        // rather pull it from the fire base server
+        setSongsOnButtons(quiz.getRandomButtonNumber(),quiz.getQuestionList());
+        playQuiz(quiz,quiz.getRandomButtonNumber());
+
+    }
+
+    //setting songs on buttons according to random number
+    public void setSongsOnButtons (int randomButton, List<QuizQuestion> questionsList){
         final Button buttonSongA = (Button) findViewById(R.id.songAButton);
         buttonSongA.setText(questionsList.get(randomButton).getTrackName());
         final Button buttonSongB = (Button) findViewById(R.id.songBButton);
@@ -183,17 +226,17 @@ public class MainActivity extends AppCompatActivity {
         buttonSongC.setText(questionsList.get((randomButton+2) % 4).getTrackName());
         final Button buttonSongD = (Button) findViewById(R.id.songDButton);
         buttonSongD.setText(questionsList.get((randomButton+3) % 4).getTrackName());
-
-        mSpotifyAppRemote.getPlayerApi().play("spotify:track:"+q4.getTrackID());
-        Log.e("TEST123", "true track: "+q4.getTrackName()+"  trackID: "+q4.getTrackID());
-        playQuiz(quiz,randomButton);
     }
 
+    //playing quiz
     public void playQuiz(Quiz quiz, final int button){
-
+        startTime = System.currentTimeMillis();
+        timerHandler.postDelayed(timerRunnable, 0);
         final Button songAButton = (Button) findViewById(R.id.songAButton);
         songAButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                timerHandler.removeCallbacks(timerRunnable);
+                setLastTimer(minutes,seconds);
                 if (button==3) {
                     songAButton.setBackgroundResource(R.color.SongButtonColorCorrect);
                 }
@@ -203,6 +246,8 @@ public class MainActivity extends AppCompatActivity {
         final Button songBButton = (Button) findViewById(R.id.songBButton);
         songBButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                timerHandler.removeCallbacks(timerRunnable);
+                setLastTimer(minutes,seconds);
                 if (button==2) {
                     songBButton.setBackgroundResource(R.color.SongButtonColorCorrect);
                 }
@@ -212,6 +257,8 @@ public class MainActivity extends AppCompatActivity {
         final Button songCButton = (Button) findViewById(R.id.songCButton);
         songCButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                timerHandler.removeCallbacks(timerRunnable);
+                setLastTimer(minutes,seconds);
                 if (button==1) {
                     songCButton.setBackgroundResource(R.color.SongButtonColorCorrect);
                 }
@@ -221,6 +268,8 @@ public class MainActivity extends AppCompatActivity {
         final Button songDButton = (Button) findViewById(R.id.songDButton);
         songDButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                timerHandler.removeCallbacks(timerRunnable);
+                setLastTimer(minutes,seconds);
                 if (button==0) {
                     songDButton.setBackgroundResource(R.color.SongButtonColorCorrect);
                 }
@@ -315,6 +364,11 @@ public class MainActivity extends AppCompatActivity {
                     // Handle other cases
             }
         }
+    }
+
+    void setLastTimer (int minutes, int seconds){
+        TextView finalTimer = (TextView) findViewById(R.id.timerLast);
+        finalTimer.setText(String.format("%d:%02d", minutes, seconds));
     }
 
     void resetButtonColor(){
