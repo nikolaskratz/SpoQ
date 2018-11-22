@@ -55,7 +55,6 @@ import static com.spotify.sdk.android.authentication.LoginActivity.REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity {
 
-    public Connection connection = new Connection();
 
     private static final String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
     private static final String REDIRECT_URI = "testschema://callback";
@@ -281,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
                 mSpotifyAppRemote.getPlayerApi().pause();
             }
         });
+        Connection connection = new Connection(quiz,button);
     }
 
     //reaction to wrong answer
