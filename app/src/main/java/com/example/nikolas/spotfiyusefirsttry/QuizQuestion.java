@@ -19,6 +19,10 @@ public class QuizQuestion {
         this.correct = correct;
     }
 
+    public QuizQuestion(){
+
+    }
+
     public String getTrackName() {
         return trackName;
     }
