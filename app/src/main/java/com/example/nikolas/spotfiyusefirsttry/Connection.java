@@ -5,12 +5,13 @@ import android.util.Log;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+
 public class Connection {
 
     private Quiz quiz;
     private int randomNumber;
 
-//    DatabaseReference database = FirebaseDatabase.getInstance().getReference("question4");
+    DatabaseReference database = FirebaseDatabase.getInstance().getReference("question4");
 
     public Connection(Quiz quiz, int randomNumber) {
 //        DatabaseReference database = FirebaseDatabase.getInstance().getReference("question4");
