@@ -235,7 +235,9 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot snap) {
 //                Log.w("receiveQuizLog", "randomButtonNumber: "+snap.getValue());
                 quiz[0] = snap.getValue(Quiz.class);
-                Log.w("receiveQuizLog", "Song1: "+ quiz[0].getQuestionList().get(0).getTrackName());
+//                Log.w("receiveQuizLog", randomButtonNumber: "+quiz[0].getRandomButtonNumber());
+                setSongsOnButtons(quiz[0].getRandomButtonNumber(),quiz[0].getQuestionList());
+                playQuiz(quiz[0],quiz[0].getRandomButtonNumber());
             }
 
             @Override
@@ -244,8 +246,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        setSongsOnButtons(quiz[0].getRandomButtonNumber(),quiz[0].getQuestionList());
-        playQuiz(quiz[0],quiz[0].getRandomButtonNumber());
     }
 
     //setting songs on buttons according to random number
