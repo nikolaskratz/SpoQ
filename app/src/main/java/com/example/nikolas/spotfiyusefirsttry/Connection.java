@@ -11,18 +11,21 @@ public class Connection {
     private Quiz quiz;
     private int randomNumber;
 
-    DatabaseReference database = FirebaseDatabase.getInstance().getReference("question4");
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference("test");
 
     public Connection(Quiz quiz, int randomNumber) {
-//        DatabaseReference database = FirebaseDatabase.getInstance().getReference("question4");
-//        Log.e("connectionLog", "database: "+database);
+
         this.quiz = quiz;
         this.randomNumber = randomNumber;
-//        sendData();
+        sendData();
     }
 
-//    void sendData (){
+    void sendData (){
+        Log.e("connectionLog", "sendDataStart, database: "+database);
 //        database.child("quiz_id").child("quiz3").child("question1").setValue
 //                ("dddddd");
-//    }
+        myRef.setValue("aaaaaaaaaa");
+        Log.e("connectionLog", "sendDataEnd, database: "+database);
+    }
 }
