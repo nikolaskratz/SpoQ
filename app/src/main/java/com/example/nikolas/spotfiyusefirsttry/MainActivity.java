@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.content.Intent;
+import android.widget.Toast;
 
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
@@ -53,6 +54,8 @@ import retrofit.client.Response;
 import static com.spotify.sdk.android.authentication.LoginActivity.REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity {
+
+    public Connection connection = new Connection();
 
     private static final String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
     private static final String REDIRECT_URI = "testschema://callback";
@@ -92,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
             timerHandler.postDelayed(this, 500);
         }
     };
+
 
 
     @Override
@@ -160,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
         spotify.getPlaylistTracks(playlistUser, playlistID, new Callback<Pager<PlaylistTrack>>() {
             @Override
             public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
-//                Log.e("TEST123", "GOT the tracks in playlist");
+               Log.e("TEST1234", "GOT the tracks in playlist");
                 List<PlaylistTrack> items = playlistTrackPager.items;
                 for (PlaylistTrack pt : items) {
 //                    Log.e("TEST123", pt.track.name + " - " + pt.track.id);
@@ -367,21 +371,25 @@ public class MainActivity extends AppCompatActivity {
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+            Log.e("authDebug", "reached auth, response: "+response.getType());
 
             switch (response.getType()) {
                 // Response was successful and contains auth token
                 case TOKEN:
                     authToken = response.getAccessToken();
+                    Log.e("authDebug", "reached token");
                     // Handle successful response
                     break;
 
                 // Auth flow returned an error
                 case ERROR:
+                    Log.e("authDebug", "reached error");
                     // Handle error response
                     break;
 
                 // Most likely auth flow was cancelled
                 default:
+                    Log.e("authDebug", "reached default");
                     // Handle other cases
             }
         }
@@ -408,6 +416,12 @@ public class MainActivity extends AppCompatActivity {
         songCButton.setBackgroundResource(R.color.SongButtonColor);
         songDButton.setBackgroundResource(R.color.SongButtonColor);
     }
+
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        super.onWindowFocusChanged(hasFocus);
+//        if(hasFocus)
+//            wrongAnswer();
+//    }
 
     public void setCurrentPlaylistText(String playlist){
         final TextView currentPlaylistButton = (TextView) findViewById(R.id.currentPlaylist);
