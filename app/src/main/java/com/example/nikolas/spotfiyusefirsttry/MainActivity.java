@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,11 @@ import android.widget.TextView;
 import android.content.Intent;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -149,6 +155,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final Button joinQuiz = (Button) findViewById(R.id.joinButton);
+        joinQuiz.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                receiveQuiz();
+            }
+        });
+
     }
 
 
@@ -212,12 +225,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //receiving quiz
-    public void receiveQuiz(Quiz quiz){
-        //now i am passing a quiz object for this method but later i would not pass this one but
-        // rather pull it from the fire base server
-        setSongsOnButtons(quiz.getRandomButtonNumber(),quiz.getQuestionList());
-        playQuiz(quiz,quiz.getRandomButtonNumber());
+    public void receiveQuiz(){
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("quiz").child("quiz_id").child("q1")
+                .child("randomButtonNumber");
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                Log.w("receiveQuizLog", "randomButtonNumber: "+snap.getValue());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("myTag", "Failed to read value.");
+            }
+        });
     }
 
     //setting songs on buttons according to random number
