@@ -66,14 +66,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String REDIRECT_URI = "testschema://callback";
     private static final int REQUEST_CODE = 1337;
     private SpotifyAppRemote mSpotifyAppRemote;
+    private String authToken;
 
     private static MainActivity ins;
-    private String authToken;
+
     private boolean playing=false;
     String playlistID="37i9dQZF1DX0XUsuxWHRQd";
     String playlistUser="spotify";
-    String playlistTrap = "spotify:user:spotify:playlist:37i9dQZF1DX0XUsuxWHRQd";
-    String playlistSchlager= "spotify:user:1146468343:playlist:3rT1Fcx6X9fhyMof5Za2NN";
     final List<Quiz> quizList = new ArrayList<>();
 
     String artistName = "";
@@ -107,63 +106,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        ins=this;
         setContentView(R.layout.activity_main);
 
+        //Main activity instance for later use in other classes via MainAcitvity.getInstance()
+        ins=this;
+
+        //timer set up
         timerTextView = (TextView) findViewById(R.id.timer);
 
-        //Authentication starts here
-        AuthenticationRequest.Builder builder =
-                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+        setUpAuthentication();
 
-        builder.setScopes(new String[]{"streaming"});
-        AuthenticationRequest request = builder.build();
+        setUpBroadcast();
 
-        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
-        //------------Authentication Stops here
-
-        //Broadcast code
-        MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
-        IntentFilter filter1 = new IntentFilter();
-        IntentFilter filter2 = new IntentFilter();
-        IntentFilter filter3 = new IntentFilter();
-        filter1.addAction("com.spotify.music.playbackstatechanged");
-        filter2.addAction("com.spotify.music.metadatachanged");
-        filter3.addAction("com.spotify.music.queuechanged");
-        registerReceiver(myBroadcastReceiver, filter1);
-        registerReceiver(myBroadcastReceiver, filter2);
-        registerReceiver(myBroadcastReceiver, filter3);
-
-        //ButtonCode
-        final Button playPauseButton = (Button) findViewById(R.id.PlayPauseButton);
-        playPauseButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (playing) setPPButtonPause(); else setPPButtonPlay();
-            }
-        });
-
-        final Button nextButton = (Button) findViewById(R.id.NextButton);
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mSpotifyAppRemote.getPlayerApi().skipNext();
-            }
-        });
-        final Button startQuiz = (Button) findViewById(R.id.startQuiz);
-        startQuiz.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                initQuiz(playlistID,playlistUser);
-            }
-        });
-
-        final Button joinQuiz = (Button) findViewById(R.id.joinButton);
-        joinQuiz.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                receiveQuiz();
-            }
-        });
+        setUpButtons();
 
     }
-
 
     //quiz initilization, using authentication token for getting playlist tracks
     public void initQuiz (String playlistID, String playlistUser) {
@@ -218,7 +175,6 @@ public class MainActivity extends AppCompatActivity {
         Log.e("TEST123", "n: "+randomButton+"//"+q1.getTrackName()+"  "+q2.getTrackName()+"  " +
                         ""+q3.getTrackName()+" "+q4.getTrackName());
         setSongsOnButtons(randomButton,questionsList);
-        mSpotifyAppRemote.getPlayerApi().play("spotify:track:"+q4.getTrackID());
 
         Log.e("TEST123", "true track: "+q4.getTrackName()+"  trackID: "+q4.getTrackID());
         playQuiz(quiz,randomButton);
@@ -262,6 +218,9 @@ public class MainActivity extends AppCompatActivity {
 
     //playing quiz
     public void playQuiz(Quiz quiz, final int button){
+        mSpotifyAppRemote.getPlayerApi().play("spotify:track:"+quiz.getQuestionList().get(3)
+                .getTrackID
+                ());
         startTime = System.currentTimeMillis();
         timerHandler.postDelayed(timerRunnable, 0);
         final Button songAButton = (Button) findViewById(R.id.songAButton);
@@ -423,17 +382,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //set up authentication
+    public void setUpAuthentication(){
+        AuthenticationRequest.Builder builder =
+                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+
+        builder.setScopes(new String[]{"streaming"});
+        AuthenticationRequest request = builder.build();
+
+        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+    }
+
+    //moving to select playlist intent
     public void selectPlaylist(View view){
         Intent intent = new Intent(MainActivity.this, PlaylistSelect.class);
         startActivity(intent);
     }
 
+    //setting timerLast textView
     void setLastTimer (int minutes, int seconds){
         TextView finalTimer = (TextView) findViewById(R.id.timerLast);
         finalTimer.setText(String.format("%d:%02d", minutes, seconds));
     }
 
-
+    //set button colour to original colour after each quiz
     void resetButtonColor(){
         final Button songAButton = (Button) findViewById(R.id.songAButton);
         final Button songBButton = (Button) findViewById(R.id.songBButton);
@@ -445,26 +417,61 @@ public class MainActivity extends AppCompatActivity {
         songDButton.setBackgroundResource(R.color.SongButtonColor);
     }
 
-//    public void onWindowFocusChanged(boolean hasFocus) {
-//        super.onWindowFocusChanged(hasFocus);
-//        if(hasFocus)
-//            wrongAnswer();
-//    }
+    //set up all onClicks on the buttons (playPause/next/startQuiz/joinQuiz
+    public void setUpButtons(){
+        final Button playPauseButton = (Button) findViewById(R.id.PlayPauseButton);
+        playPauseButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (playing) setPPButtonPause(); else setPPButtonPlay();
+            }
+        });
 
-    public void setCurrentPlaylistText(String playlist){
-        final TextView currentPlaylistButton = (TextView) findViewById(R.id.currentPlaylist);
-        currentPlaylistButton.setText(playlist);
+        final Button nextButton = (Button) findViewById(R.id.NextButton);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mSpotifyAppRemote.getPlayerApi().skipNext();
+            }
+        });
+        final Button startQuiz = (Button) findViewById(R.id.startQuiz);
+        startQuiz.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                initQuiz(playlistID,playlistUser);
+            }
+        });
+
+        final Button joinQuiz = (Button) findViewById(R.id.joinButton);
+        joinQuiz.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                receiveQuiz();
+            }
+        });
     }
+
+    //init the broadcastreceiver
+    public void setUpBroadcast(){
+        MyBroadcastReceiver myBroadcastReceiver = new MyBroadcastReceiver();
+        IntentFilter filter1 = new IntentFilter();
+        IntentFilter filter2 = new IntentFilter();
+        IntentFilter filter3 = new IntentFilter();
+        filter1.addAction("com.spotify.music.playbackstatechanged");
+        filter2.addAction("com.spotify.music.metadatachanged");
+        filter3.addAction("com.spotify.music.queuechanged");
+        registerReceiver(myBroadcastReceiver, filter1);
+        registerReceiver(myBroadcastReceiver, filter2);
+        registerReceiver(myBroadcastReceiver, filter3);
+    }
+
+    //to return a instance of main to be used in broadcast or possibly someweher else
     public static MainActivity  getInstace(){
         return ins;
     }
 
-    public void setArtistName(String artistName) {
-        this.artistName = artistName;
+    //setter for Current Playlist TextView
+    public void setCurrentPlaylistText(String playlist){
+        final TextView currentPlaylistButton = (TextView) findViewById(R.id.currentPlaylist);
+        currentPlaylistButton.setText(playlist);
     }
-    public void setAlbumName(String albumName) {
-        this.albumName = albumName;
-    }
+
     public void setTrackName(String trackName) {
         this.trackName = trackName;
     }
