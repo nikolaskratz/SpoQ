@@ -30,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.PlayerApi;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import com.spotify.protocol.WampClient;
@@ -68,24 +69,16 @@ public class MainActivity extends AppCompatActivity {
     private SpotifyAppRemote mSpotifyAppRemote;
     private String authToken;
 
-    Object o = new Object();
-
-
     private static MainActivity ins;
-
-//    SpotifyService spotify;
 
     private boolean playing=false;
     String playlistID="37i9dQZF1DX0XUsuxWHRQd";
     String playlistUser="spotify";
     final List<Quiz> quizList = new ArrayList<>();
-    List<String> pTracks;
 
-    String artistName = "";
-    String albumName = "";
+
+
     String trackName = "";
-    String trackNameTemp = "";
-
     int minutes;
     int seconds;
 
@@ -257,9 +250,10 @@ public class MainActivity extends AppCompatActivity {
 
     //playing quiz
     public void playQuiz(Quiz quiz, final int button){
-        mSpotifyAppRemote.getPlayerApi().play("spotify:track:"+quiz.getQuestionList().get(3)
-                .getTrackID
-                ());
+//        mSpotifyAppRemote.getPlayerApi().play("spotify:track:"+quiz.getQuestionList().get(3)
+//                .getTrackID
+//                ());
+        playTrack("spotify:track:"+quiz.getQuestionList().get(3).getTrackID());
         startTime = System.currentTimeMillis();
         timerHandler.postDelayed(timerRunnable, 0);
         final Button songAButton = (Button) findViewById(R.id.songAButton);
@@ -342,28 +336,28 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "meinTestCase1: playPauseButton paused");
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Set the connection parameters
-        ConnectionParams connectionParams =
-                new ConnectionParams.Builder(CLIENT_ID).setRedirectUri(REDIRECT_URI).showAuthView(true).build();
-        SpotifyAppRemote.connect(this, connectionParams,
-                new Connector.ConnectionListener() {
-
-                    @Override
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        Log.d("MainActivity", "Connected! Yay!");
-                        connected();
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("MainActivity", throwable.getMessage(), throwable);
-                    }
-                });
-    }
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        // Set the connection parameters
+//        ConnectionParams connectionParams =
+//                new ConnectionParams.Builder(CLIENT_ID).setRedirectUri(REDIRECT_URI).showAuthView(true).build();
+//        SpotifyAppRemote.connect(this, connectionParams,
+//                new Connector.ConnectionListener() {
+//
+//                    @Override
+//                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+//                        mSpotifyAppRemote = spotifyAppRemote;
+//                        Log.d("MainActivity", "Connected! Yay!");
+//                        connected();
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Throwable throwable) {
+//                        Log.e("MainActivity", throwable.getMessage(), throwable);
+//                    }
+//                });
+//    }
 
     private void connected(){
         mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(new Subscription.EventCallback<PlayerState>() {
@@ -476,6 +470,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
 //                startActivity(new Intent(MainActivity.this, PlayQuiz.class));
                     initQuiz(playlistID,playlistUser);
+//                playTrack("spotify:track:4W4wYHtsrgDiivRASVOINL");
             }
         });
 
@@ -529,7 +524,14 @@ public class MainActivity extends AppCompatActivity {
         return authToken;
     }
 
-//    public SpotifyService getSpotifyService(){
-//        return spotify;
-//    }
+    public void playTrack(String trackID){
+        mSpotifyAppRemote.getPlayerApi().play(trackID);
+        Log.e("playingQuiz", "playing song: "+trackID);
+    }
+
+    public void pauseTrack(){
+        mSpotifyAppRemote.getPlayerApi().pause();
+        Log.e("playingQuiz", "paused track");
+    }
+
 }
