@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "545964837934",
+    "firebase_url": "https://spoq-75d91.firebaseio.com",
+    "project_id": "spoq-75d91",
+    "storage_bucket": "spoq-75d91.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:545964837934:android:b646cf34e33888db",
+        "android_client_info": {
+          "package_name": "com.example.nikolas.spotfiyusefirsttry"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "545964837934-7efcc76n8j0rjp5tj6nt5ka2b3cld834.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nikolas.spotfiyusefirsttry",
+            "certificate_hash": "5b1c3ac6de9a463be7c5ac735bf6c372c02915bf"
+          }
+        },
+        {
+          "client_id": "545964837934-9ckq100sdbm8gkkq9r747q4vqsh28e9b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nikolas.spotfiyusefirsttry",
+            "certificate_hash": "7cae03eec7749d3c4c27c6fcdb949779c8314ed9"
+          }
+        },
+        {
+          "client_id": "545964837934-3rv0r97v11c9fm6fdumn5b16mhof3osi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAs2HYB4qQvkQOJ75y0Y9OrxoINPsl5hAg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "545964837934-3rv0r97v11c9fm6fdumn5b16mhof3osi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
