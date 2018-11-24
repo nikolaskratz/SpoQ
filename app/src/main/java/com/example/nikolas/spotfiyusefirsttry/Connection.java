@@ -25,7 +25,6 @@ public class Connection {
         Log.e("connectionLog", "sendDataStart, database: "+myRef);
         myRef.child("quiz_id").child("q1").setValue(quiz);
         myRef.child("quiz_id").child("q2").setValue(quiz);
-
         Log.e("connectionLog", "sendDataEnd, database: "+myRef);
 
 

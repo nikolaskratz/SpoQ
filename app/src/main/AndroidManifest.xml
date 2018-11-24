@@ -14,6 +14,7 @@
         <activity android:name=".MainActivity">
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,7 +22,18 @@
             </intent-filter>
         </activity>
         <activity android:name=".PlaylistSelect" />
-        <activity android:name=".PlayQuiz"></activity>
+        <activity android:name=".PlayQuiz" />
+        <activity
+            android:name=".MainAppActivity"
+            android:label="@string/title_activity_main_app"
+            android:theme="@style/AppTheme.NoActionBar">
+<!-- // will be switched in the future
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
     </application>
 
 </manifest>
