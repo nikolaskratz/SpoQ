@@ -22,68 +22,36 @@ import retrofit.RetrofitError;
 
 /*THIS SINGLETON IS UNDER CONSTRUCTION*/
 
-
-
 public class SpotifyApiManager {
     public static final SpotifyApiManager ourInstance = new SpotifyApiManager();
 
-    public String authToken;
     private  String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
     private  String REDIRECT_URI = "testschema://callback";
     private  int REQUEST_CODE = 1337;
     private SpotifyAppRemote mSpotifyAppRemote;
     private Context invokeContext;
 
-    //singeltons constructor
+    //singelton's constructor
     private SpotifyApiManager() {
     }
 
+    // first step of authentication
     public void setUpAuthetication() {
 
-
-        AuthenticationRequest.Builder builder =
+        AuthenticationRequest.Builder builder = 
                 new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
-
         builder.setScopes(new String[]{"streaming"});
         AuthenticationRequest request = builder.build();
 
+        // TODO: 24/11/2018 change activity in parameter below
         AuthenticationClient.openLoginActivity(MainActivity.getInstace(), REQUEST_CODE, request);
     }
 
-
-
+        // will be implemented
     public void connect() {
-
-
-        ConnectionParams connectionParams =
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
-                        .showAuthView(true)
-                        .build();
-
-        SpotifyAppRemote.connect(invokeContext, connectionParams,
-                new Connector.ConnectionListener() {
-
-                    @Override
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        Log.d("MainActivity", "Connected! Yay!...... " + invokeContext);
-                        mSpotifyAppRemote.getPlayerApi().play("spotify:user:spotify:playlist:37i9dQZF1DX2sUQwD7tbmL");
-                        // Now you can start interacting with App Remote
-                        //connect();
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("MainActivity", throwable.getMessage(), throwable);
-
-                        // Something went wrong when attempting to connect! Handle errors here
-                    }
-                });
-        Log.d("MainActivity", "IN SINGLETON"+ invokeContext);
-
     }
 
+    // setter for context
     public void setInvokeContext(Context invokeContext) {
         this.invokeContext = invokeContext;
     }
