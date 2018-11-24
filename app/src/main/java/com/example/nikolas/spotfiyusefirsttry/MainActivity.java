@@ -68,12 +68,18 @@ public class MainActivity extends AppCompatActivity {
     private SpotifyAppRemote mSpotifyAppRemote;
     private String authToken;
 
+    Object o = new Object();
+
+
     private static MainActivity ins;
+
+//    SpotifyService spotify;
 
     private boolean playing=false;
     String playlistID="37i9dQZF1DX0XUsuxWHRQd";
     String playlistUser="spotify";
     final List<Quiz> quizList = new ArrayList<>();
+    List<String> pTracks;
 
     String artistName = "";
     String albumName = "";
@@ -108,44 +114,77 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         //Main activity instance for later use in other classes via MainAcitvity.getInstance()
         ins=this;
 
         //timer set up
         timerTextView = (TextView) findViewById(R.id.timer);
-
+        
         setUpAuthentication();
 
         setUpBroadcast();
 
         setUpButtons();
 
-    }
 
+    }
+    
     //quiz initilization, using authentication token for getting playlist tracks
     public void initQuiz (String playlistID, String playlistUser) {
-        resetButtonColor();
-        final List<String> playlistTracks = new ArrayList<>();
-        final List<String> playlistTracksIDs = new ArrayList<>();
+
+            resetButtonColor();
+            final List<String> playlistTracks = new ArrayList<>();
+            final List<String> playlistTracksIDs = new ArrayList<>();
+            SpotifyApi api = new SpotifyApi();
+            api.setAccessToken(authToken);
+            SpotifyService spotify = api.getService();
+
+            Log.e("TEST1234", "start t1");
+            spotify.getPlaylistTracks(playlistUser, playlistID, new Callback<Pager<PlaylistTrack>>() {
+                @Override
+                public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
+                    Log.e("TEST1234", "GOT the tracks in playlist");
+                    List<PlaylistTrack> items = playlistTrackPager.items;
+                    for (PlaylistTrack pt : items) {
+//                    Log.e("TEST123", pt.track.name + " - " + pt.track.id);
+                        playlistTracks.add(pt.track.name);
+                        playlistTracksIDs.add(pt.track.id);
+                    }
+                    createQuiz(playlistTracks, playlistTracksIDs);
+//                    quizPlay.setPlaylistTracks(playlistTracks);
+//                    quizPlay.proceed();
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    Log.e("TEST123", "Could not get playlist tracks");
+                }
+            });
+
+
+
+    }
+
+    public void getPlaylistTracks(String playlistID, String playlistUser, final GamePlayManager gamePlayManager)  {
+        Log.e("getPlaylistTracksTest", "started getPlaylistTracksTest");
         SpotifyApi api = new SpotifyApi();
         api.setAccessToken(authToken);
         SpotifyService spotify = api.getService();
+        Log.e("getPlaylistTracksTest", "authToken: "+authToken);
         spotify.getPlaylistTracks(playlistUser, playlistID, new Callback<Pager<PlaylistTrack>>() {
-            @Override
-            public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
-               Log.e("TEST1234", "GOT the tracks in playlist");
-                List<PlaylistTrack> items = playlistTrackPager.items;
-                for (PlaylistTrack pt : items) {
-//                    Log.e("TEST123", pt.track.name + " - " + pt.track.id);
-                    playlistTracks.add(pt.track.name);
-                    playlistTracksIDs.add(pt.track.id);
-                }
-                createQuiz(playlistTracks,playlistTracksIDs);
-            }
 
             @Override
+            public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
+                 Log.e("getPlaylistTracksTest", "GOT the tracks in playlist");
+                 List<PlaylistTrack> items = playlistTrackPager.items;
+                 gamePlayManager.setPlaylist(items);
+                 gamePlayManager.proceed();
+            }
+            @Override
             public void failure(RetrofitError error) {
-                Log.e("TEST123", "Could not get playlist tracks");
+                Log.e("getPlaylistTracksTest", "error while getting tracks of playlist");
             }
         });
     }
@@ -170,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         questionsList.add(q4);
 
         int randomButton = (int) (Math.random() * 4) ;
-        Quiz quiz = new Quiz(randomButton,questionsList);
+        Quiz quiz = new Quiz(questionsList);
         quizList.add(quiz);
         Log.e("TEST123", "n: "+randomButton+"//"+q1.getTrackName()+"  "+q2.getTrackName()+"  " +
                         ""+q3.getTrackName()+" "+q4.getTrackName());
@@ -435,7 +474,8 @@ public class MainActivity extends AppCompatActivity {
         final Button startQuiz = (Button) findViewById(R.id.startQuiz);
         startQuiz.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                initQuiz(playlistID,playlistUser);
+//                startActivity(new Intent(MainActivity.this, PlayQuiz.class));
+                    initQuiz(playlistID,playlistUser);
             }
         });
 
@@ -484,4 +524,12 @@ public class MainActivity extends AppCompatActivity {
     public void setPlaylistUser(String playlistUser) {
         this.playlistUser = playlistUser;
     }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+//    public SpotifyService getSpotifyService(){
+//        return spotify;
+//    }
 }

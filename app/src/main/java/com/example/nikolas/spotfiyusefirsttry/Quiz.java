@@ -7,7 +7,7 @@ public class Quiz {
     private int randomButtonNumber;
     private List<QuizQuestion> questionList = new ArrayList<>();
 
-    public Quiz(int randomButtonNumber, List<QuizQuestion> questionList) {
+    public Quiz(List<QuizQuestion> questionList) {
         this.randomButtonNumber = randomButtonNumber;
         this.questionList = questionList;
     }

@@ -1,5 +1,6 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,13 +9,20 @@ import android.widget.Button;
 
 public class PlaylistSelect extends AppCompatActivity {
 
+    String playlistID;
+    String playlistUser;
+
     PlaylistInfo playlistInfo = new PlaylistInfo();
     private Button b1,b2,b3,b4,b5,b6,b7,b8;
+
+    public static PlaylistSelect playlistSelect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_select);
+        playlistSelect=this;
+
         initControl();
         setPlaylistNameButton();
         listen();
@@ -31,84 +39,76 @@ public class PlaylistSelect extends AppCompatActivity {
         b8 = (Button) findViewById(R.id.button8);
     }
 
-    void listen(){
+    public void listen(){
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.getInstace().setPlaylistID(playlistInfo.getPlaylistID().get(0));
-                MainActivity.getInstace().setPlaylistUser(playlistInfo.getPlaylistUser().get(0));
-                MainActivity.getInstace().setCurrentPlaylistText(playlistInfo.getPlaylistName()
-                        .get(0));
+                playlistID=playlistInfo.getPlaylistID().get(0);
+                playlistUser=playlistInfo.getPlaylistUser().get(0);
+                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
                 finish();
             }
         });
         b2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.getInstace().setPlaylistID(playlistInfo.getPlaylistID().get(1));
-                MainActivity.getInstace().setPlaylistUser(playlistInfo.getPlaylistUser().get(1));
-                MainActivity.getInstace().setCurrentPlaylistText(playlistInfo.getPlaylistName()
-                        .get(1));
+                playlistID=playlistInfo.getPlaylistID().get(1);
+                playlistUser=playlistInfo.getPlaylistUser().get(1);
+                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
                 finish();
             }
         });
         b3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.getInstace().setPlaylistID(playlistInfo.getPlaylistID().get(2));
-                MainActivity.getInstace().setPlaylistUser(playlistInfo.getPlaylistUser().get(2));
-                MainActivity.getInstace().setCurrentPlaylistText(playlistInfo.getPlaylistName()
-                        .get(2));
+                playlistID=playlistInfo.getPlaylistID().get(2);
+                playlistUser=playlistInfo.getPlaylistUser().get(2);
+                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
                 finish();
             }
         });
         b4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.getInstace().setPlaylistID(playlistInfo.getPlaylistID().get(3));
-                MainActivity.getInstace().setPlaylistUser(playlistInfo.getPlaylistUser().get(3));
-                MainActivity.getInstace().setCurrentPlaylistText(playlistInfo.getPlaylistName()
-                        .get(3));
+                playlistID=playlistInfo.getPlaylistID().get(3);
+                playlistUser=playlistInfo.getPlaylistUser().get(3);
+                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
                 finish();
             }
         });
         b5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.getInstace().setPlaylistID(playlistInfo.getPlaylistID().get(4));
-                MainActivity.getInstace().setPlaylistUser(playlistInfo.getPlaylistUser().get(4));
-                MainActivity.getInstace().setCurrentPlaylistText(playlistInfo.getPlaylistName()
-                        .get(4));
+                playlistID=playlistInfo.getPlaylistID().get(4);
+                playlistUser=playlistInfo.getPlaylistUser().get(4);
+                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
                 finish();
             }
         });
         b6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.getInstace().setPlaylistID(playlistInfo.getPlaylistID().get(5));
-                MainActivity.getInstace().setPlaylistUser(playlistInfo.getPlaylistUser().get(5));
-                MainActivity.getInstace().setCurrentPlaylistText(playlistInfo.getPlaylistName()
-                        .get(5));
+                playlistID=playlistInfo.getPlaylistID().get(5);
+                playlistUser=playlistInfo.getPlaylistUser().get(5);
+                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
                 finish();
             }
         });
         b7.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.getInstace().setPlaylistID(playlistInfo.getPlaylistID().get(6));
-                MainActivity.getInstace().setPlaylistUser(playlistInfo.getPlaylistUser().get(6));
-                MainActivity.getInstace().setCurrentPlaylistText(playlistInfo.getPlaylistName()
-                        .get(6));
+                playlistID=playlistInfo.getPlaylistID().get(6);
+                playlistUser=playlistInfo.getPlaylistUser().get(6);
+                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
                 finish();
             }
         });
         b8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.getInstace().setPlaylistID(playlistInfo.getPlaylistID().get(7));
-                MainActivity.getInstace().setPlaylistUser(playlistInfo.getPlaylistUser().get(7));
-                MainActivity.getInstace().setCurrentPlaylistText(playlistInfo.getPlaylistName()
-                        .get(7));
+                playlistID=playlistInfo.getPlaylistID().get(7);
+                playlistUser=playlistInfo.getPlaylistUser().get(7);
+                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
                 finish();
             }
         });
@@ -124,5 +124,17 @@ public class PlaylistSelect extends AppCompatActivity {
         b7.setText(playlistInfo.getPlaylistName().get(6));
         b8.setText(playlistInfo.getPlaylistName().get(7));
 
+    }
+
+    public String getPlaylistID() {
+        return playlistID;
+    }
+
+    public String getPlaylistUser() {
+        return playlistUser;
+    }
+
+    public static PlaylistSelect getPlaylistSelect() {
+        return playlistSelect;
     }
 }

@@ -32,10 +32,10 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             artistName = intent.getStringExtra("artist");
             albumName = intent.getStringExtra("album");
             trackName = intent.getStringExtra("track");
-//            MainActivity.getInstace().setAlbumName(albumName);
+
             MainActivity.getInstace().setTrackName(trackName);
             Log.d("MainActivity", "meinTestCase1: trackNameSet" + trackName);
-//            MainActivity.getInstace().setArtistName(artistName);
+
             int trackLengthInSec = intent.getIntExtra("length", 0);
             // Do something with extracted information...
         } else if (action.equals(BroadcastTypes.PLAYBACK_STATE_CHANGED)) {
