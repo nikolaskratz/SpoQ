@@ -3,6 +3,7 @@ package com.example.nikolas.spotfiyusefirsttry;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.VibrationEffect;
@@ -44,6 +45,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     int gamesPlayed=0;
     int correctAnswers=0;
     int wrongAnswers=0;
+    int questionNumber=1;
 
     //timer set up
     TextView timerTextView;
@@ -155,18 +157,22 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
     public void playQuiz(final Quiz quiz, final int button) throws InterruptedException {
         playTrack("spotify:track:"+quiz.getQuestionList().get(3).getTrackID());
-        Log.e("playingQuiz", "correct Song: "+quiz.getQuestionList().get(3).getTrackID());
         startTime = System.currentTimeMillis();
         timerHandler.postDelayed(timerRunnable, 0);
+
+        TextView questionCount= findViewById(R.id.questionNumber);
+        questionCount.setText("Question "+questionNumber+"/5");
+        questionNumber++;
+
         final Button songAButton = (Button) findViewById(R.id.songAButton);
         songAButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 timerHandler.removeCallbacks(timerRunnable);
 
                 if (button==3) {
-                    songAButton.setBackgroundResource(R.color.SongButtonColorCorrect);
+                    songAButton.setBackgroundResource(R.drawable.button_pressed_correct);
                     correctAnswers++;
-                } else wrongAnswer(button);
+                } else wrongAnswer(button,songAButton);
                 pauseTrack();
                 try {
                     nextGame();
@@ -179,11 +185,10 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         songBButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 timerHandler.removeCallbacks(timerRunnable);
-
                 if (button==2) {
-                    songBButton.setBackgroundResource(R.color.SongButtonColorCorrect);
+                    songBButton.setBackgroundResource(R.drawable.button_pressed_correct);
                     correctAnswers++;
-                } else wrongAnswer(button);
+                } else wrongAnswer(button,songBButton);
                 pauseTrack() ;
                 try {
                     nextGame();
@@ -197,9 +202,9 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
             public void onClick(View v) {
                 timerHandler.removeCallbacks(timerRunnable);
                 if (button==1) {
-                    songCButton.setBackgroundResource(R.color.SongButtonColorCorrect);
+                    songCButton.setBackgroundResource(R.drawable.button_pressed_correct);
                     correctAnswers++;
-                } else wrongAnswer(button);
+                } else wrongAnswer(button,songCButton);
                 pauseTrack();
                 try {
                     nextGame();
@@ -213,9 +218,9 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
             public void onClick(View v) {
                 timerHandler.removeCallbacks(timerRunnable);
                 if (button==0) {
-                    songDButton.setBackgroundResource(R.color.SongButtonColorCorrect);
+                    songDButton.setBackgroundResource(R.drawable.button_pressed_correct);
                     correctAnswers++;
-                } else wrongAnswer(button);
+                } else wrongAnswer(button,songDButton);
                 pauseTrack();
                 try {
                     nextGame();
@@ -230,9 +235,10 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
     }
 
-    public void wrongAnswer(int buttonCorrect){
+    public void wrongAnswer(int buttonCorrect,Button button){
         wrongAnswers++;
-        getWindow().getDecorView().setBackgroundColor(Color.RED);
+//        getWindow().getDecorView().setBackgroundColor(Color.RED);
+        button.setBackgroundResource(R.drawable.button_pressed_wrong);
         setCorrect(buttonCorrect);
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
@@ -241,32 +247,32 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         } else {
             v.vibrate(500);
         }
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getWindow().getDecorView().setBackgroundColor(getResources().getColor
-                        (R.color.colorPrimaryDark));
-            }
-        }, 500);
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                getWindow().getDecorView().setBackgroundColor(getResources().getColor
+//                        (R.color.colorPrimaryDark));
+//            }
+//        }, 500);
 
     }
 
     public void setCorrect(int buttonCorrect){
         if(buttonCorrect==3) {
-            findViewById(R.id.songAButton).setBackgroundResource(R.color.SongButtonColorCorrect);
+            findViewById(R.id.songAButton).setBackgroundResource(R.drawable.button_pressed_correct);
             Log.e("setCorrectTest","A");
         }
         if(buttonCorrect==2) {
-            findViewById(R.id.songBButton).setBackgroundResource(R.color.SongButtonColorCorrect);
+            findViewById(R.id.songBButton).setBackgroundResource(R.drawable.button_pressed_correct);
             Log.e("setCorrectTest","B");
         }
         if(buttonCorrect==1) {
-            findViewById(R.id.songCButton).setBackgroundResource(R.color.SongButtonColorCorrect);
+            findViewById(R.id.songCButton).setBackgroundResource(R.drawable.button_pressed_correct);
             Log.e("setCorrectTest","C");
         }
         if(buttonCorrect==0) {
-            findViewById(R.id.songDButton).setBackgroundResource(R.color.SongButtonColorCorrect);
+            findViewById(R.id.songDButton).setBackgroundResource(R.drawable.button_pressed_correct);
             Log.e("setCorrectTest","D");
         }
     }
@@ -275,16 +281,21 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         Thread thread = new Thread(new Runnable(){
             @Override
             public void run(){
-                if(gamesPlayed++<2) {
+                if(gamesPlayed++<4) {
 
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(700);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     resetButtonColor();
                     getPlaylistTracks(playlistID,playlistUser);
                 } else {
+                    try {
+                        Thread.sleep(700);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     setTotalTime(minutes,seconds,(int) millis);
                     Intent intent = new Intent(PlayQuiz.this, QuizSummary.class);
                     intent.putExtra("Minutes", minutesTotal);
@@ -315,10 +326,10 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         final Button songBButton = (Button) findViewById(R.id.songBButton);
         final Button songCButton = (Button) findViewById(R.id.songCButton);
         final Button songDButton = (Button) findViewById(R.id.songDButton);
-        songAButton.setBackgroundResource(R.color.SongButtonColor);
-        songBButton.setBackgroundResource(R.color.SongButtonColor);
-        songCButton.setBackgroundResource(R.color.SongButtonColor);
-        songDButton.setBackgroundResource(R.color.SongButtonColor);
+        songAButton.setBackgroundResource(R.drawable.button_border);
+        songBButton.setBackgroundResource(R.drawable.button_border);
+        songCButton.setBackgroundResource(R.drawable.button_border);
+        songDButton.setBackgroundResource(R.drawable.button_border);
     }
 
     public void playTrack(String trackID){
