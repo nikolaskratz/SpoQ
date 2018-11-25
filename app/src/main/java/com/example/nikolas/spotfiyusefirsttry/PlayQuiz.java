@@ -1,6 +1,7 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
@@ -41,6 +42,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     int secondsTotal;
     int milliesTotal;
     int gamesPlayed=0;
+    int correctAnswers=0;
+    int wrongAnswers=0;
 
     //timer set up
     TextView timerTextView;
@@ -162,7 +165,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
                 if (button==3) {
                     songAButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                } else wrongAnswer();
+                    correctAnswers++;
+                } else wrongAnswer(button);
                 pauseTrack();
                 try {
                     nextGame();
@@ -178,7 +182,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
                 if (button==2) {
                     songBButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                } else wrongAnswer();
+                    correctAnswers++;
+                } else wrongAnswer(button);
                 pauseTrack() ;
                 try {
                     nextGame();
@@ -193,7 +198,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                 timerHandler.removeCallbacks(timerRunnable);
                 if (button==1) {
                     songCButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                } else wrongAnswer();
+                    correctAnswers++;
+                } else wrongAnswer(button);
                 pauseTrack();
                 try {
                     nextGame();
@@ -208,7 +214,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                 timerHandler.removeCallbacks(timerRunnable);
                 if (button==0) {
                     songDButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                } else wrongAnswer();
+                    correctAnswers++;
+                } else wrongAnswer(button);
                 pauseTrack();
                 try {
                     nextGame();
@@ -223,29 +230,52 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
     }
 
-    public void wrongAnswer(){
+    public void wrongAnswer(int buttonCorrect){
+        wrongAnswers++;
         getWindow().getDecorView().setBackgroundColor(Color.RED);
+        setCorrect(buttonCorrect);
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-// Vibrate for 500 milliseconds
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
         } else {
-            //deprecated in API 26
             v.vibrate(500);
         }
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                getWindow().getDecorView().setBackgroundColor(Color.WHITE);
+                getWindow().getDecorView().setBackgroundColor(getResources().getColor
+                        (R.color.colorPrimaryDark));
             }
         }, 500);
+
     }
+
+    public void setCorrect(int buttonCorrect){
+        if(buttonCorrect==3) {
+            findViewById(R.id.songAButton).setBackgroundResource(R.color.SongButtonColorCorrect);
+            Log.e("setCorrectTest","A");
+        }
+        if(buttonCorrect==2) {
+            findViewById(R.id.songBButton).setBackgroundResource(R.color.SongButtonColorCorrect);
+            Log.e("setCorrectTest","B");
+        }
+        if(buttonCorrect==1) {
+            findViewById(R.id.songCButton).setBackgroundResource(R.color.SongButtonColorCorrect);
+            Log.e("setCorrectTest","C");
+        }
+        if(buttonCorrect==0) {
+            findViewById(R.id.songDButton).setBackgroundResource(R.color.SongButtonColorCorrect);
+            Log.e("setCorrectTest","D");
+        }
+    }
+
     public void nextGame() throws InterruptedException {
         Thread thread = new Thread(new Runnable(){
             @Override
             public void run(){
-                if(gamesPlayed++<5) {
+                if(gamesPlayed++<2) {
 
                     try {
                         Thread.sleep(500);
@@ -254,6 +284,16 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     }
                     resetButtonColor();
                     getPlaylistTracks(playlistID,playlistUser);
+                } else {
+                    setTotalTime(minutes,seconds,(int) millis);
+                    Intent intent = new Intent(PlayQuiz.this, QuizSummary.class);
+                    intent.putExtra("Minutes", minutesTotal);
+                    intent.putExtra("Seconds", secondsTotal);
+                    intent.putExtra("Millis", milliesTotal);
+                    intent.putExtra("Correct Answers", correctAnswers);
+                    intent.putExtra("Wrong Answers",wrongAnswers);
+                    startActivity(intent);
+                    finish();
                 }
             }
         });
