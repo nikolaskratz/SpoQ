@@ -2,6 +2,7 @@ package com.example.nikolas.spotfiyusefirsttry;
 
 import android.app.Activity;
 import android.content.Context;
+import android.nfc.Tag;
 import android.util.Log;
 
 import com.google.android.gms.common.api.Response;
@@ -31,6 +32,9 @@ public class SpotifyApiManager {
     private SpotifyAppRemote mSpotifyAppRemote;
     private Context invokeContext;
 
+    //debugging tag
+    private static final String TAG = "SpotifyApiManager: ";
+
     //singelton's constructor
     private SpotifyApiManager() {
     }
@@ -45,11 +49,40 @@ public class SpotifyApiManager {
 
         // TODO: 24/11/2018 change activity in parameter below
         AuthenticationClient.openLoginActivity(MainActivity.getInstace(), REQUEST_CODE, request);
-    }
 
-        // will be implemented
-    public void connect() {
     }
+        //Called when an activity you launched exits, giving you the requestCode you started it with,
+        // the resultCode it returned, and any additional data from it.
+        // will be implemented
+    /*public void connect() {
+        Log.d(TAG,"Code:" + REQUEST_CODE);
+        if (requestCode == REQUEST_CODE) {
+            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+            Log.e("authDebug", "reached auth, response: "+response.getType());
+
+            switch (response.getType()) {
+                // Response was successful and contains auth token
+                case TOKEN:
+                    authToken = response.getAccessToken();
+                    Log.e("authDebug", "reached token");
+                    // Handle successful response
+                    break;
+
+                // Auth flow returned an error
+                case ERROR:
+                    Log.e("authDebug", "reached error");
+                    // Handle error response
+                    break;
+
+                // Most likely auth flow was cancelled
+                default:
+                    Log.e("authDebug", "reached default");
+                    // Handle other cases
+            }
+          }
+        }*/
+
+
 
     // setter for context
     public void setInvokeContext(Context invokeContext) {

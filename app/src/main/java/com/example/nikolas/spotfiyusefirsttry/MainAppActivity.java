@@ -51,8 +51,6 @@ public class MainAppActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main_app);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -64,7 +62,7 @@ public class MainAppActivity extends AppCompatActivity {
         mViewPager.setCurrentItem(1);
 
         // testing api sing
-        //SpotifyApiManager.getInstance().setInvokeContext(getApplicationContext());
+        SpotifyApiManager.getInstance().setInvokeContext(getApplicationContext());
         //SpotifyApiManager.getInstance().connect();
     }
 
