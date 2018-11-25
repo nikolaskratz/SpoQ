@@ -53,7 +53,7 @@
         android:layout_marginRight="8dp"
         android:layout_marginBottom="148dp"
         android:text="TextView"
-        android:textSize="35dp"
+        android:textSize="30dp"
         app:layout_constraintBottom_toTopOf="@+id/playAgainButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
