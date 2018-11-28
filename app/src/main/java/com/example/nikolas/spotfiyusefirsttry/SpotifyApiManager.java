@@ -54,35 +54,11 @@ public class SpotifyApiManager {
         //Called when an activity you launched exits, giving you the requestCode you started it with,
         // the resultCode it returned, and any additional data from it.
         // will be implemented
-    /*public void connect() {
-        Log.d(TAG,"Code:" + REQUEST_CODE);
-        if (requestCode == REQUEST_CODE) {
-            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            Log.e("authDebug", "reached auth, response: "+response.getType());
-
-            switch (response.getType()) {
-                // Response was successful and contains auth token
-                case TOKEN:
-                    authToken = response.getAccessToken();
-                    Log.e("authDebug", "reached token");
-                    // Handle successful response
-                    break;
-
-                // Auth flow returned an error
-                case ERROR:
-                    Log.e("authDebug", "reached error");
-                    // Handle error response
-                    break;
-
-                // Most likely auth flow was cancelled
-                default:
-                    Log.e("authDebug", "reached default");
-                    // Handle other cases
-            }
-          }
-        }*/
-
-
+    public void connect() {
+        final AuthenticationRequest request = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
+                   .setScopes(new String[]{"user-read-private", "playlist-read", "playlist-read-private", "streaming"})
+                  .build();
+        }
 
     // setter for context
     public void setInvokeContext(Context invokeContext) {

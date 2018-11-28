@@ -62,7 +62,7 @@ public class MainAppActivity extends AppCompatActivity {
         mViewPager.setCurrentItem(1);
 
         // testing api sing
-        SpotifyApiManager.getInstance().setInvokeContext(getApplicationContext());
+        //SpotifyApiManager.getInstance().setInvokeContext(getApplicationContext());
         //SpotifyApiManager.getInstance().connect();
     }
 
