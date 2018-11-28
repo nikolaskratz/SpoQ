@@ -6,10 +6,12 @@ import java.util.List;
 public class Quiz {
     private int randomButtonNumber;
     private List<QuizQuestion> questionList = new ArrayList<>();
+    private String playlistID;
 
-    public Quiz(List<QuizQuestion> questionList) {
+    public Quiz(List<QuizQuestion> questionList,String playlistID) {
         this.randomButtonNumber = randomButtonNumber;
         this.questionList = questionList;
+        this.playlistID=playlistID;
     }
 
     public Quiz() {
@@ -29,5 +31,9 @@ public class Quiz {
 
     public void setQuestionList(List<QuizQuestion> questionList) {
         this.questionList = questionList;
+    }
+
+    public String getPlaylistID() {
+        return playlistID;
     }
 }

@@ -66,39 +66,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
     private static final String REDIRECT_URI = "testschema://callback";
     private static final int REQUEST_CODE = 1337;
-    private SpotifyAppRemote mSpotifyAppRemote;
     private String authToken;
 
     private static MainActivity ins;
 
-    private boolean playing=false;
-    String playlistID="37i9dQZF1DX0XUsuxWHRQd";
-    String playlistUser="spotify";
-    final List<Quiz> quizList = new ArrayList<>();
-
-
-
     String trackName = "";
-    int minutes;
-    int seconds;
-
-    //timer set up
-    TextView timerTextView;
-    long startTime = 0;
-    Handler timerHandler = new Handler();
-    Runnable timerRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            long millis = System.currentTimeMillis() - startTime;
-            seconds = (int) (millis / 1000);
-            minutes = seconds / 60;
-            seconds = seconds % 60;
-            timerTextView.setText(String.format("%d:%02d", minutes, seconds));
-            timerHandler.postDelayed(this, 500);
-        }
-    };
-
+    boolean playing;
 
 
     @Override
@@ -113,49 +86,13 @@ public class MainActivity extends AppCompatActivity {
         ins=this;
 
         //timer set up
-        timerTextView = (TextView) findViewById(R.id.timer);
+//        timerTextView = (TextView) findViewById(R.id.timer);
         
         setUpAuthentication();
 
         setUpBroadcast();
 
         setUpButtons();
-
-
-    }
-    
-    //quiz initilization, using authentication token for getting playlist tracks
-    public void initQuiz (String playlistID, String playlistUser) {
-
-            resetButtonColor();
-            final List<String> playlistTracks = new ArrayList<>();
-            final List<String> playlistTracksIDs = new ArrayList<>();
-            SpotifyApi api = new SpotifyApi();
-            api.setAccessToken(authToken);
-            SpotifyService spotify = api.getService();
-
-            Log.e("TEST1234", "start t1");
-            spotify.getPlaylistTracks(playlistUser, playlistID, new Callback<Pager<PlaylistTrack>>() {
-                @Override
-                public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
-                    Log.e("TEST1234", "GOT the tracks in playlist");
-                    List<PlaylistTrack> items = playlistTrackPager.items;
-                    for (PlaylistTrack pt : items) {
-//                    Log.e("TEST123", pt.track.name + " - " + pt.track.id);
-                        playlistTracks.add(pt.track.name);
-                        playlistTracksIDs.add(pt.track.id);
-                    }
-                    createQuiz(playlistTracks, playlistTracksIDs);
-//                    quizPlay.setPlaylistTracks(playlistTracks);
-//                    quizPlay.proceed();
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    Log.e("TEST123", "Could not get playlist tracks");
-                }
-            });
-
 
 
     }
@@ -182,36 +119,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //actually building the quiz with questions etc, for the 1st player
-    public void createQuiz(List<String> playlistTracks, List<String> playlistTracksIDs){
-
-        final List<QuizQuestion> questionsList = new ArrayList<>();
-        int playlistSize = playlistTracks.size()-1;
-        int randomTrack = (int) (Math.random() * (playlistTracks.size()-1));
-        QuizQuestion q1 = new QuizQuestion(playlistTracks.get(randomTrack % playlistSize
-        ),playlistTracksIDs.get(randomTrack % playlistTracks.size()),false);
-        QuizQuestion q2 = new QuizQuestion(playlistTracks.get((randomTrack+1) % playlistSize),
-                playlistTracksIDs.get((randomTrack+1) % playlistTracks.size()),false);
-        QuizQuestion q3 = new QuizQuestion(playlistTracks.get((randomTrack+2) % playlistSize),
-                playlistTracksIDs.get((randomTrack+2) % playlistTracks.size()),false);
-        QuizQuestion q4 = new QuizQuestion(playlistTracks.get((randomTrack+3) % playlistSize),
-                playlistTracksIDs.get((randomTrack+3) % playlistTracks.size()),true);
-        questionsList.add(q1);
-        questionsList.add(q2);
-        questionsList.add(q3);
-        questionsList.add(q4);
-
-        int randomButton = (int) (Math.random() * 4) ;
-        Quiz quiz = new Quiz(questionsList);
-        quizList.add(quiz);
-        Log.e("TEST123", "n: "+randomButton+"//"+q1.getTrackName()+"  "+q2.getTrackName()+"  " +
-                        ""+q3.getTrackName()+" "+q4.getTrackName());
-        setSongsOnButtons(randomButton,questionsList);
-
-        Log.e("TEST123", "true track: "+q4.getTrackName()+"  trackID: "+q4.getTrackID());
-        playQuiz(quiz,randomButton);
-    }
-
     //receiving quiz
     public void receiveQuiz(){
         final Quiz[] quiz = new Quiz[1];
@@ -224,8 +131,8 @@ public class MainActivity extends AppCompatActivity {
 //                Log.w("receiveQuizLog", "randomButtonNumber: "+snap.getValue());
                 quiz[0] = snap.getValue(Quiz.class);
 //                Log.w("receiveQuizLog", randomButtonNumber: "+quiz[0].getRandomButtonNumber());
-                setSongsOnButtons(quiz[0].getRandomButtonNumber(),quiz[0].getQuestionList());
-                playQuiz(quiz[0],quiz[0].getRandomButtonNumber());
+//                setSongsOnButtons(quiz[0].getRandomButtonNumber(),quiz[0].getQuestionList());
+//                playQuiz(quiz[0],quiz[0].getRandomButtonNumber());
             }
 
             @Override
@@ -236,105 +143,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    //setting songs on buttons according to random number
-    public void setSongsOnButtons (int randomButton, List<QuizQuestion> questionsList){
-        final Button buttonSongA = (Button) findViewById(R.id.songAButton);
-        buttonSongA.setText(questionsList.get(randomButton).getTrackName());
-        final Button buttonSongB = (Button) findViewById(R.id.songBButton);
-        buttonSongB.setText(questionsList.get((randomButton+1) % 4).getTrackName());
-        final Button buttonSongC = (Button) findViewById(R.id.songCButton);
-        buttonSongC.setText(questionsList.get((randomButton+2) % 4).getTrackName());
-        final Button buttonSongD = (Button) findViewById(R.id.songDButton);
-        buttonSongD.setText(questionsList.get((randomButton+3) % 4).getTrackName());
-    }
-
-    //playing quiz
-    public void playQuiz(Quiz quiz, final int button){
-//        mSpotifyAppRemote.getPlayerApi().play("spotify:track:"+quiz.getQuestionList().get(3)
-//                .getTrackID
-//                ());
-        playTrack("spotify:track:"+quiz.getQuestionList().get(3).getTrackID());
-        startTime = System.currentTimeMillis();
-        timerHandler.postDelayed(timerRunnable, 0);
-        final Button songAButton = (Button) findViewById(R.id.songAButton);
-        songAButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                timerHandler.removeCallbacks(timerRunnable);
-                setLastTimer(minutes,seconds);
-                if (button==3) {
-                    songAButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                } else wrongAnswer();
-                mSpotifyAppRemote.getPlayerApi().pause();
-            }
-        });
-        final Button songBButton = (Button) findViewById(R.id.songBButton);
-        songBButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                timerHandler.removeCallbacks(timerRunnable);
-                setLastTimer(minutes,seconds);
-                if (button==2) {
-                    songBButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                } else wrongAnswer();
-                mSpotifyAppRemote.getPlayerApi().pause();
-            }
-        });
-        final Button songCButton = (Button) findViewById(R.id.songCButton);
-        songCButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                timerHandler.removeCallbacks(timerRunnable);
-                setLastTimer(minutes,seconds);
-                if (button==1) {
-                    songCButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                } else wrongAnswer();
-                mSpotifyAppRemote.getPlayerApi().pause();
-            }
-        });
-        final Button songDButton = (Button) findViewById(R.id.songDButton);
-        songDButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                timerHandler.removeCallbacks(timerRunnable);
-                setLastTimer(minutes,seconds);
-                if (button==0) {
-                    songDButton.setBackgroundResource(R.color.SongButtonColorCorrect);
-                } else wrongAnswer();
-                mSpotifyAppRemote.getPlayerApi().pause();
-            }
-        });
-        Connection connection = new Connection(quiz,button);
-    }
-
-    //reaction to wrong answer
-    public void wrongAnswer(){
-        getWindow().getDecorView().setBackgroundColor(Color.RED);
-        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-// Vibrate for 500 milliseconds
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-            //deprecated in API 26
-            v.vibrate(500);
-        }
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getWindow().getDecorView().setBackgroundColor(Color.WHITE);
-            }
-        }, 500);
-    }
-
-    void setPPButtonPlay(){
-        final Button playPauseButton = (Button) findViewById(R.id.PlayPauseButton);
-        mSpotifyAppRemote.getPlayerApi().resume();
-        playPauseButton.setText("Pause");
-        Log.d("MainActivity", "meinTestCase1: playPauseButton resumed");
-    }
-    void setPPButtonPause(){
-        final Button playPauseButton = (Button) findViewById(R.id.PlayPauseButton);
-        mSpotifyAppRemote.getPlayerApi().pause();
-        playPauseButton.setText("Play");
-        Log.d("MainActivity", "meinTestCase1: playPauseButton paused");
-    }
 
 //    @Override
 //    protected void onStart() {
@@ -359,11 +167,11 @@ public class MainActivity extends AppCompatActivity {
 //                });
 //    }
 
-    private void connected(){
-        mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(new Subscription.EventCallback<PlayerState>() {
-                    @Override
-                    public void onEvent(PlayerState playerState) {
-                        final Track track = playerState.track;
+//    private void connected(){
+//        mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(new Subscription.EventCallback<PlayerState>() {
+//                    @Override
+//                    public void onEvent(PlayerState playerState) {
+//                        final Track track = playerState.track;
 //                        if (track != null) {
 //                            Log.d("MainActivity", track.name + " by " + track.artist.name);
 //                            final TextView songName = (TextView) findViewById(R.id.SongName);
@@ -373,16 +181,14 @@ public class MainActivity extends AppCompatActivity {
 //                            final TextView artistName = (TextView) findViewById(R.id.ArtistName);
 //                            artistName.setText(track.artist.name);
 //                        }
-                    }
-        });
-    }
+//                    }
+//        });
+//    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
-    }
-
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//    }
 
     //Authentication function which also saves the AccesToken to use with WebApi
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -415,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //set up authentication
+    //set up authentication (Web)
     public void setUpAuthentication(){
         AuthenticationRequest.Builder builder =
                 new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
@@ -432,44 +238,26 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    //setting timerLast textView
-    void setLastTimer (int minutes, int seconds){
-        TextView finalTimer = (TextView) findViewById(R.id.timerLast);
-        finalTimer.setText(String.format("%d:%02d", minutes, seconds));
-    }
-
-    //set button colour to original colour after each quiz
-    void resetButtonColor(){
-        final Button songAButton = (Button) findViewById(R.id.songAButton);
-        final Button songBButton = (Button) findViewById(R.id.songBButton);
-        final Button songCButton = (Button) findViewById(R.id.songCButton);
-        final Button songDButton = (Button) findViewById(R.id.songDButton);
-        songAButton.setBackgroundResource(R.color.SongButtonColor);
-        songBButton.setBackgroundResource(R.color.SongButtonColor);
-        songCButton.setBackgroundResource(R.color.SongButtonColor);
-        songDButton.setBackgroundResource(R.color.SongButtonColor);
-    }
-
     //set up all onClicks on the buttons (playPause/next/startQuiz/joinQuiz
     public void setUpButtons(){
         final Button playPauseButton = (Button) findViewById(R.id.PlayPauseButton);
         playPauseButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (playing) setPPButtonPause(); else setPPButtonPlay();
+//                if (playing) setPPButtonPause(); else setPPButtonPlay();
             }
         });
 
         final Button nextButton = (Button) findViewById(R.id.NextButton);
         nextButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mSpotifyAppRemote.getPlayerApi().skipNext();
+//                mSpotifyAppRemote.getPlayerApi().skipNext();
             }
         });
         final Button startQuiz = (Button) findViewById(R.id.startQuiz);
         startQuiz.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
 //                startActivity(new Intent(MainActivity.this, PlayQuiz.class));
-                    initQuiz(playlistID,playlistUser);
+//                    initQuiz(playlistID,playlistUser);
 //                playTrack("spotify:track:4W4wYHtsrgDiivRASVOINL");
             }
         });
@@ -501,37 +289,13 @@ public class MainActivity extends AppCompatActivity {
         return ins;
     }
 
-    //setter for Current Playlist TextView
-    public void setCurrentPlaylistText(String playlist){
-        final TextView currentPlaylistButton = (TextView) findViewById(R.id.currentPlaylist);
-        currentPlaylistButton.setText(playlist);
-    }
-
     public void setTrackName(String trackName) {
         this.trackName = trackName;
     }
     public void setPlaying(boolean playing) {
         this.playing = playing;
     }
-    public void setPlaylistID(String playlistID) {
-        this.playlistID = playlistID;
-    }
-    public void setPlaylistUser(String playlistUser) {
-        this.playlistUser = playlistUser;
-    }
 
-    public String getAuthToken() {
-        return authToken;
-    }
 
-    public void playTrack(String trackID){
-        mSpotifyAppRemote.getPlayerApi().play(trackID);
-        Log.e("playingQuiz", "playing song: "+trackID);
-    }
-
-    public void pauseTrack(){
-        mSpotifyAppRemote.getPlayerApi().pause();
-        Log.e("playingQuiz", "paused track");
-    }
 
 }

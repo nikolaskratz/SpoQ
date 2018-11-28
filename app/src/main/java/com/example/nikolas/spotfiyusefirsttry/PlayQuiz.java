@@ -8,13 +8,21 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
@@ -36,12 +44,16 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     List<PlaylistTrack> playlistTracks;
     public String playlistID = PlaylistSelect.getPlaylistSelect().getPlaylistID();
     public String playlistUser = PlaylistSelect.getPlaylistSelect().getPlaylistUser();;
+
+    QuizGame quizGame = new QuizGame();
+
     int minutes;
     int seconds;
     long millis;
     int minutesTotal;
     int secondsTotal;
     int milliesTotal;
+
     int gamesPlayed=0;
     int correctAnswers=0;
     int wrongAnswers=0;
@@ -72,7 +84,6 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         main= MainActivity.getInstace();
         playQuiz=this;
         timerTextView = (TextView) findViewById(R.id.timer);
-
     }
 
     @Override
@@ -109,12 +120,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
     @Override
     public void proceed(){
-        Log.e("getPlaylistTracksTest", "reached proceed");
-        try {
-            createQuiz(playlistTracks);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        checkQuizOverwriting();
     }
 
     public void createQuiz(List<PlaylistTrack> playlistTracks) throws InterruptedException {
@@ -137,7 +143,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         questionsList.add(q4);
 
         int randomButton = (int) (Math.random() * 4) ;
-        Quiz quiz = new Quiz(questionsList);
+        Quiz quiz = new Quiz(questionsList,playlistID);
+        quizGame.addQuiz(quiz);
         Log.e("getPlaylistTracksTest", "createQuiz");
         setSongsOnButtons(randomButton,questionsList);
         Log.e("getPlaylistTracksTest", "setSongsButtons");
@@ -161,8 +168,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         timerHandler.postDelayed(timerRunnable, 0);
 
         TextView questionCount= findViewById(R.id.questionNumber);
-        questionCount.setText("Question "+questionNumber+"/5");
-        questionNumber++;
+        questionCount.setText("Question "+(gamesPlayed+1)+"/3");
+//        questionNumber++;
 
         final Button songAButton = (Button) findViewById(R.id.songAButton);
         songAButton.setOnClickListener(new View.OnClickListener() {
@@ -281,7 +288,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         Thread thread = new Thread(new Runnable(){
             @Override
             public void run(){
-                if(gamesPlayed++<4) {
+                if(gamesPlayed++<2) {
 
                     try {
                         Thread.sleep(700);
@@ -303,6 +310,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     intent.putExtra("Millis", milliesTotal);
                     intent.putExtra("Correct Answers", correctAnswers);
                     intent.putExtra("Wrong Answers",wrongAnswers);
+                    intent.putExtra("Quiz",(new Gson()).toJson(quizGame));
                     startActivity(intent);
                     finish();
                 }
@@ -310,6 +318,39 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         });
         thread.start();
 
+    }
+
+    void checkQuizOverwriting(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        // A and B have to be changed to actual users later
+        DatabaseReference myRef = database.getReference("Quiz");
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.hasChild("playerAplayerB"+playlistID)) {
+                    Log.e("duplicateCheck","quizalready exists, quiz will not start");
+                    //following part should be removed later becuase it overwrites the quiz START
+                    try {
+                        createQuiz(playlistTracks);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    //remove later END
+                } else {
+                    try {
+                        createQuiz(playlistTracks);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     void setTotalTime (int minutes, int seconds, int millies){
