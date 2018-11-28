@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String REDIRECT_URI = "testschema://callback";
     private static final int REQUEST_CODE = 1337;
     private String authToken;
+    private String currentPlayer="edo123";
+    private String playerToChallenge;
 
     private static MainActivity ins;
 
@@ -266,6 +268,27 @@ public class MainActivity extends AppCompatActivity {
         joinQuiz.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 receiveQuiz();
+            }
+        });
+
+        final Button playlistSelect = (Button) findViewById(R.id.playlistSelecter);
+        playlistSelect.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        final Button kalayu = (Button) findViewById(R.id.playVsKalayu);
+        kalayu.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                playerToChallenge="kalayu";
+                Intent intent = new Intent(MainActivity.this, PlaylistSelect.class);
+                Log.e("abc123","jojojo");
+                intent.putExtra("me",currentPlayer);
+                intent.putExtra("vs",playerToChallenge);
+                startActivity(intent);
             }
         });
     }

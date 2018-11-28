@@ -20,13 +20,24 @@ import java.util.List;
 
 public class QuizSummary extends AppCompatActivity {
 
+    String quizID;
+    QuizGame quizGame;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz_summary);
+        quizGame = new Gson().fromJson(getIntent().getExtras().getString("Quiz"), QuizGame
+                .class);
+
+        String playlistID= quizGame.getQuizList().get(0).getPlaylistID();
+        String me = getIntent().getExtras().getString("me");
+        String vs = getIntent().getExtras().getString("vs");
+        quizID = me+vs+playlistID;
         setSummary();
         setButtons();
         sendQuiz();
+        sendInvitation();
     }
 
     void setSummary(){
@@ -41,6 +52,9 @@ public class QuizSummary extends AppCompatActivity {
 
         TextView answers = findViewById(R.id.answerCount);
         answers.setText("Correct Answers: "+correct+"\nWrong Answers: "+wrong);
+
+        TextView vs = findViewById(R.id.vs);
+        vs.setText("You played vs: "+getIntent().getExtras().getString("vs"));
     }
 
     void setButtons(){
@@ -61,15 +75,17 @@ public class QuizSummary extends AppCompatActivity {
     }
 
     void sendQuiz(){
-        QuizGame quizGame = new Gson().fromJson(getIntent().getExtras().getString("Quiz"), QuizGame
-                .class);
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Quiz");
+        myRef.child(quizID).setValue(quizGame);
+    }
 
-        String playlistID= quizGame.getQuizList().get(0).getPlaylistID();
-        // A and B will alter be obtained also by passing
-        String iD = "playerA"+"playerB"+playlistID;
+    void sendInvitation(){
 
+    }
 
-        myRef.child(iD).setValue(quizGame);
+    void sendResult(){
+        //using seconds as points will change later to propper point system
+        int points =getIntent().getExtras().getInt("Seconds");
+
     }
 }

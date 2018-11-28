@@ -45,8 +45,7 @@ public class PlaylistSelect extends AppCompatActivity {
             public void onClick(View view) {
                 playlistID=playlistInfo.getPlaylistID().get(0);
                 playlistUser=playlistInfo.getPlaylistUser().get(0);
-                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
-                finish();
+                startQuiz();
             }
         });
         b2.setOnClickListener(new View.OnClickListener() {
@@ -54,8 +53,7 @@ public class PlaylistSelect extends AppCompatActivity {
             public void onClick(View view) {
                 playlistID=playlistInfo.getPlaylistID().get(1);
                 playlistUser=playlistInfo.getPlaylistUser().get(1);
-                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
-                finish();
+                startQuiz();
             }
         });
         b3.setOnClickListener(new View.OnClickListener() {
@@ -63,8 +61,7 @@ public class PlaylistSelect extends AppCompatActivity {
             public void onClick(View view) {
                 playlistID=playlistInfo.getPlaylistID().get(2);
                 playlistUser=playlistInfo.getPlaylistUser().get(2);
-                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
-                finish();
+                startQuiz();
             }
         });
         b4.setOnClickListener(new View.OnClickListener() {
@@ -72,8 +69,7 @@ public class PlaylistSelect extends AppCompatActivity {
             public void onClick(View view) {
                 playlistID=playlistInfo.getPlaylistID().get(3);
                 playlistUser=playlistInfo.getPlaylistUser().get(3);
-                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
-                finish();
+                startQuiz();
             }
         });
         b5.setOnClickListener(new View.OnClickListener() {
@@ -81,8 +77,7 @@ public class PlaylistSelect extends AppCompatActivity {
             public void onClick(View view) {
                 playlistID=playlistInfo.getPlaylistID().get(4);
                 playlistUser=playlistInfo.getPlaylistUser().get(4);
-                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
-                finish();
+                startQuiz();
             }
         });
         b6.setOnClickListener(new View.OnClickListener() {
@@ -90,8 +85,7 @@ public class PlaylistSelect extends AppCompatActivity {
             public void onClick(View view) {
                 playlistID=playlistInfo.getPlaylistID().get(5);
                 playlistUser=playlistInfo.getPlaylistUser().get(5);
-                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
-                finish();
+                startQuiz();
             }
         });
         b7.setOnClickListener(new View.OnClickListener() {
@@ -99,8 +93,7 @@ public class PlaylistSelect extends AppCompatActivity {
             public void onClick(View view) {
                 playlistID=playlistInfo.getPlaylistID().get(6);
                 playlistUser=playlistInfo.getPlaylistUser().get(6);
-                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
-                finish();
+                startQuiz();
             }
         });
         b8.setOnClickListener(new View.OnClickListener() {
@@ -108,8 +101,7 @@ public class PlaylistSelect extends AppCompatActivity {
             public void onClick(View view) {
                 playlistID=playlistInfo.getPlaylistID().get(7);
                 playlistUser=playlistInfo.getPlaylistUser().get(7);
-                startActivity(new Intent(PlaylistSelect.this, PlayQuiz.class));
-                finish();
+                startQuiz();
             }
         });
     }
@@ -136,5 +128,13 @@ public class PlaylistSelect extends AppCompatActivity {
 
     public static PlaylistSelect getPlaylistSelect() {
         return playlistSelect;
+    }
+
+    void startQuiz(){
+        Intent intent = new Intent(PlaylistSelect.this, PlayQuiz.class);
+        intent.putExtra("me",getIntent().getExtras().getString("me"));
+        intent.putExtra("vs",getIntent().getExtras().getString("vs"));
+        startActivity(intent);
+        finish();
     }
 }

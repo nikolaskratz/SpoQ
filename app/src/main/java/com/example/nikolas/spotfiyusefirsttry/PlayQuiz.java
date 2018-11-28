@@ -311,6 +311,10 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     intent.putExtra("Correct Answers", correctAnswers);
                     intent.putExtra("Wrong Answers",wrongAnswers);
                     intent.putExtra("Quiz",(new Gson()).toJson(quizGame));
+                    String me = getIntent().getExtras().getString("me");
+                    intent.putExtra("me",me);
+                    String vs = getIntent().getExtras().getString("vs");
+                    intent.putExtra("vs",vs);
                     startActivity(intent);
                     finish();
                 }
