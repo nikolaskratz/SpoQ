@@ -9,8 +9,6 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-
-
     <style name="QuizButton" parent="@android:style/Widget.Button">
         <item name="android:background">@drawable/button_pressed_correct</item>
     </style>
