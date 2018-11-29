@@ -30,6 +30,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
+        emailEt = findViewById(R.id.signIn_form_email_et);
+        passwordEt = findViewById(R.id.signIn_form_password_et);
         // Initialize listeners on buttons
         findViewById(R.id.signIn_signIn_b).setOnClickListener(this);
         findViewById(R.id.signIn_signUp_b).setOnClickListener(this);
@@ -65,7 +67,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         if (!validateForm()) {
             return;
         }
-        // [START sign_in_with_email]
+
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -84,16 +86,12 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             updateUI(null);
                         }
 
-                        // [START_EXCLUDE]
                         if (!task.isSuccessful()) {
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
-
-                        // [END_EXCLUDE]
                     }
                 });
-
 
     }
 

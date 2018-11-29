@@ -8,12 +8,12 @@
 
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/signIn_form_email_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="@string/email_hint"
-        android:inputType="textPersonName"
+        android:inputType="textEmailAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,16 +21,16 @@
         />
 
     <EditText
-        android:id="@+id/password_edit_text_signIn"
+        android:id="@+id/signIn_form_password_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:hint="@string/password_hint"
         android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="@+id/editText"
-        app:layout_constraintStart_toStartOf="@+id/editText"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
+        app:layout_constraintEnd_toEndOf="@+id/signIn_form_email_et"
+        app:layout_constraintStart_toStartOf="@+id/signIn_form_email_et"
+        app:layout_constraintTop_toBottomOf="@+id/signIn_form_email_et" />
 
     <Button
         android:id="@+id/signIn_signIn_b"
@@ -38,10 +38,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/sing_in_button"
-        app:layout_constraintEnd_toEndOf="@+id/password_edit_text_signIn"
+        app:layout_constraintEnd_toEndOf="@+id/signIn_form_password_et"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/password_edit_text_signIn"
-        app:layout_constraintTop_toBottomOf="@+id/password_edit_text_signIn" />
+        app:layout_constraintStart_toStartOf="@+id/signIn_form_password_et"
+        app:layout_constraintTop_toBottomOf="@+id/signIn_form_password_et" />
 
     <Button
         android:id="@+id/signIn_signUp_b"
@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/sign_up_button"
-        app:layout_constraintEnd_toEndOf="@+id/password_edit_text_signIn"
+        app:layout_constraintEnd_toEndOf="@+id/signIn_form_password_et"
         app:layout_constraintStart_toStartOf="@+id/signIn_signIn_b"
         app:layout_constraintTop_toBottomOf="@+id/signIn_signIn_b" />
 

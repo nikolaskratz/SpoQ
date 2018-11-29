@@ -1,6 +1,7 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -22,12 +23,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
+import com.google.firebase.auth.FirebaseAuth;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
-public class MainAppActivity extends AppCompatActivity {
+public class MainAppActivity extends AppCompatActivity implements View.OnClickListener{
 
+
+    private FirebaseAuth mAuth;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -49,6 +53,8 @@ public class MainAppActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mAuth = FirebaseAuth.getInstance();
+
         setContentView(R.layout.activity_main_app);
 
         // Create the adapter that will return a fragment for each of the three
@@ -64,6 +70,8 @@ public class MainAppActivity extends AppCompatActivity {
         // testing api sing
         //SpotifyApiManager.getInstance().setInvokeContext(getApplicationContext());
         //SpotifyApiManager.getInstance().connect();
+
+
     }
 
 
@@ -79,14 +87,31 @@ public class MainAppActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle  clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if(i == R.id.mainAppActivity_signOut_b) {
+            signOut();
+            updateUI();
+        }
+    }
+
+    private void updateUI() {
+        startActivity( new Intent(this, SignInActivity.class));
+    }
+
+    private void signOut() {
+        mAuth.signOut();
     }
 
     /**

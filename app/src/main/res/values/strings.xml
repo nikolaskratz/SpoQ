@@ -12,4 +12,5 @@
     <string name="sign_up_form_password1">Password</string>
     <string name="sign_up_form_password_confirm">Confirm password</string>
     <string name="sign_up_submit_b">Submit</string>
+    <string name="mainAppActivity_signOut_b">SIGN OUT</string>
 </resources>
