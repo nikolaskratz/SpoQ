@@ -1,64 +1,33 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
-import android.os.Build;
-import android.os.Handler;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.JsonToken;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
-import android.content.Intent;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.spotify.android.appremote.api.ConnectionParams;
-import com.spotify.android.appremote.api.Connector;
-import com.spotify.android.appremote.api.PlayerApi;
-import com.spotify.android.appremote.api.SpotifyAppRemote;
 
-import com.spotify.protocol.WampClient;
-import com.spotify.protocol.client.CallResult;
-import com.spotify.protocol.client.ErrorCallback;
-import com.spotify.protocol.client.Result;
-import com.spotify.protocol.client.Subscription;
-import com.spotify.protocol.types.PlayerState;
-import com.spotify.protocol.types.Track;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Pager;
-import kaaes.spotify.webapi.android.models.Playlist;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-
-import static com.spotify.sdk.android.authentication.LoginActivity.REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private String authToken;
     private String currentPlayer="edo123";
     private String playerToChallenge;
+    private List<String> friends = new ArrayList<>();
 
     private static MainActivity ins;
 
@@ -87,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
         //Main activity instance for later use in other classes via MainAcitvity.getInstance()
         ins=this;
 
-        //timer set up
-//        timerTextView = (TextView) findViewById(R.id.timer);
+
+
         
         setUpAuthentication();
 
@@ -242,19 +212,19 @@ public class MainActivity extends AppCompatActivity {
 
     //set up all onClicks on the buttons (playPause/next/startQuiz/joinQuiz
     public void setUpButtons(){
-        final Button playPauseButton = (Button) findViewById(R.id.PlayPauseButton);
-        playPauseButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-//                if (playing) setPPButtonPause(); else setPPButtonPlay();
-            }
-        });
-
-        final Button nextButton = (Button) findViewById(R.id.NextButton);
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-//                mSpotifyAppRemote.getPlayerApi().skipNext();
-            }
-        });
+//        final Button playPauseButton = (Button) findViewById(R.id.PlayPauseButton);
+//        playPauseButton.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+////                if (playing) setPPButtonPause(); else setPPButtonPlay();
+//            }
+//        });
+//
+//        final Button nextButton = (Button) findViewById(R.id.NextButton);
+//        nextButton.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+////                mSpotifyAppRemote.getPlayerApi().skipNext();
+//            }
+//        });
         final Button startQuiz = (Button) findViewById(R.id.startQuiz);
         startQuiz.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -279,19 +249,83 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final Button kalayu = (Button) findViewById(R.id.playVsKalayu);
+        final Button andreas = (Button) findViewById(R.id.userAndreas);
+        andreas.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                currentPlayer="Andreas";
+                setVsButtons();
+            }
+        });
+        final Button kalayu = (Button) findViewById(R.id.userKalayu);
         kalayu.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                playerToChallenge="kalayu";
+                currentPlayer="Kalayu";
+                setVsButtons();
+            }
+        });
+        final Button edo123 = (Button) findViewById(R.id.userEdo123);
+        edo123.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                currentPlayer="edo123";
+                setVsButtons();
+            }
+        });
+
+        final Button playF1 = (Button) findViewById(R.id.playVsF1);
+        playF1.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, PlaylistSelect.class);
-                Log.e("abc123","jojojo");
                 intent.putExtra("me",currentPlayer);
+                playerToChallenge=friends.get(0);
+                intent.putExtra("vs",playerToChallenge);
+                startActivity(intent);
+            }
+        });
+
+        final Button playF2 = (Button) findViewById(R.id.playVsF2);
+        playF2.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, PlaylistSelect.class);
+                intent.putExtra("me",currentPlayer);
+                playerToChallenge=friends.get(1);
                 intent.putExtra("vs",playerToChallenge);
                 startActivity(intent);
             }
         });
     }
+
+    public void setVsButtons(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Users").child(currentPlayer).child
+                ("friends");
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                friends.clear();
+                for (DataSnapshot postSnapshot: snap.getChildren()) {
+                    friends.add(postSnapshot.getValue(String.class));
+                    Log.e("Get Data",postSnapshot.getValue(String.class) );
+                }
+                final Button playF1 = (Button) findViewById(R.id.playVsF1);
+                playF1.setText("play vs "+friends.get(0));
+                final Button playF2 = (Button) findViewById(R.id.playVsF2);
+                playF2.setText("play vs "+friends.get(1));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("myTag", "Failed to read value.");
+            }
+        });
+    }
+
+
 
     //init the broadcastreceiver
     public void setUpBroadcast(){

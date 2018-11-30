@@ -1,6 +1,7 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,8 @@ import java.util.List;
 
 public class QuizSummary extends AppCompatActivity {
 
+    String vs;
+    String me;
     String quizID;
     QuizGame quizGame;
 
@@ -31,8 +34,8 @@ public class QuizSummary extends AppCompatActivity {
                 .class);
 
         String playlistID= quizGame.getQuizList().get(0).getPlaylistID();
-        String me = getIntent().getExtras().getString("me");
-        String vs = getIntent().getExtras().getString("vs");
+        me = getIntent().getExtras().getString("me");
+        vs = getIntent().getExtras().getString("vs");
         quizID = me+vs+playlistID;
         setSummary();
         setButtons();
@@ -80,7 +83,10 @@ public class QuizSummary extends AppCompatActivity {
     }
 
     void sendInvitation(){
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Users").child(vs)
+                .child("games");
 
+        myRef.child(quizID).setValue(quizID);
     }
 
     void sendResult(){
