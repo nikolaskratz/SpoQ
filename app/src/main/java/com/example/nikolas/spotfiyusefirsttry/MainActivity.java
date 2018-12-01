@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private static MainActivity ins;
 
     String trackName = "";
+    String quizIDInvite;
     boolean playing;
 
 
@@ -212,42 +214,6 @@ public class MainActivity extends AppCompatActivity {
 
     //set up all onClicks on the buttons (playPause/next/startQuiz/joinQuiz
     public void setUpButtons(){
-//        final Button playPauseButton = (Button) findViewById(R.id.PlayPauseButton);
-//        playPauseButton.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-////                if (playing) setPPButtonPause(); else setPPButtonPlay();
-//            }
-//        });
-//
-//        final Button nextButton = (Button) findViewById(R.id.NextButton);
-//        nextButton.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-////                mSpotifyAppRemote.getPlayerApi().skipNext();
-//            }
-//        });
-        final Button startQuiz = (Button) findViewById(R.id.startQuiz);
-        startQuiz.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-//                startActivity(new Intent(MainActivity.this, PlayQuiz.class));
-//                    initQuiz(playlistID,playlistUser);
-//                playTrack("spotify:track:4W4wYHtsrgDiivRASVOINL");
-            }
-        });
-
-        final Button joinQuiz = (Button) findViewById(R.id.joinButton);
-        joinQuiz.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                receiveQuiz();
-            }
-        });
-
-        final Button playlistSelect = (Button) findViewById(R.id.playlistSelecter);
-        playlistSelect.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
 
         final Button andreas = (Button) findViewById(R.id.userAndreas);
         andreas.setOnClickListener(new View.OnClickListener(){
@@ -255,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 currentPlayer="Andreas";
                 setVsButtons();
+                checkInvites();
             }
         });
         final Button kalayu = (Button) findViewById(R.id.userKalayu);
@@ -263,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 currentPlayer="Kalayu";
                 setVsButtons();
+                checkInvites();
             }
         });
         final Button edo123 = (Button) findViewById(R.id.userEdo123);
@@ -271,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 currentPlayer="edo123";
                 setVsButtons();
+                checkInvites();
             }
         });
 
@@ -295,6 +264,38 @@ public class MainActivity extends AppCompatActivity {
                 playerToChallenge=friends.get(1);
                 intent.putExtra("vs",playerToChallenge);
                 startActivity(intent);
+            }
+        });
+
+        final Button joinInvite = (Button) findViewById(R.id.joinInvite);
+        joinInvite.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, PlayQuiz.class);
+                intent.putExtra("invite",true);
+                intent.putExtra("quizID",quizIDInvite);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void checkInvites(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Users").child(currentPlayer).child
+                ("games");
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                quizIDInvite = snap.getChildren().iterator().next().getValue(String.class);
+                String vs = quizIDInvite.split("-")[0];
+                TextView invites = (TextView) findViewById(R.id.invites);
+                invites.setText("You have been challenged by: "+vs);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("myTag", "Failed to read value.");
             }
         });
     }

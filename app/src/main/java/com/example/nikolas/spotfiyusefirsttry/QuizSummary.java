@@ -36,11 +36,14 @@ public class QuizSummary extends AppCompatActivity {
         String playlistID= quizGame.getQuizList().get(0).getPlaylistID();
         me = getIntent().getExtras().getString("me");
         vs = getIntent().getExtras().getString("vs");
-        quizID = me+vs+playlistID;
+        quizID = me+"-"+vs+"-"+playlistID;
+
         setSummary();
         setButtons();
-        sendQuiz();
-        sendInvitation();
+        if(!getIntent().getExtras().getBoolean("invite")){
+            sendQuiz();
+            sendInvitation();
+        }
     }
 
     void setSummary(){

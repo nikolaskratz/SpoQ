@@ -42,8 +42,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     private static final String REDIRECT_URI = "testschema://callback";
 
     List<PlaylistTrack> playlistTracks;
-    public String playlistID = PlaylistSelect.getPlaylistSelect().getPlaylistID();
-    public String playlistUser = PlaylistSelect.getPlaylistSelect().getPlaylistUser();;
+    public String playlistID;
+    public String playlistUser;
 
     QuizGame quizGame = new QuizGame();
 
@@ -98,8 +98,14 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     @Override
                     public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                         mSpotifyAppRemote = spotifyAppRemote;
-                        Log.d("onStartTest", "Connected! Yay!");
-                        getPlaylistTracks(playlistID,playlistUser);
+                        boolean invite= getIntent().getBooleanExtra("invite",false);
+                        if(invite) {
+                            joinQuiz();
+                        } else {
+                            playlistID = PlaylistSelect.getPlaylistSelect().getPlaylistID();
+                            playlistUser = PlaylistSelect.getPlaylistSelect().getPlaylistUser();
+                            getPlaylistTracks(playlistID,playlistUser);
+                        }
                     }
 
                     @Override
@@ -242,6 +248,38 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
     }
 
+    public void joinQuiz() {
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Quiz").child
+                (getIntent().getExtras().getString("quizID"));
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                QuizGame quizGame =snap.getValue(QuizGame.class);
+//                QuizGame quizGame = new Gson().fromJson(getIntent().getExtras().getString("Quiz"),QuizGame.class);
+                List<Quiz> quizzes=new ArrayList<>();
+                for(int i=0; i<quizGame.getQuizList().size(); i++){
+                    quizzes.add(quizGame.getQuizList().get(i));
+                }
+                for(int i=0; i<quizzes.size(); i++){
+                    setSongsOnButtons(quizGame.getQuizList().get(i).getRandomButtonNumber(),
+                            quizGame.getQuizList().get(i).getQuestionList());
+                    try {
+                        playQuiz(quizGame.getQuizList().get(i),quizGame.getQuizList().get(i)
+                                .getRandomButtonNumber() );
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("myTag", "Failed to read value.");
+            }
+        });
+    }
+
     public void wrongAnswer(int buttonCorrect,Button button){
         wrongAnswers++;
 //        getWindow().getDecorView().setBackgroundColor(Color.RED);
@@ -286,6 +324,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
     public void nextGame() throws InterruptedException {
         Thread thread = new Thread(new Runnable(){
+            boolean invite= getIntent().getBooleanExtra("invite",false);
             @Override
             public void run(){
                 if(gamesPlayed++<2) {
@@ -296,7 +335,9 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                         e.printStackTrace();
                     }
                     resetButtonColor();
-                    getPlaylistTracks(playlistID,playlistUser);
+                    if(!invite) {
+                        getPlaylistTracks(playlistID,playlistUser);
+                    } else getPlaylistTracks(playlistID,playlistUser);
                 } else {
                     try {
                         Thread.sleep(700);
@@ -310,6 +351,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     intent.putExtra("Millis", milliesTotal);
                     intent.putExtra("Correct Answers", correctAnswers);
                     intent.putExtra("Wrong Answers",wrongAnswers);
+                    intent.putExtra("invite",invite);
                     intent.putExtra("Quiz",(new Gson()).toJson(quizGame));
                     String me = getIntent().getExtras().getString("me");
                     intent.putExtra("me",me);
