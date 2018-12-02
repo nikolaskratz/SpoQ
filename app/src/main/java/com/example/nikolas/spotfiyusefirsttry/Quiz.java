@@ -8,7 +8,7 @@ public class Quiz {
     private List<QuizQuestion> questionList = new ArrayList<>();
     private String playlistID;
 
-    public Quiz(List<QuizQuestion> questionList,String playlistID) {
+    public Quiz(List<QuizQuestion> questionList,String playlistID,int randomButtonNumber) {
         this.randomButtonNumber = randomButtonNumber;
         this.questionList = questionList;
         this.playlistID=playlistID;

@@ -100,7 +100,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                         mSpotifyAppRemote = spotifyAppRemote;
                         boolean invite= getIntent().getBooleanExtra("invite",false);
                         if(invite) {
-                            joinQuiz();
+                            receiveQuiz();
                         } else {
                             playlistID = PlaylistSelect.getPlaylistSelect().getPlaylistID();
                             playlistUser = PlaylistSelect.getPlaylistSelect().getPlaylistUser();
@@ -149,7 +149,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         questionsList.add(q4);
 
         int randomButton = (int) (Math.random() * 4) ;
-        Quiz quiz = new Quiz(questionsList,playlistID);
+        Quiz quiz = new Quiz(questionsList,playlistID,randomButton);
         quizGame.addQuiz(quiz);
         Log.e("getPlaylistTracksTest", "createQuiz");
         setSongsOnButtons(randomButton,questionsList);
@@ -157,24 +157,37 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         playQuiz(quiz,randomButton);
     }
 
-    public void setSongsOnButtons (int randomButton, List<QuizQuestion> questionsList){
-        final Button buttonSongA = (Button) findViewById(R.id.songAButton);
-        buttonSongA.setText(questionsList.get(randomButton).getTrackName());
-        final Button buttonSongB = (Button) findViewById(R.id.songBButton);
-        buttonSongB.setText(questionsList.get((randomButton+1) % 4).getTrackName());
-        final Button buttonSongC = (Button) findViewById(R.id.songCButton);
-        buttonSongC.setText(questionsList.get((randomButton+2) % 4).getTrackName());
-        final Button buttonSongD = (Button) findViewById(R.id.songDButton);
-        buttonSongD.setText(questionsList.get((randomButton+3) % 4).getTrackName());
+    public void setSongsOnButtons (final int randomButton, final List<QuizQuestion> questionsList){
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                final Button buttonSongA = (Button) findViewById(R.id.songAButton);
+                buttonSongA.setText(questionsList.get(randomButton).getTrackName());
+                final Button buttonSongB = (Button) findViewById(R.id.songBButton);
+                buttonSongB.setText(questionsList.get((randomButton+1) % 4).getTrackName());
+                final Button buttonSongC = (Button) findViewById(R.id.songCButton);
+                buttonSongC.setText(questionsList.get((randomButton+2) % 4).getTrackName());
+                final Button buttonSongD = (Button) findViewById(R.id.songDButton);
+                buttonSongD.setText(questionsList.get((randomButton+3) % 4).getTrackName());
+            }
+        });
+
     }
 
     public void playQuiz(final Quiz quiz, final int button) throws InterruptedException {
         playTrack("spotify:track:"+quiz.getQuestionList().get(3).getTrackID());
         startTime = System.currentTimeMillis();
         timerHandler.postDelayed(timerRunnable, 0);
+        runOnUiThread(new Runnable() {
 
-        TextView questionCount= findViewById(R.id.questionNumber);
-        questionCount.setText("Question "+(gamesPlayed+1)+"/3");
+            @Override
+            public void run() {
+                TextView questionCount= findViewById(R.id.questionNumber);
+                questionCount.setText("Question "+(gamesPlayed+1)+"/3");
+            }
+        });
+
 //        questionNumber++;
 
         final Button songAButton = (Button) findViewById(R.id.songAButton);
@@ -248,29 +261,18 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
     }
 
-    public void joinQuiz() {
+    public void receiveQuiz(){
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Quiz").child
                 (getIntent().getExtras().getString("quizID"));
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snap) {
-                QuizGame quizGame =snap.getValue(QuizGame.class);
-//                QuizGame quizGame = new Gson().fromJson(getIntent().getExtras().getString("Quiz"),QuizGame.class);
-                List<Quiz> quizzes=new ArrayList<>();
-                for(int i=0; i<quizGame.getQuizList().size(); i++){
-                    quizzes.add(quizGame.getQuizList().get(i));
+                quizGame =snap.getValue(QuizGame.class);
+                try {
+                    joinQuiz(0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                for(int i=0; i<quizzes.size(); i++){
-                    setSongsOnButtons(quizGame.getQuizList().get(i).getRandomButtonNumber(),
-                            quizGame.getQuizList().get(i).getQuestionList());
-                    try {
-                        playQuiz(quizGame.getQuizList().get(i),quizGame.getQuizList().get(i)
-                                .getRandomButtonNumber() );
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
             }
 
             @Override
@@ -278,6 +280,13 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                 Log.w("myTag", "Failed to read value.");
             }
         });
+    }
+
+    public void joinQuiz(final int i) throws InterruptedException {
+        setSongsOnButtons(quizGame.getQuizList().get(i).getRandomButtonNumber(),
+                quizGame.getQuizList().get(i).getQuestionList());
+        Log.e("randomButton: ",""+quizGame.getQuizList().get(i).getRandomButtonNumber());
+        playQuiz(quizGame.getQuizList().get(i),quizGame.getQuizList().get(i).getRandomButtonNumber());
     }
 
     public void wrongAnswer(int buttonCorrect,Button button){
@@ -328,15 +337,22 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
             @Override
             public void run(){
                 if(gamesPlayed++<2) {
-
+                    Log.e("randomButton-gP1:",""+gamesPlayed);
                     try {
                         Thread.sleep(700);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     resetButtonColor();
-                    if(!invite) {
-                        getPlaylistTracks(playlistID,playlistUser);
+                    if(invite) {
+
+                            Log.e("randomButton-gP2:",""+gamesPlayed);
+                        try {
+                            joinQuiz(gamesPlayed);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
                     } else getPlaylistTracks(playlistID,playlistUser);
                 } else {
                     try {
