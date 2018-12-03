@@ -8,9 +8,12 @@
     <string name="email_hint">Email</string>
     <string name="sing_in_button">Sign in</string>
     <string name="sign_up_form_nickname">Nickname</string>
-    <string name="sign_up_form_email" >Email </string>
+    <string name="sign_up_form_email">Email </string>
     <string name="sign_up_form_password1">Password</string>
     <string name="sign_up_form_password_confirm">Confirm password</string>
     <string name="sign_up_submit_b">Submit</string>
     <string name="mainAppActivity_signOut_b">SIGN OUT</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Here will be section with statistics </string>
 </resources>

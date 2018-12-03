@@ -4,10 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -28,7 +33,9 @@ import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
-public class MainAppActivity extends AppCompatActivity implements View.OnClickListener{
+import java.util.ArrayList;
+
+public class MainAppActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     private FirebaseAuth mAuth;
@@ -41,8 +48,8 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private  String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
-    private  String REDIRECT_URI = "testschema://callback";
+    private String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
+    private String REDIRECT_URI = "testschema://callback";
     private SpotifyAppRemote mSpotifyAppRemote;
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -63,15 +70,18 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
+
+
+        FragmentManager mg = getSupportFragmentManager();
+
+        FragmentTransaction transaction = mg.beginTransaction();
+        transaction.add(R.id.container, new FriendsFragment(), "abc");
+        transaction.addToBackStack(null);
+        transaction.commit();
+
+
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        //setting page to the middle one
         mViewPager.setCurrentItem(1);
-
-        // testing api sing
-        //SpotifyApiManager.getInstance().setInvokeContext(getApplicationContext());
-        //SpotifyApiManager.getInstance().connect();
-
-
     }
 
 
@@ -100,14 +110,14 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if(i == R.id.mainAppActivity_signOut_b) {
+        if (i == R.id.mainAppActivity_signOut_b) {
             signOut();
             updateUI();
         }
     }
 
     private void updateUI() {
-        startActivity( new Intent(this, SignInActivity.class));
+        startActivity(new Intent(this, SignInActivity.class));
     }
 
     private void signOut() {
@@ -142,9 +152,23 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main_app, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            View rootView = null;
+
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
+                case 1:
+                    rootView = inflater.inflate(R.layout.fragment_statistics, container, false);
+                    break;
+
+                case 2:
+                    rootView = inflater.inflate(R.layout.fragment_welcome_menu, container, false);
+                    break;
+
+                case 3:
+                    Log.d("MYTAG", "onCreateView / MainAppActivity: fragment_friends");
+
+                    //rootView = inflater.inflate(R.layout.fragment_friends, container, false);
+                    break;
+            }
             return rootView;
         }
     }
@@ -154,6 +178,7 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
