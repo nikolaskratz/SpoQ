@@ -1,18 +1,8 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
-import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -24,16 +14,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import android.widget.TextView;
-
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable;
 import com.google.firebase.auth.FirebaseAuth;
-import com.spotify.android.appremote.api.ConnectionParams;
-import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainAppActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -61,29 +45,38 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
 
         mAuth = FirebaseAuth.getInstance();
-
         setContentView(R.layout.activity_main_app);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
-
-
-        FragmentManager mg = getSupportFragmentManager();
-
-        FragmentTransaction transaction = mg.beginTransaction();
-        transaction.add(R.id.container, new FriendsFragment(), "abc");
-        transaction.addToBackStack(null);
-        transaction.commit();
-
-
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setCurrentItem(1);
+        mViewPager = (ViewPager) findViewById(R.id.containerViewPager);
+        setViewPager(mViewPager);
+//        // Create the adapter that will return a fragment for each of the three
+//        // primary sections of the activity.
+//        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+//
+//        // Set up the ViewPager with the sections adapter.
+//        mViewPager = (ViewPager) findViewById(R.id.containerViewPager);
+//
+//
+//        FragmentManager mg = getSupportFragmentManager();
+//
+//        FragmentTransaction transaction = mg.beginTransaction();
+//        transaction.replace(R.id.containerViewPager, new FriendsFragment());
+//        transaction.addToBackStack(null);
+//        transaction.commit();
+//
+//        mViewPager.setAdapter(mSectionsPagerAdapter);
+//        mViewPager.setCurrentItem(1);
     }
 
+private void setViewPager(ViewPager viewPager) {
+        SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new Statistics());
+        adapter.addFragment(new WelcomeMenu());
+        adapter.addFragment(new FriendsFragment());
+        viewPager.setAdapter(adapter);
+}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,10 +135,19 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
          * number.
          */
         public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
+/*          // I have to test it later
+
+            if (sectionNumber == 2 ){
+
+
+            }*/
+
+                PlaceholderFragment fragment = new PlaceholderFragment();
+                Bundle args = new Bundle();
+                args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+                fragment.setArguments(args);
+
+
             return fragment;
         }
 
@@ -156,16 +158,15 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
-                    rootView = inflater.inflate(R.layout.fragment_statistics, container, false);
+                    //rootView = inflater.inflate(R.layout.fragment_statistics, container, false);
                     break;
 
                 case 2:
-                    rootView = inflater.inflate(R.layout.fragment_welcome_menu, container, false);
+                    //rootView = inflater.inflate(R.layout.fragment_welcome_menu, container, false);
                     break;
 
                 case 3:
                     Log.d("MYTAG", "onCreateView / MainAppActivity: fragment_friends");
-
                     //rootView = inflater.inflate(R.layout.fragment_friends, container, false);
                     break;
             }
@@ -179,6 +180,11 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+
+        public void addFragment (Fragment fragment){
+            mFragmentList.add(fragment);
+        }
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -188,13 +194,14 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            //return PlaceholderFragment.newInstance(position + 1);
+            return mFragmentList.get(position);
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return mFragmentList.size();
         }
     }
 }
