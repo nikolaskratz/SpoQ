@@ -32,6 +32,8 @@ public class FriendsFragment extends Fragment {
     private String currentPlayer="edo123";
     String friendsJSON;
 
+    UserManager userManager = UserManager.getInstance();
+
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("Users").child(currentPlayer).child
             ("friends");
@@ -48,7 +50,9 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getFriends();
+
+        userManager.databaseQuerry();
+        //getFriends();
         initRecyclerView();
 
     }

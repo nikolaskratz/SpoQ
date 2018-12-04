@@ -90,29 +90,34 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private void addUserToFirebase(FirebaseUser firebaseuser, String nickname ) {
         if  (firebaseuser == null) return;
 
-        String nick;
-        nick = nickname;
+        //get user ID from firebase auth.
+        String uid = firebaseuser.getUid();
 
         // creating json to build the structure
         JsonObject user = new JsonObject();
         JsonObject games = new JsonObject();
         JsonObject results = new JsonObject();
         JsonObject friendsData = new JsonObject();
+        JsonObject userInfo = new JsonObject();
 
         //adding objects to the structure
+        user.add("userInfo",userInfo);
         user.add("friends",friendsData);
         user.add("games", games);
         user.add("results", results);
 
         //filling the structure with default data
-        friendsData.addProperty("f1","testFridenship");
+        userInfo.addProperty("Nickname", nickname);
+        userInfo.addProperty("ProfileImg", "here will be picture converted into string");
+        userInfo.addProperty("Points", "0");
+        friendsData.addProperty("f1","testFriendship");
         games.addProperty("g1","testGame");
         results.addProperty("r1","testResult");
 
         Map<String, Object> map = new Gson().fromJson(user.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
 
         //writing to the database with user nickname as a root
-        mDatabase.child(nick).setValue(map);
+        mDatabase.child(uid).setValue(map);
     }
 
     private void updateUI(FirebaseUser user) {
