@@ -70,22 +70,22 @@
         android:id="@+id/timer"
         android:layout_width="127dp"
         android:layout_height="40dp"
-        android:layout_marginTop="120dp"
-        android:layout_marginEnd="56dp"
-        android:layout_marginRight="56dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="52dp"
+        android:layout_marginRight="52dp"
         android:gravity="center"
         android:text="timer"
         android:textSize="30dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/Points" />
 
     <TextView
         android:id="@+id/totalTimer"
         android:layout_width="126dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="56dp"
-        android:layout_marginRight="56dp"
+        android:layout_marginEnd="52dp"
+        android:layout_marginRight="52dp"
         android:gravity="center"
         android:text="totalTimer"
         android:textSize="20dp"
@@ -147,15 +147,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/spotifyicon" />
 
-    <Button
-        android:id="@+id/seek50"
+    <TextView
+        android:id="@+id/Points"
         android:layout_width="wrap_content"
-        android:layout_height="36dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/songDButton" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="104dp"
+        android:layout_marginEnd="88dp"
+        android:layout_marginRight="88dp"
+        android:text="300"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

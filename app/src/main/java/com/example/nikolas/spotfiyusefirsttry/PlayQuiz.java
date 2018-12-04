@@ -3,9 +3,6 @@ package com.example.nikolas.spotfiyusefirsttry;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.media.RemoteControlClient;
 import android.os.Build;
 import android.os.Handler;
 import android.os.VibrationEffect;
@@ -18,7 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,18 +26,13 @@ import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.client.CallResult;
-import com.spotify.protocol.client.Result;
 import com.spotify.protocol.client.Subscription;
-import com.spotify.protocol.types.ImageUri;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import kaaes.spotify.webapi.android.models.Playlist;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 
 public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
@@ -65,6 +56,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     int minutesTotal;
     int secondsTotal;
     int milliesTotal;
+
+    int points = 300;
 
     int gamesPlayed=0;
     int correctAnswers=0;
@@ -98,13 +91,6 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         timerTextView = (TextView) findViewById(R.id.timer);
 
 
-        final Button seek = (Button) findViewById(R.id.seek50);
-        seek.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSpotifyAppRemote.getPlayerApi().seekTo(50000);
-            }
-        });
     }
 
     @Override
@@ -289,6 +275,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
 
         setTotalTime(minutes,seconds,(int) millis);
+        final TextView pointView = findViewById(R.id.Points);
+        pointView.setText(""+this.points);
 //        Connection connection = new Connection(quiz,button);
 
     }
@@ -369,7 +357,6 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
             @Override
             public void run(){
                 if(gamesPlayed++<2) {
-                    Log.e("randomButton-gP1:",""+gamesPlayed);
                     try {
                         Thread.sleep(700);
                     } catch (InterruptedException e) {
@@ -377,8 +364,6 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     }
                     resetButtonColor();
                     if(invite) {
-
-                            Log.e("randomButton-gP2:",""+gamesPlayed);
                         try {
                             joinQuiz(gamesPlayed);
                         } catch (InterruptedException e) {
@@ -397,6 +382,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     intent.putExtra("Minutes", minutesTotal);
                     intent.putExtra("Seconds", secondsTotal);
                     intent.putExtra("Millis", milliesTotal);
+                    intent.putExtra("Points", points);
                     intent.putExtra("Correct Answers", correctAnswers);
                     intent.putExtra("Wrong Answers",wrongAnswers);
                     intent.putExtra("invite",invite);
@@ -454,6 +440,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         TextView finalTimer = (TextView) findViewById(R.id.totalTimer);
         finalTimer.setText(String.format("%d:%02d:%3d", minutesTotal, secondsTotal,
                 (milliesTotal%100)));
+        points=points-seconds*10;
+        Log.d(TAG, "points setter - total: "+points);
     }
 
     void resetButtonColor(){
@@ -483,14 +471,12 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                 final Track track = playerState.track;
                 final ImageView cover = (ImageView) findViewById(R.id.imageView4);
                 if(track!=null){
-                    Log.d(TAG, "trackImageUri: "+track.imageUri);
                     mSpotifyAppRemote.getImagesApi().getImage(track.imageUri).setResultCallback(
                             new CallResult.ResultCallback<Bitmap>() {
                                 @Override public void onResult(Bitmap bitmap) {
                                     cover.setImageBitmap(bitmap); } });
                 }
                 if (!playerState.isPaused && once[0]) {
-                    Log.d("seekseek", "läuft");
                     mSpotifyAppRemote.getPlayerApi().seekTo(50000);
                     once[0] = false;
                 }

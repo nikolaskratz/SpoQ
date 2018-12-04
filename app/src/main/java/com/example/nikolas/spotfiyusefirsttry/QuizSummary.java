@@ -52,6 +52,9 @@ public class QuizSummary extends AppCompatActivity {
         int millis = getIntent().getExtras().getInt("Millis")%100;
         int correct = getIntent().getExtras().getInt("Correct Answers");
         int wrong = getIntent().getExtras().getInt("Wrong Answers");
+        int points = getIntent().getExtras().getInt("Points");
+
+//        Log.e("abc132",""+points);
 
         TextView time = findViewById(R.id.time);
         time.setText(minutes+":"+seconds+":"+millis);
@@ -61,6 +64,9 @@ public class QuizSummary extends AppCompatActivity {
 
         TextView vs = findViewById(R.id.vs);
         vs.setText("You played vs: "+getIntent().getExtras().getString("vs"));
+
+        TextView pointsView = findViewById(R.id.pointSummary);
+        pointsView.setText(""+points);
     }
 
     void setButtons(){

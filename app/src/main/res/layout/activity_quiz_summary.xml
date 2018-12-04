@@ -38,10 +38,10 @@
         android:textSize="40dp"
         app:layout_constraintBottom_toTopOf="@+id/answerCount"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintHorizontal_bias="0.512"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/message"
-        app:layout_constraintVertical_bias="0.33" />
+        app:layout_constraintVertical_bias="0.28" />
 
     <TextView
         android:id="@+id/answerCount"
@@ -51,10 +51,10 @@
         android:layout_marginLeft="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginBottom="92dp"
+        android:layout_marginBottom="40dp"
         android:text="TextView"
         android:textSize="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/vs"
+        app:layout_constraintBottom_toTopOf="@+id/pointSummary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent" />
@@ -101,5 +101,21 @@
         android:text="youplayedvs"
         app:layout_constraintBottom_toTopOf="@+id/playAgainButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/pointSummary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="40dp"
+        android:text="points"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/vs"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>
