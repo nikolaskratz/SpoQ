@@ -133,6 +133,29 @@
         android:layout_marginTop="96dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/blank_album" />
+
+    <ImageView
+        android:id="@+id/spotifyBlur"
+        android:layout_width="145dp"
+        android:layout_height="129dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="96dp"
+        android:alpha="0.965"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/spotifyicon" />
+
+    <Button
+        android:id="@+id/seek50"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/songDButton" />
 
 </android.support.constraint.ConstraintLayout>

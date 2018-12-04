@@ -15,6 +15,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -91,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("getPlaylistTracksTest", "error while getting tracks of playlist");
             }
         });
+
     }
 
     //receiving quiz
@@ -118,20 +122,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        // Set the connection parameters
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Set the connection parameters
 //        ConnectionParams connectionParams =
 //                new ConnectionParams.Builder(CLIENT_ID).setRedirectUri(REDIRECT_URI).showAuthView(true).build();
+//        ConnectionParams.Builder connectionParams = new ConnectionParams.Builder(CLIENT_ID)
+//                .setPreferredImageSize(10);
 //        SpotifyAppRemote.connect(this, connectionParams,
 //                new Connector.ConnectionListener() {
 //
 //                    @Override
 //                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-//                        mSpotifyAppRemote = spotifyAppRemote;
+////                        mSpotifyAppRemote = spotifyAppRemote;
 //                        Log.d("MainActivity", "Connected! Yay!");
-//                        connected();
+////                        connected();
 //                    }
 //
 //                    @Override
@@ -139,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 //                        Log.e("MainActivity", throwable.getMessage(), throwable);
 //                    }
 //                });
-//    }
+    }
 
 //    private void connected(){
 //        mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(new Subscription.EventCallback<PlayerState>() {

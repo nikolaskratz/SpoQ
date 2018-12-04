@@ -2,8 +2,10 @@ package com.example.nikolas.spotfiyusefirsttry;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.media.RemoteControlClient;
 import android.os.Build;
 import android.os.Handler;
 import android.os.VibrationEffect;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,11 +29,19 @@ import com.google.gson.Gson;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.protocol.client.CallResult;
+import com.spotify.protocol.client.Result;
+import com.spotify.protocol.client.Subscription;
+import com.spotify.protocol.types.ImageUri;
+import com.spotify.protocol.types.PlayerState;
+import com.spotify.protocol.types.Track;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import kaaes.spotify.webapi.android.models.Playlist;
 import kaaes.spotify.webapi.android.models.PlaylistTrack;
 
 public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
@@ -44,6 +55,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     List<PlaylistTrack> playlistTracks;
     public String playlistID;
     public String playlistUser;
+    private static final String TAG = "PlayQuizLog";
 
     QuizGame quizGame = new QuizGame();
 
@@ -84,19 +96,31 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         main= MainActivity.getInstace();
         playQuiz=this;
         timerTextView = (TextView) findViewById(R.id.timer);
+
+
+        final Button seek = (Button) findViewById(R.id.seek50);
+        seek.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSpotifyAppRemote.getPlayerApi().seekTo(50000);
+            }
+        });
     }
 
     @Override
     protected void onStart() {
+
         super.onStart();
         // Set the connection parameters
         ConnectionParams connectionParams =
                 new ConnectionParams.Builder(CLIENT_ID).setRedirectUri(REDIRECT_URI).showAuthView(true).build();
+
         SpotifyAppRemote.connect(this, connectionParams,
                 new Connector.ConnectionListener() {
 
                     @Override
                     public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+
                         mSpotifyAppRemote = spotifyAppRemote;
                         boolean invite= getIntent().getBooleanExtra("invite",false);
                         if(invite) {
@@ -113,6 +137,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                         Log.e("onStartTest", throwable.getMessage(), throwable);
                     }
                 });
+
     }
 
     public void getPlaylistTracks(String playlistID, String playlistUser){
@@ -177,6 +202,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
     public void playQuiz(final Quiz quiz, final int button) throws InterruptedException {
         playTrack("spotify:track:"+quiz.getQuestionList().get(3).getTrackID());
+        seekTrack();
+
         startTime = System.currentTimeMillis();
         timerHandler.postDelayed(timerRunnable, 0);
         runOnUiThread(new Runnable() {
@@ -188,7 +215,6 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
             }
         });
 
-//        questionNumber++;
 
         final Button songAButton = (Button) findViewById(R.id.songAButton);
         songAButton.setOnClickListener(new View.OnClickListener() {
@@ -200,6 +226,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     correctAnswers++;
                 } else wrongAnswer(button,songAButton);
                 pauseTrack();
+                showCover();
                 try {
                     nextGame();
                 } catch (InterruptedException e) {
@@ -216,6 +243,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     correctAnswers++;
                 } else wrongAnswer(button,songBButton);
                 pauseTrack() ;
+                showCover();
                 try {
                     nextGame();
                 } catch (InterruptedException e) {
@@ -232,6 +260,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     correctAnswers++;
                 } else wrongAnswer(button,songCButton);
                 pauseTrack();
+                showCover();
                 try {
                     nextGame();
                 } catch (InterruptedException e) {
@@ -248,6 +277,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     correctAnswers++;
                 } else wrongAnswer(button,songDButton);
                 pauseTrack();
+                showCover();
                 try {
                     nextGame();
                 } catch (InterruptedException e) {
@@ -256,6 +286,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
             }
         });
+
+
         setTotalTime(minutes,seconds,(int) millis);
 //        Connection connection = new Connection(quiz,button);
 
@@ -425,6 +457,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     }
 
     void resetButtonColor(){
+        final ImageView hidingCover = (ImageView) findViewById(R.id.spotifyBlur);
+        hidingCover.setImageAlpha(250);
         final Button songAButton = (Button) findViewById(R.id.songAButton);
         final Button songBButton = (Button) findViewById(R.id.songBButton);
         final Button songCButton = (Button) findViewById(R.id.songCButton);
@@ -438,10 +472,37 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     public void playTrack(String trackID){
         mSpotifyAppRemote.getPlayerApi().play(trackID);
     }
+
+    public void seekTrack(){
+        final boolean[] once = {true};
+        mSpotifyAppRemote.getPlayerApi().subscribeToPlayerState().setEventCallback(new Subscription.EventCallback<PlayerState>() {
+
+            @Override
+            public void onEvent(PlayerState playerState) {
+
+                final Track track = playerState.track;
+                final ImageView cover = (ImageView) findViewById(R.id.imageView4);
+                if(track!=null){
+                    Log.d(TAG, "trackImageUri: "+track.imageUri);
+                    mSpotifyAppRemote.getImagesApi().getImage(track.imageUri).setResultCallback(
+                            new CallResult.ResultCallback<Bitmap>() {
+                                @Override public void onResult(Bitmap bitmap) {
+                                    cover.setImageBitmap(bitmap); } });
+                }
+                if (!playerState.isPaused && once[0]) {
+                    Log.d("seekseek", "läuft");
+                    mSpotifyAppRemote.getPlayerApi().seekTo(50000);
+                    once[0] = false;
+                }
+            }
+        });
+    }
     public void pauseTrack() {
         mSpotifyAppRemote.getPlayerApi().pause();
     }
-    public static PlayQuiz getInstance(){
-        return playQuiz;
+
+    public void showCover(){
+        final ImageView hidingCover = (ImageView) findViewById(R.id.spotifyBlur);
+        hidingCover.setImageAlpha(0);
     }
 }
