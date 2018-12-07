@@ -17,11 +17,14 @@ import java.util.ArrayList;
 
 public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerViewFriendsAdapter.ViewHolder>{
     private static final String TAG = "RecyclerViewFriendsAdap";
-    private ArrayList<String> friends = new ArrayList<>();
+    private ArrayList<Friend> friends;
     private Context mContex;
 
-    public RecyclerViewFriendsAdapter(ArrayList<String> frends, Activity mContex) {
-        this.friends = frends;
+    public RecyclerViewFriendsAdapter(Activity mContex) {
+        UserManager.getInstance().databaseQuerry();
+        this.friends=UserManager.getInstance().getUserInfo().getFriends();
+
+//        this.friends = frends;
         this.mContex = mContex;
     }
 
@@ -37,7 +40,7 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
         Log.d(TAG, "onBindViewHolder: called.");
 
-        viewHolder.userName.setText(friends.get(i));
+        viewHolder.userName.setText(friends.get(i).getNickname());
 
         viewHolder.elementLayout.setOnClickListener(new View.OnClickListener() {
             @Override

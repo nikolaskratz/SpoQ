@@ -27,8 +27,7 @@ public class FriendsFragment extends Fragment {
     private static final String TAG = "FriendsFragment_debug";
 
     Gson gsonFriends = new Gson();
-    ArrayList<String> friends = new ArrayList<>();
-    ArrayList<String> friends1 = new ArrayList<>();
+    ArrayList<Friend> friends = new ArrayList<>();
     private String currentPlayer="edo123";
     String friendsJSON;
 
@@ -51,38 +50,38 @@ public class FriendsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        userManager.databaseQuerry();
-        //getFriends();
+//        userManager.databaseQuerry();
+        getFriends();
         initRecyclerView();
 
     }
 
     private void initRecyclerView() {
         RecyclerView recyclerView = getView().findViewById(R.id.friends_recycler_view);
-        RecyclerViewFriendsAdapter adapter = new RecyclerViewFriendsAdapter(friends, getActivity());
+        RecyclerViewFriendsAdapter adapter = new RecyclerViewFriendsAdapter(getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     private void getFriends() {
+        friends=UserManager.getInstance().getUserInfo().getFriends();
 
-
-        ValueEventListener postListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // Get Post object and use the values to update the UI
-                //Post post = dataSnapshot.getValue(Post.class);
-                String friendsJSON = gsonFriends.toJson(dataSnapshot.getValue());
-                Log.d(TAG, "onDataChange: " + friendsJSON);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
-            }
-        };
-        myRef.addValueEventListener(postListener);
+//        ValueEventListener postListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // Get Post object and use the values to update the UI
+//                //Post post = dataSnapshot.getValue(Post.class);
+//                String friendsJSON = gsonFriends.toJson(dataSnapshot.getValue());
+//                Log.d(TAG, "onDataChange: " + friendsJSON);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                // Getting Post failed, log a message
+//                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+//                // ...
+//            }
+//        };
+//        myRef.addValueEventListener(postListener);
     }
 }

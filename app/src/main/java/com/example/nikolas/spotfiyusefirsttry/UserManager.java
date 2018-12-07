@@ -1,5 +1,6 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -19,7 +20,7 @@ public class UserManager {
     private static final String TAG = "UserManager_debug";
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private FirebaseAuth userAuth = FirebaseAuth.getInstance();
+//    private FirebaseAuth userAuth = FirebaseAuth.getInstance();
 
     private String userNickname;
     private String userProfilePicture;
@@ -27,56 +28,77 @@ public class UserManager {
     private ArrayList<String> usersFriendsList = new ArrayList<>();
     private Gson gsonOBJ = new Gson();
 
-    private final String userID = userAuth.getCurrentUser().getUid();
+    UserInfo userInfo;
+
+//    private final String userID = userAuth.getCurrentUser().getUid();
 
     public static UserManager getInstance() {
         return ourInstance;
     }
 
     private UserManager() {
+        databaseQuerry();
     }
 
-    public String getUserNickname() {
-        return userNickname;
-    }
-
-    public String getUserProfilePicture() {
-        return userProfilePicture;
-    }
-
-    public Integer getUserPoint() {
-        return userPoint;
-    }
-
-    public ArrayList<String> getUsersFriendsList() {
-        return usersFriendsList;
-    }
+//    public String getUserNickname() {
+//        return userNickname;
+//    }
+//
+//    public String getUserProfilePicture() {
+//        return userProfilePicture;
+//    }
+//
+//    public Integer getUserPoint() {
+//        return userPoint;
+//    }
+//
+//    public ArrayList<String> getUsersFriendsList() {
+//        return usersFriendsList;
+//    }
 
     // returns all information about currently logged in user
 
     public void databaseQuerry() {
-
-        DatabaseReference myRef = database.getReference("Users").child(userID).child("userInfo");
+        FirebaseAuth userAuth = FirebaseAuth.getInstance();
+        String userID = userAuth.getCurrentUser().getUid();
+        DatabaseReference myRef = database.getReference("Users").child(userID);
+        Log.e("getting friends","userID: "+userID);
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                UserInfo userInfo = dataSnapshot.getValue(UserInfo.class);
-
-                userNickname = userInfo.getNickname();
-                userProfilePicture = userInfo.getProfileImg();
-                // TODO: 04/12/2018 Add points
-                Log.d(TAG, "onDataChange: " + userInfo.getNickname());
+                userInfo = dataSnapshot.getValue(UserInfo.class);
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // Getting Post failed, log a message
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
             }
         };
         myRef.addValueEventListener(postListener);
+
+
+//        ValueEventListener postListener = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//                userInfo = dataSnapshot.getValue(UserInfo.class);
+//
+//                userNickname = userInfo.getNickname();
+//                userProfilePicture = userInfo.getProfileImg();
+//                // TODO: 04/12/2018 Add points
+//                Log.d(TAG, "onDataChange: " + userInfo.getNickname());
+//            }
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                // Getting Post failed, log a message
+//                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+//                // ...
+//            }
+//        };
+//        myRef.addValueEventListener(postListener);
     }
 
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
 }

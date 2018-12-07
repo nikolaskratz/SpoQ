@@ -25,6 +25,8 @@ public class QuizSummary extends AppCompatActivity {
     String me;
     String quizID;
     QuizGame quizGame;
+    int points;
+    QuizResult quizResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,9 @@ public class QuizSummary extends AppCompatActivity {
         if(!getIntent().getExtras().getBoolean("invite")){
             sendQuiz();
             sendInvitation();
+            quizResult = new QuizResult(points);
         }
+        sendResult();
     }
 
     void setSummary(){
@@ -52,7 +56,7 @@ public class QuizSummary extends AppCompatActivity {
         int millis = getIntent().getExtras().getInt("Millis")%100;
         int correct = getIntent().getExtras().getInt("Correct Answers");
         int wrong = getIntent().getExtras().getInt("Wrong Answers");
-        int points = getIntent().getExtras().getInt("Points");
+        points = getIntent().getExtras().getInt("Points");
 
 //        Log.e("abc132",""+points);
 
@@ -99,8 +103,10 @@ public class QuizSummary extends AppCompatActivity {
     }
 
     void sendResult(){
-        //using seconds as points will change later to propper point system
-        int points =getIntent().getExtras().getInt("Seconds");
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Users").child(vs)
+                .child("games");
+
+        myRef.child(quizID).setValue(quizID);
 
     }
 }

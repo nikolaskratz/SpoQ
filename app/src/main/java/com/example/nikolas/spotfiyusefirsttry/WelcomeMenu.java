@@ -1,5 +1,6 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,12 +22,21 @@ public class WelcomeMenu extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         //userAuth.signOut();
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_welcome_menu, container, false);
 
+        final Button signout = (Button) view.findViewById(R.id.signout_button);
+        signout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userAuth.signOut();
+                startActivity(new Intent(getActivity(), SignInActivity.class));
+            }
+        });
         return view;
     }
+
+
 
 }

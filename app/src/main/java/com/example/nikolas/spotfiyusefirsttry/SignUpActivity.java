@@ -74,7 +74,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             Log.d("MyTag", "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            addUserToFirebase(user, nickname);
+                            addUserToFirebase(user, nickname, email);
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -87,37 +87,40 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 });
     }
 
-    private void addUserToFirebase(FirebaseUser firebaseuser, String nickname ) {
+    private void addUserToFirebase(FirebaseUser firebaseuser, String nickname, String email ) {
         if  (firebaseuser == null) return;
 
         //get user ID from firebase auth.
         String uid = firebaseuser.getUid();
 
-        // creating json to build the structure
-        JsonObject user = new JsonObject();
-        JsonObject games = new JsonObject();
-        JsonObject results = new JsonObject();
-        JsonObject friendsData = new JsonObject();
-        JsonObject userInfo = new JsonObject();
+        //create new UserInfo object
+        UserInfo userInfo = new UserInfo(nickname,0,"pictureCode123", email);
 
-        //adding objects to the structure
-        user.add("userInfo",userInfo);
-        user.add("friends",friendsData);
-        user.add("games", games);
-        user.add("results", results);
+//        // creating json to build the structure
+//        JsonObject user = new JsonObject();
+//        JsonObject games = new JsonObject();
+//        JsonObject results = new JsonObject();
+//        JsonObject friendsData = new JsonObject();
+//        JsonObject userInfo = new JsonObject();
+//
+//        //adding objects to the structure
+//        user.add("userInfo",userInfo);
+//        user.add("friends",friendsData);
+//        user.add("games", games);
+//        user.add("results", results);
+//
+//        //filling the structure with default data
+//        userInfo.addProperty("Nickname", nickname);
+//        userInfo.addProperty("ProfileImg", "here will be picture converted into string");
+//        userInfo.addProperty("Points", "0");
+//        friendsData.addProperty("f1","testFriendship");
+//        games.addProperty("g1","testGame");
+//        results.addProperty("r1","testResult");
+//
+//        Map<String, Object> map = new Gson().fromJson(user.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
 
-        //filling the structure with default data
-        userInfo.addProperty("Nickname", nickname);
-        userInfo.addProperty("ProfileImg", "here will be picture converted into string");
-        userInfo.addProperty("Points", "0");
-        friendsData.addProperty("f1","testFriendship");
-        games.addProperty("g1","testGame");
-        results.addProperty("r1","testResult");
-
-        Map<String, Object> map = new Gson().fromJson(user.toString(), new TypeToken<HashMap<String, Object>>() {}.getType());
-
-        //writing to the database with user nickname as a root
-        mDatabase.child(uid).setValue(map);
+        //writing to the database with userID as a root
+        mDatabase.child(uid).setValue(userInfo);
     }
 
     private void updateUI(FirebaseUser user) {
