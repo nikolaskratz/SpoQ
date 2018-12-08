@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,10 +20,8 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
     private Context mContex;
 
     public RecyclerViewFriendsAdapter(Activity mContex) {
-        UserManager.getInstance().databaseQuerry();
-        this.friends=UserManager.getInstance().getUserInfo().getFriends();
 
-//        this.friends = frends;
+        this.friends = UserManager.getInstance().getUserInfo().getFriends();
         this.mContex = mContex;
     }
 

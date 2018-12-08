@@ -39,10 +39,13 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-
+    private static final String TAG = "MainAppActivity_debug";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // get UserInfo from db
+        UserManager.getInstance();
 
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main_app);
@@ -67,13 +70,13 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
 //        transaction.commit();
 //
 //        mViewPager.setAdapter(mSectionsPagerAdapter);
-//        mViewPager.setCurrentItem(1);
+        // mViewPager.setCurrentItem(1);
     }
 
 private void setViewPager(ViewPager viewPager) {
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new Statistics());
-        adapter.addFragment(new WelcomeMenu());
+        adapter.addFragment(new StatisticsFragment());
+        adapter.addFragment(new WelcomeMenuFragment());
         adapter.addFragment(new FriendsFragment());
         viewPager.setAdapter(adapter);
 }

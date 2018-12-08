@@ -4,9 +4,13 @@
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:background">@color/colorBackgroundApp</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="editTextBackground">@color/editTextBackground</item>
+        <item name="android:textColor">@color/editTextBackground</item>
+
     </style>
 
     <style name="QuizButton" parent="@android:style/Widget.Button">

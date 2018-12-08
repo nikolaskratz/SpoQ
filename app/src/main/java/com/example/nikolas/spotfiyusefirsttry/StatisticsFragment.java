@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 
 
-public class Statistics extends Fragment {
+public class StatisticsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -21,4 +21,5 @@ public class Statistics extends Fragment {
 
         return view;
     }
+
 }

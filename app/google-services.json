@@ -31,6 +31,14 @@
           }
         },
         {
+          "client_id": "545964837934-4031f3sue787ms18nv2g5fc7pqn6unj9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nikolas.spotfiyusefirsttry",
+            "certificate_hash": "92c3e6eb798ba45593de5073fa50cd50a04bc9e7"
+          }
+        },
+        {
           "client_id": "545964837934-3rv0r97v11c9fm6fdumn5b16mhof3osi.apps.googleusercontent.com",
           "client_type": 3
         }

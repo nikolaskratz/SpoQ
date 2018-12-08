@@ -6,10 +6,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,16 +29,6 @@ public class FriendsFragment extends Fragment {
 
     private static final String TAG = "FriendsFragment_debug";
 
-    Gson gsonFriends = new Gson();
-    ArrayList<Friend> friends = new ArrayList<>();
-    private String currentPlayer="edo123";
-    String friendsJSON;
-
-    UserManager userManager = UserManager.getInstance();
-
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference myRef = database.getReference("Users").child(currentPlayer).child
-            ("friends");
 
 
     @Override
@@ -49,9 +42,19 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        EditText searchEt = (EditText) getView().findViewById(R.id.searchFriends_et);
+        searchEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        Log.d(TAG, "onEditorAction: " + searchEt.getText().toString());
 
-//        userManager.databaseQuerry();
-        getFriends();
+                    handled = true;
+                }
+                return handled;
+            }
+        });
         initRecyclerView();
 
     }
@@ -63,25 +66,6 @@ public class FriendsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
-    private void getFriends() {
-        friends=UserManager.getInstance().getUserInfo().getFriends();
 
-//        ValueEventListener postListener = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // Get Post object and use the values to update the UI
-//                //Post post = dataSnapshot.getValue(Post.class);
-//                String friendsJSON = gsonFriends.toJson(dataSnapshot.getValue());
-//                Log.d(TAG, "onDataChange: " + friendsJSON);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                // Getting Post failed, log a message
-//                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-//                // ...
-//            }
-//        };
-//        myRef.addValueEventListener(postListener);
-    }
+
 }

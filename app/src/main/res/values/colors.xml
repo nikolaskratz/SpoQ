@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#424242</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorBackgroundApp">#32444C</color>
+    <color name="colorPrimaryDark">#222826</color>
+    <color name="colorAccent">#008577</color>
+    <color name="editTextBackground">#FFFFFF</color>
+
     <color name="SongButtonColor">#B3E5FC</color>
     <color name="SongButtonColorCorrect">#42f44e</color>
     <color name="startQuiz">#f4a742</color>

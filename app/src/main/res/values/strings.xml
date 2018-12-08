@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">SpoQ</string>
+
     <string name="title_activity_main_app">SpoQ</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="sign_up_button">Sign Up</string>
-    <string name="password_hint">Password</string>
-    <string name="email_hint">Email</string>
+    <string name="password_hint">*</string>
+    <string name="email_hint">@</string>
     <string name="sing_in_button">Sign in</string>
     <string name="sign_up_form_nickname">Nickname</string>
     <string name="sign_up_form_email">Email </string>
@@ -16,4 +16,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Here will be section with statistics </string>
+    <string name="play_with_friend">play with friend</string>
+    <string name="random_game">random game</string>
+    <string name="statistics_title_fragment">Statistics</string>
+    <string name="app_name">SpoQ</string>
 </resources>
