@@ -18,9 +18,10 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
     private static final String TAG = "RecyclerViewFriendsAdap";
     private ArrayList<Friend> friends;
     private Context mContex;
+    View.OnClickListener onClickListener;
 
-    public RecyclerViewFriendsAdapter(Activity mContex) {
-
+    public RecyclerViewFriendsAdapter(View.OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
         this.friends = UserManager.getInstance().getUserInfo().getFriends();
         this.mContex = mContex;
     }
@@ -39,13 +40,7 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
 
         viewHolder.userName.setText(friends.get(i).getNickname());
 
-        viewHolder.elementLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: clicked on:" + friends.get(i));
-                Toast.makeText(mContex, "Clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
+        viewHolder.elementLayout.setOnClickListener(onClickListener);
     }
 
     @Override

@@ -20,4 +20,6 @@
     <string name="random_game">random game</string>
     <string name="statistics_title_fragment">Statistics</string>
     <string name="app_name">SpoQ</string>
+    <string name="preference_file_key">testPRefs</string>
+    <string name="savedUserInfoObject" />
 </resources>

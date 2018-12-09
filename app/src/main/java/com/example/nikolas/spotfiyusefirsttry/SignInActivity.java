@@ -1,6 +1,8 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -78,12 +80,15 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             updateUI(user);
+
                         } else {
+
                             // If sign in fails, display a message to the user.
                             Log.w("MyTag","signInWithEmail:failure", task.getException());
                             Toast.makeText(SignInActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
+                            // create object in shared preferences
+
                         }
 
                         if (!task.isSuccessful()) {

@@ -1,6 +1,10 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -21,7 +25,25 @@ public class UserManager extends Application {
     private static final String TAG = "UserManager_debug";
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    SharedPreferences sharedPref ;
     private UserInfo userInfo;
+    String jsonInString;
+    Gson gson = new Gson();
+
+    FirebaseAuth userAuth = FirebaseAuth.getInstance();
+    String userID = userAuth.getCurrentUser().getUid();
+    DatabaseReference myRef = database.getReference("Users").child(userID);
+
+    private static Context mContext;
+
+    public void onCreate() {
+        super.onCreate();
+        mContext = getApplicationContext();
+    }
+
+    public static Context getAppContext() {
+        return mContext;
+    }
 
     public static UserManager getInstance() {
         return ourInstance;
@@ -31,32 +53,14 @@ public class UserManager extends Application {
         databaseQuery();
     }
 
-
-
     // returns all information about currently logged in user
     public void databaseQuery() {
-        FirebaseAuth userAuth = FirebaseAuth.getInstance();
-        String userID = userAuth.getCurrentUser().getUid();
-        DatabaseReference myRef = database.getReference("Users").child(userID);
-
-
-        // listening for changes in db
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "Data is loaded" );
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 userInfo = dataSnapshot.getValue(UserInfo.class);
+                 //jsonInString = gson.toJson(userInfo);
             }
 
             @Override
@@ -67,7 +71,37 @@ public class UserManager extends Application {
 
     }
 
+    public void dataBaseListener () {
+        // listening for changes in db
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange: loaded");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
     public UserInfo getUserInfo() {
         return userInfo;
     }
+
+
+
+
+    private void initUserInfoSharedPrefObject() {
+        jsonInString = gson.toJson(userInfo);
+        SharedPreferences sharedPref = getSharedPreferences("PREFERENCE_1", Context.MODE_PRIVATE);
+        sharedPref.edit().putString("UserInfoObjectJson", jsonInString).apply();
+        Log.d(TAG, "initUserInfoSharedPrefObject: OK");
+
+        /*SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("abc", Context.MODE_PRIVATE);
+        String msg = sharedPref.getString("abc","x");*/
+}
+
 }

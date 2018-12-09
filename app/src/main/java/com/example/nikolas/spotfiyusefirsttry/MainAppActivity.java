@@ -45,7 +45,7 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
 
         // get UserInfo from db
-        UserManager.getInstance();
+        UserManager.getInstance().dataBaseListener();
 
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main_app);

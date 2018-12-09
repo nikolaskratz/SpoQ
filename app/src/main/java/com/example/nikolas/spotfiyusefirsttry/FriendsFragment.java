@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 
 
-public class FriendsFragment extends Fragment {
+public class FriendsFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "FriendsFragment_debug";
 
@@ -55,17 +55,21 @@ public class FriendsFragment extends Fragment {
                 return handled;
             }
         });
+
         initRecyclerView();
 
     }
 
     private void initRecyclerView() {
         RecyclerView recyclerView = getView().findViewById(R.id.friends_recycler_view);
-        RecyclerViewFriendsAdapter adapter = new RecyclerViewFriendsAdapter(getActivity());
+        RecyclerViewFriendsAdapter adapter = new RecyclerViewFriendsAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
+    @Override
+    public void onClick(View v) {
+        // TODO: 09/12/2018 implement listeners for friends
 
-
+    }
 }
