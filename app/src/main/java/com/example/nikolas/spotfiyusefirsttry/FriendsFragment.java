@@ -14,21 +14,13 @@ import android.support.v4.app.Fragment;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-
-import java.util.ArrayList;
 
 
-
-public class FriendsFragment extends Fragment implements View.OnClickListener {
+public class FriendsFragment extends Fragment implements View.OnClickListener, CustomChangeListener.Listener {
 
     private static final String TAG = "FriendsFragment_debug";
-    RecyclerViewFriendsAdapter adapter1;
+    private RecyclerViewFriendsAdapter adapter1;
+    private CustomChangeListener mListener;
 
 
     @Override
@@ -42,6 +34,11 @@ public class FriendsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mListener = new CustomChangeListener();
+        mListener.registerListener(this);
+        mListener.doYourWork();
+
         EditText searchEt = (EditText) getView().findViewById(R.id.searchFriends_et);
         searchEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -50,7 +47,8 @@ public class FriendsFragment extends Fragment implements View.OnClickListener {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                         Log.d(TAG, "onEditorAction: " + searchEt.getText().toString());
                         Log.d(TAG, "onEditorAction: " + UserManager.getInstance().userInfo.getFriends().get(0).getNickname() );
-                    adapter1.notifyDataSetChanged();
+
+                    initRecyclerView();
                     handled = true;
                 }
                 return handled;
@@ -75,6 +73,17 @@ public class FriendsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         // TODO: 09/12/2018 implement listeners for friends
+
+    }
+
+    @Override
+    public void onStateChange(boolean state) {
+        if (state) {
+            initRecyclerView();
+        } else {
+            initRecyclerView();
+        }
+
 
     }
 }
