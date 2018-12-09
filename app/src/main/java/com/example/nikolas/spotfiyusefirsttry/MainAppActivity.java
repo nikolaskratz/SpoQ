@@ -1,6 +1,7 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.Fragment;
@@ -45,7 +46,7 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
 
         // get UserInfo from db
-        UserManager.getInstance().dataBaseListener();
+        UserManager.getInstance();
 
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main_app);
@@ -207,4 +208,5 @@ private void setViewPager(ViewPager viewPager) {
             return mFragmentList.size();
         }
     }
+
 }

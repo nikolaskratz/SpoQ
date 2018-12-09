@@ -3,6 +3,7 @@ package com.example.nikolas.spotfiyusefirsttry;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -26,23 +27,19 @@ public class UserManager extends Application {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     SharedPreferences sharedPref ;
-    private UserInfo userInfo;
+    //private UserInfo userInfo;
     String jsonInString;
     Gson gson = new Gson();
+    UserInfo userInfo;
+    RecyclerViewFriendsAdapter adapterA;
 
     FirebaseAuth userAuth = FirebaseAuth.getInstance();
     String userID = userAuth.getCurrentUser().getUid();
     DatabaseReference myRef = database.getReference("Users").child(userID);
 
-    private static Context mContext;
 
-    public void onCreate() {
-        super.onCreate();
-        mContext = getApplicationContext();
-    }
-
-    public static Context getAppContext() {
-        return mContext;
+    public void getAdapter(RecyclerViewFriendsAdapter adapter) {
+        adapterA = adapter;
     }
 
     public static UserManager getInstance() {
@@ -50,6 +47,8 @@ public class UserManager extends Application {
     }
 
     private UserManager() {
+
+        //Log.d(TAG, "UserManager: "+userInfo.getFriends().get(0));
         databaseQuery();
     }
 
@@ -60,7 +59,9 @@ public class UserManager extends Application {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 userInfo = dataSnapshot.getValue(UserInfo.class);
+                Log.d(TAG, "onDataChange: CHANGHE!");
                  //jsonInString = gson.toJson(userInfo);
+                //adapterA.notifyDataSetChanged();
             }
 
             @Override
@@ -71,23 +72,8 @@ public class UserManager extends Application {
 
     }
 
-    public void dataBaseListener () {
-        // listening for changes in db
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onDataChange: loaded");
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
     public UserInfo getUserInfo() {
+        //userInfo = new UserInfo();
         return userInfo;
     }
 
@@ -95,7 +81,7 @@ public class UserManager extends Application {
 
 
     private void initUserInfoSharedPrefObject() {
-        jsonInString = gson.toJson(userInfo);
+       // jsonInString = gson.toJson(userInfo);
         SharedPreferences sharedPref = getSharedPreferences("PREFERENCE_1", Context.MODE_PRIVATE);
         sharedPref.edit().putString("UserInfoObjectJson", jsonInString).apply();
         Log.d(TAG, "initUserInfoSharedPrefObject: OK");
@@ -103,5 +89,29 @@ public class UserManager extends Application {
         /*SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("abc", Context.MODE_PRIVATE);
         String msg = sharedPref.getString("abc","x");*/
 }
+
+
+    private class MyAsync extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+                // listening for changes in db
+                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+            return null;
+        }
+    }
+
 
 }

@@ -12,6 +12,8 @@ public class UserInfo {
     private List<String> games;
     private List<QuizResult> results;
 
+
+
     public UserInfo(String nickname, int points, String profileImg, String email) {
         this.nickname = nickname;
         this.points = points;
@@ -28,7 +30,11 @@ public class UserInfo {
         this.games = new ArrayList<>();
         this.results = new ArrayList<>();
     }
-    public UserInfo() {}
+    public UserInfo() {
+        this.games = new ArrayList<String>();
+        this.results = new ArrayList<QuizResult>();
+        this.friends = new ArrayList<Friend>();
+    }
 
     public String getNickname() {
         return nickname;

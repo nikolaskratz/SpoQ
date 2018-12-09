@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public class FriendsFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "FriendsFragment_debug";
-
+    RecyclerViewFriendsAdapter adapter1;
 
 
     @Override
@@ -49,7 +49,8 @@ public class FriendsFragment extends Fragment implements View.OnClickListener {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                         Log.d(TAG, "onEditorAction: " + searchEt.getText().toString());
-
+                        Log.d(TAG, "onEditorAction: " + UserManager.getInstance().userInfo.getFriends().get(0).getNickname() );
+                    adapter1.notifyDataSetChanged();
                     handled = true;
                 }
                 return handled;
@@ -62,10 +63,14 @@ public class FriendsFragment extends Fragment implements View.OnClickListener {
 
     private void initRecyclerView() {
         RecyclerView recyclerView = getView().findViewById(R.id.friends_recycler_view);
-        RecyclerViewFriendsAdapter adapter = new RecyclerViewFriendsAdapter(this);
-        recyclerView.setAdapter(adapter);
+         adapter1 = new RecyclerViewFriendsAdapter(this);
+        recyclerView.setAdapter(adapter1);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
+
     }
+
 
     @Override
     public void onClick(View v) {
