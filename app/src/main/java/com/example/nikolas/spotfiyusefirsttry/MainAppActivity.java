@@ -45,8 +45,8 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // get UserInfo from db
-        UserManager.getInstance();
+        // start querying firebase
+        UserManager.getInstance().databaseQuery();
 
         mAuth = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main_app);
@@ -55,26 +55,25 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
 
         mViewPager = (ViewPager) findViewById(R.id.containerViewPager);
         setViewPager(mViewPager);
-//        // Create the adapter that will return a fragment for each of the three
-//        // primary sections of the activity.
-//        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-//
-//        // Set up the ViewPager with the sections adapter.
-//        mViewPager = (ViewPager) findViewById(R.id.containerViewPager);
-//
-//
-//        FragmentManager mg = getSupportFragmentManager();
-//
-//        FragmentTransaction transaction = mg.beginTransaction();
-//        transaction.replace(R.id.containerViewPager, new FriendsFragment());
-//        transaction.addToBackStack(null);
-//        transaction.commit();
-//
-//        mViewPager.setAdapter(mSectionsPagerAdapter);
-        // mViewPager.setCurrentItem(1);
+
+
     }
 
-private void setViewPager(ViewPager viewPager) {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //registering observer - observing changes in friends list
+        UserManager.getInstance().register(new FriendsFragment());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        UserManager.getInstance().unregister(new FriendsFragment());
+
+    }
+
+    private void setViewPager(ViewPager viewPager) {
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new StatisticsFragment());
         adapter.addFragment(new WelcomeMenuFragment());

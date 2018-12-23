@@ -3,13 +3,7 @@ package com.example.nikolas.spotfiyusefirsttry;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.util.Log;
-
-import com.google.firebase.FirebaseError;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,23 +13,32 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class UserManager extends Application {
+public class UserManager extends Application implements Subject {
     private static final UserManager ourInstance = new UserManager();
 
     private static final String TAG = "UserManager_debug";
+
+
+    private List<Observer> observers;
+    private boolean statusChanged;
+    private boolean friendsListLoaded = false;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     SharedPreferences sharedPref ;
     //private UserInfo userInfo;
     String jsonInString;
     Gson gson = new Gson();
-    UserInfo userInfo;
+
+    UserInfo userInfo = new UserInfo();
+
     RecyclerViewFriendsAdapter adapterA;
 
     FirebaseAuth userAuth = FirebaseAuth.getInstance();
     String userID = userAuth.getCurrentUser().getUid();
     DatabaseReference myRef = database.getReference("Users").child(userID);
+
 
 
     public void getAdapter(RecyclerViewFriendsAdapter adapter) {
@@ -46,10 +49,8 @@ public class UserManager extends Application {
         return ourInstance;
     }
 
-    private UserManager() {
-
-        //Log.d(TAG, "UserManager: "+userInfo.getFriends().get(0));
-        databaseQuery();
+    private UserManager(){
+        observers = new ArrayList<>();
     }
 
     // returns all information about currently logged in user
@@ -59,9 +60,8 @@ public class UserManager extends Application {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 userInfo = dataSnapshot.getValue(UserInfo.class);
+                notifyObservers();
                 Log.d(TAG, "onDataChange: CHANGHE!");
-                 //jsonInString = gson.toJson(userInfo);
-                //adapterA.notifyDataSetChanged();
             }
 
             @Override
@@ -73,11 +73,8 @@ public class UserManager extends Application {
     }
 
     public UserInfo getUserInfo() {
-        //userInfo = new UserInfo();
         return userInfo;
     }
-
-
 
 
     private void initUserInfoSharedPrefObject() {
@@ -88,30 +85,32 @@ public class UserManager extends Application {
 
         /*SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("abc", Context.MODE_PRIVATE);
         String msg = sharedPref.getString("abc","x");*/
-}
-
-
-    private class MyAsync extends AsyncTask<String,Void,String> {
-
-        @Override
-        protected String doInBackground(String... strings) {
-
-                // listening for changes in db
-                myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-            return null;
-        }
     }
 
+    public boolean isFriendsListLoaded() {
+        return friendsListLoaded;
+    }
 
+    public void setFriendsListLoaded(boolean friendsListLoaded) {
+        this.friendsListLoaded = friendsListLoaded;
+    }
+
+    @Override
+    public void register(final Observer observer) {
+        if (!observers.contains(observer)) {
+            observers.add(observer);
+        }
+        Log.d(TAG, "register: " + observers.size());
+    }
+    @Override
+    public void unregister(final Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (final Observer observer : observers) {
+            observer.update(statusChanged = true);
+        }
+    }
 }
