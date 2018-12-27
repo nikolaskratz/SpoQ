@@ -30,7 +30,8 @@
                 android:id="@+id/button1"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:text="Today's Top Hits on Spotify" />
+                android:text="Today's Top Hits on Spotify"
+                android:visibility="visible" />
 
             <Button
                 android:id="@+id/button2"
@@ -88,11 +89,5 @@
 
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"></LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -13,15 +13,15 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity android:name=".MainActivity">
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
 
-            <!--
+            android:theme="@android:style/Theme.NoDisplay"
+<!--
                     <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            -->
+-->
 
         </activity>
         <activity android:name=".PlaylistSelect" />
@@ -41,11 +41,13 @@
         </activity>
         <activity android:name=".QuizSummary" />
         <activity android:name=".SignInActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity android:name=".SignUpActivity">
 

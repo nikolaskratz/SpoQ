@@ -37,7 +37,7 @@ import kaaes.spotify.webapi.android.models.PlaylistTrack;
 
 public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
-    MainActivity main;
+    PlaylistSelect playlistSelect;
     private static PlayQuiz playQuiz;
     private SpotifyAppRemote mSpotifyAppRemote;
     private static final String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
@@ -86,7 +86,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_quiz);
-        main= MainActivity.getInstace();
+        playlistSelect = PlaylistSelect.getPlaylistSelect();
         playQuiz=this;
         timerTextView = (TextView) findViewById(R.id.timer);
 
@@ -112,8 +112,10 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                         if(invite) {
                             receiveQuiz();
                         } else {
+
                             playlistID = PlaylistSelect.getPlaylistSelect().getPlaylistID();
                             playlistUser = PlaylistSelect.getPlaylistSelect().getPlaylistUser();
+                            Log.e("checkitout",playlistUser);
                             getPlaylistTracks(playlistID,playlistUser);
                         }
                     }
@@ -127,7 +129,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     }
 
     public void getPlaylistTracks(String playlistID, String playlistUser){
-        main.getPlaylistTracks(playlistID,playlistUser,this);
+        playlistSelect.getPlaylistTracks(playlistID,playlistUser,this);
     }
 
     @Override
