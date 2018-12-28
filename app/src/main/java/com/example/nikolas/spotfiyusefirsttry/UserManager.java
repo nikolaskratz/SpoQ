@@ -29,7 +29,9 @@ public class UserManager extends Application implements Subject {
     SharedPreferences sharedPref ;
     //private UserInfo userInfo;
     String jsonInString;
+    String dbResponse;
     Gson gson = new Gson();
+    ArrayList<Friend> friends5 = new ArrayList<>();
 
     UserInfo userInfo = new UserInfo();
 
@@ -38,6 +40,7 @@ public class UserManager extends Application implements Subject {
     FirebaseAuth userAuth = FirebaseAuth.getInstance();
     String userID = userAuth.getCurrentUser().getUid();
     DatabaseReference myRef = database.getReference("Users").child(userID);
+    DatabaseReference myRefIdentities = database.getReference("Identities");
 
 
 
@@ -49,19 +52,44 @@ public class UserManager extends Application implements Subject {
         return ourInstance;
     }
 
-    private UserManager(){
-        observers = new ArrayList<>();
+    private UserManager(){}
+
+    public Boolean getFriend(String nickname) {
+        ArrayList<String> ids = new ArrayList<String>();
+        myRefIdentities.child(nickname);
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot childSnapshot: dataSnapshot.getChildren()) {
+                    ids.add(childSnapshot.getValue().toString());
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        myRefIdentities.addListenerForSingleValueEvent(postListener);
+
+        Log.d(TAG, "getFriend: " + ids.size());
+
+        return true;
     }
 
     // returns all information about currently logged in user
     public void databaseQuery() {
+        observers = new ArrayList<>();
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 userInfo = dataSnapshot.getValue(UserInfo.class);
                 notifyObservers();
-                Log.d(TAG, "onDataChange: CHANGHE!");
+
             }
 
             @Override
@@ -76,9 +104,9 @@ public class UserManager extends Application implements Subject {
         return userInfo;
     }
 
-
+    // TODO: 28/12/18 IMPLEMENT SHARED PREFS
     private void initUserInfoSharedPrefObject() {
-        
+
        // jsonInString = gson.toJson(userInfo);
         SharedPreferences sharedPref = getSharedPreferences("PREFERENCE_1", Context.MODE_PRIVATE);
         sharedPref.edit().putString("UserInfoObjectJson", jsonInString).apply();
@@ -88,16 +116,14 @@ public class UserManager extends Application implements Subject {
         String msg = sharedPref.getString("abc","x");*/
     }
 
-    public boolean isFriendsListLoaded() {
-        return friendsListLoaded;
-    }
 
-    public void setFriendsListLoaded(boolean friendsListLoaded) {
-        this.friendsListLoaded = friendsListLoaded;
-    }
 
+    // observer-subject methods
     @Override
     public void register(final Observer observer) {
+        //creating list of observers to track
+        //check if this array list can be initiated here
+
         if (!observers.contains(observer)) {
             observers.add(observer);
         }

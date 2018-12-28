@@ -45,7 +45,7 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // start querying firebase
+        // start querying firebase for user info
         UserManager.getInstance().databaseQuery();
 
         mAuth = FirebaseAuth.getInstance();
@@ -56,20 +56,6 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
         mViewPager = (ViewPager) findViewById(R.id.containerViewPager);
         setViewPager(mViewPager);
 
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //registering observer - observing changes in friends list
-        UserManager.getInstance().register(new FriendsFragment());
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        UserManager.getInstance().unregister(new FriendsFragment());
 
     }
 
