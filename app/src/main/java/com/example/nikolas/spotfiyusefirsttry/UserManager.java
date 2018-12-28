@@ -113,5 +113,7 @@ public class UserManager extends Application {
         }
     }
 
-
+    public String getUserID() {
+        return userID;
+    }
 }
