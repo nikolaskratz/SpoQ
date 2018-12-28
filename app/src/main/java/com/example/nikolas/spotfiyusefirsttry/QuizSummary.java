@@ -43,9 +43,9 @@ public class QuizSummary extends AppCompatActivity {
         setSummary();
         setButtons();
         if(!getIntent().getExtras().getBoolean("invite")){
+            quizResult = new QuizResult(points);
             sendQuiz();
             sendInvitation();
-            quizResult = new QuizResult(points);
         } else {
 //            sendResult();
         }
