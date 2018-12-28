@@ -115,7 +115,6 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
                             playlistID = PlaylistSelect.getPlaylistSelect().getPlaylistID();
                             playlistUser = PlaylistSelect.getPlaylistSelect().getPlaylistUser();
-                            Log.e("checkitout",playlistUser);
                             getPlaylistTracks(playlistID,playlistUser);
                         }
                     }
