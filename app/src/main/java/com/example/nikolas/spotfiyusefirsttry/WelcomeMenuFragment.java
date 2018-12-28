@@ -31,6 +31,7 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
 
         view.findViewById(R.id.welcomeMenu_playWithFriend_bt).setOnClickListener(this);
         view.findViewById(R.id.signout_button).setOnClickListener(this);
+        view.findViewById(R.id.playQuizDebug).setOnClickListener(this);
 
         return view;
     }
@@ -44,6 +45,13 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
             else if (i == R.id.signout_button)  {
                 userAuth.signOut();
                 startActivity(new Intent(getActivity(), SignInActivity.class));
+            }
+            //DEBUG only (to reach the playlistselecter)
+            else if (i == R.id.playQuizDebug){
+                Intent intent = new Intent(getActivity(), PlaylistSelect.class);
+                intent.putExtra("me","5CJQUtHyefdGeGKTKdpZoNEL04G2");
+                intent.putExtra("vs","Hc4Xpv88wYQWG3QoSqo0qjpov4r2");
+                startActivity(intent);
             }
     }
 }

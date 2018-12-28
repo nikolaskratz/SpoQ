@@ -7,6 +7,20 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
+
+import java.util.List;
+
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Pager;
+import kaaes.spotify.webapi.android.models.PlaylistTrack;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
 public class PlaylistSelect extends AppCompatActivity {
 
     String playlistID;
@@ -14,6 +28,11 @@ public class PlaylistSelect extends AppCompatActivity {
 
     PlaylistInfo playlistInfo = new PlaylistInfo();
     private Button b1,b2,b3,b4,b5,b6,b7,b8;
+
+    private static final String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
+    private static final String REDIRECT_URI = "testschema://callback";
+    private static final int REQUEST_CODE = 1337;
+    private String authToken;
 
     public static PlaylistSelect playlistSelect;
 
@@ -23,9 +42,76 @@ public class PlaylistSelect extends AppCompatActivity {
         setContentView(R.layout.activity_playlist_select);
         playlistSelect=this;
 
+        setUpAuthentication();
+
         initControl();
         setPlaylistNameButton();
         listen();
+    }
+
+    //set up authentication (Web)
+    public void setUpAuthentication(){
+        AuthenticationRequest.Builder builder =
+                new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+
+        builder.setScopes(new String[]{"streaming"});
+        AuthenticationRequest request = builder.build();
+
+        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+    }
+
+    //Authentication function which also saves the AccesToken to use with WebApi
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+
+        super.onActivityResult(requestCode, resultCode, intent);
+        // Check if result comes from the correct activity
+        if (requestCode == REQUEST_CODE) {
+            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+            Log.e("authDebug", "reached auth, response: "+response.getType());
+
+            switch (response.getType()) {
+                // Response was successful and contains auth token
+                case TOKEN:
+                    authToken = response.getAccessToken();
+                    Log.e("authDebug", "reached token");
+                    // Handle successful response
+                    break;
+
+                // Auth flow returned an error
+                case ERROR:
+                    Log.e("authDebug", "reached error");
+                    // Handle error response
+                    break;
+
+                // Most likely auth flow was cancelled
+                default:
+                    Log.e("authDebug", "reached default");
+                    // Handle other cases
+            }
+        }
+    }
+
+    public void getPlaylistTracks(String playlistID, String playlistUser, final GamePlayManager gamePlayManager)  {
+        Log.e("getPlaylistTracksTest", "started getPlaylistTracksTest");
+        SpotifyApi api = new SpotifyApi();
+        api.setAccessToken(authToken);
+        SpotifyService spotify = api.getService();
+        Log.e("getPlaylistTracksTest", "authToken: "+authToken);
+        spotify.getPlaylistTracks(playlistUser, playlistID, new Callback<Pager<PlaylistTrack>>() {
+
+            @Override
+            public void success(Pager<PlaylistTrack> playlistTrackPager, Response response) {
+                Log.e("getPlaylistTracksTest", "GOT the tracks in playlist");
+                List<PlaylistTrack> items = playlistTrackPager.items;
+                gamePlayManager.setPlaylist(items);
+                gamePlayManager.proceed();
+            }
+            @Override
+            public void failure(RetrofitError error) {
+                Log.e("getPlaylistTracksTest", "error while getting tracks of playlist");
+            }
+        });
+
     }
 
     private void initControl(){
