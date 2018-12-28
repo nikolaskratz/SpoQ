@@ -40,7 +40,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-            UserManager.getInstance().setFriendsListLoaded(true);
+            //UserManager.getInstance().setFriendsListLoaded(true);
 
         // listener for search field
         EditText searchEt = (EditText) getView().findViewById(R.id.searchFriends_et);
@@ -66,7 +66,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
     @Override
     public void onDetach() {
         super.onDetach();
-        UserManager.getInstance().setFriendsListLoaded(false);
+        //UserManager.getInstance().setFriendsListLoaded(false);
     }
 
     public void initRecyclerView() {
@@ -87,13 +87,13 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
     public void update(boolean checked) {
 
         updatedView = checked;
-        if(updatedView && UserManager.getInstance().isFriendsListLoaded()){
-            
-            Log.d(TAG, "ok" +getView());
-            updatedView = false;
-        }
-        else
+        //if(updatedView && UserManager.getInstance().isFriendsListLoaded()){
 
-            Log.d(TAG, "not ok ");
+           // Log.d(TAG, "ok" +getView());
+          //  updatedView = false;
+       // }
+     //   else
+
+           // Log.d(TAG, "not ok ");
     }
 }

@@ -53,7 +53,6 @@ public class PlaylistSelect extends AppCompatActivity {
     public void setUpAuthentication(){
         AuthenticationRequest.Builder builder =
                 new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
-
         builder.setScopes(new String[]{"streaming"});
         AuthenticationRequest request = builder.build();
 
