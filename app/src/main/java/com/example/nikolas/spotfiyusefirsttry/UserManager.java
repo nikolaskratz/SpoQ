@@ -81,6 +81,7 @@ public class UserManager extends Application {
 
 
     private void initUserInfoSharedPrefObject() {
+        
        // jsonInString = gson.toJson(userInfo);
         SharedPreferences sharedPref = getSharedPreferences("PREFERENCE_1", Context.MODE_PRIVATE);
         sharedPref.edit().putString("UserInfoObjectJson", jsonInString).apply();
