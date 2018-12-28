@@ -47,13 +47,12 @@ public class UserManager extends Application {
     }
 
     private UserManager() {
-
-        //Log.d(TAG, "UserManager: "+userInfo.getFriends().get(0));
         databaseQuery();
     }
 
     // returns all information about currently logged in user
     public void databaseQuery() {
+        Log.d(TAG, userID);
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
@@ -66,6 +65,7 @@ public class UserManager extends Application {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "onDataChange: CANCEL!");
             }
         };
         myRef.addValueEventListener(postListener);
@@ -73,7 +73,7 @@ public class UserManager extends Application {
     }
 
     public UserInfo getUserInfo() {
-        //userInfo = new UserInfo();
+        if(userInfo==null) Log.d(TAG, "userInfo null");
         return userInfo;
     }
 

@@ -9,7 +9,7 @@ public class UserInfo {
     private String profileImg;
     private String email;
     private ArrayList<Friend> friends;
-    private List<String> games;
+    private ArrayList<Object> games;
     private List<QuizResult> results;
 
 
@@ -20,21 +20,23 @@ public class UserInfo {
         this.profileImg = profileImg;
         this.email=email;
         this.friends = new ArrayList<>();
+        this.games = new ArrayList<>();
 
         //only for debuggin purpose i am adding hardcoded friends here, later it will be via the
         // fragment
-        friends.add(new Friend("Dd4D3vktbGMtl3oTBV1HDrG4Fc92","t1"));
-        friends.add(new Friend("TYxUsxT3FBMeIP9ipD2FULLi7yV2","t0"));
-        friends.add(new Friend("00000test","t0-dont use"));
+        friends.add(new Friend("5CJQUtHyefdGeGKTKdpZoNEL04G2","a1"));
+        friends.add(new Friend("Hc4Xpv88wYQWG3QoSqo0qjpov4r2","a2"));
+        friends.add(new Friend("0test0","t0-dont use"));
 
-        this.games = new ArrayList<>();
         this.results = new ArrayList<>();
     }
-    public UserInfo() {
-        this.games = new ArrayList<String>();
-        this.results = new ArrayList<QuizResult>();
-        this.friends = new ArrayList<Friend>();
+
+    public UserInfo(){
+        this.results = new ArrayList<>();
+        this.friends = new ArrayList<>();
+        this.games = new ArrayList<>();
     }
+
 
     public String getNickname() {
         return nickname;
@@ -52,9 +54,9 @@ public class UserInfo {
         return friends;
     }
 
-    public List<String> getGames() {
-        return games;
-    }
+//    public List<String> getGames() {
+//        return games;
+//    }
 
     public List<QuizResult> getResults() {
         return results;

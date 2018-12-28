@@ -139,7 +139,12 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
     @Override
     public void proceed(){
-        checkQuizOverwriting();
+        try {
+            createQuiz(playlistTracks);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        checkQuizOverwriting();
     }
 
     public void createQuiz(List<PlaylistTrack> playlistTracks) throws InterruptedException {
