@@ -46,8 +46,9 @@ public class QuizSummary extends AppCompatActivity {
             sendQuiz();
             sendInvitation();
             quizResult = new QuizResult(points);
+        } else {
+//            sendResult();
         }
-//        sendResult();
     }
 
     void setSummary(){
@@ -91,6 +92,7 @@ public class QuizSummary extends AppCompatActivity {
     }
 
     void sendQuiz(){
+        quizGame.setQuizResult(quizResult);
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Quiz");
         myRef.child(quizID).setValue(quizGame);
     }
@@ -107,6 +109,10 @@ public class QuizSummary extends AppCompatActivity {
     }
 
     void sendResult(){
+
+
+
+
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Users").child(vs)
                 .child("games");
 

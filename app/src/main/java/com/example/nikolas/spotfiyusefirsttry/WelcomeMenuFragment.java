@@ -49,8 +49,10 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
             //DEBUG only (to reach the playlistselecter)
             else if (i == R.id.playQuizDebug){
                 Intent intent = new Intent(getActivity(), PlaylistSelect.class);
-                intent.putExtra("me","5CJQUtHyefdGeGKTKdpZoNEL04G2");
+                String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                intent.putExtra("me",userID);
                 intent.putExtra("vs","Hc4Xpv88wYQWG3QoSqo0qjpov4r2");
+                Log.d(TAG, "current user id: "+userID);
                 startActivity(intent);
             }
     }
