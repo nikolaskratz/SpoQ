@@ -15,7 +15,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 public class FriendsFragment extends Fragment implements View.OnClickListener, Observer {
@@ -23,6 +24,9 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
     private static final String TAG = "FriendsFragment_debug";
     private RecyclerViewFriendsAdapter friendsListAdapter;
     private boolean updatedView = false;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private String valueEt;
+
 
     RecyclerView recyclerView;
 
@@ -32,17 +36,20 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
                 // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
+        // register observer
         UserManager.getInstance().register(this);
 
         return view;
-
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // unregister observer
         UserManager.getInstance().unregister(this);
     }
+
+    // TODO: 29/12/18 To fix: refresh friends list while switching account, prevent adding yoursel to the list
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -55,8 +62,32 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        Log.d(TAG, "onEditorAction: " + searchEt.getText().toString());
-                        UserManager.getInstance().getFriend(searchEt.getText().toString());
+                     valueEt = searchEt.getText().toString();
+                        Log.d(TAG, "onEditorAction: " + valueEt);
+                        UserManager.getInstance().readData(database.getReference(), new OnGetDataListener() {
+                            @Override
+                            public void onSuccess(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
+                                    String userIdentity = (String) messageSnapshot.child(valueEt).getValue();
+                                    if(userIdentity != null) {
+                                        Log.d(TAG, "onSuccess: " + userIdentity);
+                                        UserManager.getInstance().writeNewFriend(database.getReference().
+                                                child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
+                                                child("friends").child(String.valueOf(UserManager.getInstance().
+                                                userInfo.getFriends().size())), valueEt, userIdentity);
+                                    }
+                                }
+                            }
+                            @Override
+                            public void onStart() {
+                                Log.d(TAG, "Started query");
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                Log.d(TAG, "Failed query");
+                            }
+                        });
                     handled = true;
                 }
                 return handled;
@@ -83,7 +114,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
 
     @Override
     public void update(boolean checked) {
-
         updatedView = checked;
         if(updatedView && getView() != null){
             updatedView = false;

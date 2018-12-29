@@ -14,76 +14,60 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class UserManager extends Application implements Subject {
     private static final UserManager ourInstance = new UserManager();
 
     private static final String TAG = "UserManager_debug";
-    String userIdentity = null;
 
     private List<Observer> observers;
-    private boolean statusChanged;
-
-    private boolean friendsListLoaded = false;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    private boolean statusChanged;
+
     SharedPreferences sharedPref ;
     //private UserInfo userInfo;
     String jsonInString;
-    String dbResponse;
-    Gson gson = new Gson();
-    ArrayList<Friend> friends5 = new ArrayList<>();
+
 
     UserInfo userInfo = new UserInfo();
-
     RecyclerViewFriendsAdapter adapterA;
-
     FirebaseAuth userAuth = FirebaseAuth.getInstance();
     String userID = userAuth.getCurrentUser().getUid();
+
+    //reference to User object in firebase
     DatabaseReference myRef = database.getReference("Users").child(userID);
-    DatabaseReference myRefIdentities = database.getReference();
 
 
-
-    public void getAdapter(RecyclerViewFriendsAdapter adapter) {
-        adapterA = adapter;
-    }
+    private UserManager(){}
 
     public static UserManager getInstance() {
         return ourInstance;
     }
 
-    private UserManager(){}
+    public void getAdapter(RecyclerViewFriendsAdapter adapter) {
+        adapterA = adapter;
+    }
 
-    public Boolean getFriend(String nickname) {
-
-        //myRefIdentities.child(nickname);
-
-        ValueEventListener postListener = new ValueEventListener() {
+    public void readData(DatabaseReference ref, final  OnGetDataListener listener) {
+        listener.onStart();
+        ref.addListenerForSingleValueEvent (new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
-                    userIdentity = (String) messageSnapshot.child(nickname).getValue();
-
-                }
+                listener.onSuccess(dataSnapshot);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-
+                listener.onFailure();
             }
-        };
-        myRefIdentities.addListenerForSingleValueEvent(postListener);
+        });
+    }
 
-        Log.d(TAG, "found: " + userIdentity);
-
-        if (userIdentity != null){
-            Log.d(TAG, "found: " + userIdentity);
-            return true;
-        }
-        else return false;
-
+    public void writeNewFriend(DatabaseReference ref, String userID , String nickname ) {
+        ref.setValue(new Friend(nickname,userID));
     }
 
     // returns all information about currently logged in user
@@ -110,6 +94,10 @@ public class UserManager extends Application implements Subject {
         return userInfo;
     }
 
+    public FirebaseAuth getCurrentUid() {
+        return userAuth;
+    }
+
     // TODO: 28/12/18 IMPLEMENT SHARED PREFS
     private void initUserInfoSharedPrefObject() {
 
@@ -121,8 +109,6 @@ public class UserManager extends Application implements Subject {
         /*SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("abc", Context.MODE_PRIVATE);
         String msg = sharedPref.getString("abc","x");*/
     }
-
-
 
     // observer-subject methods
     @Override
