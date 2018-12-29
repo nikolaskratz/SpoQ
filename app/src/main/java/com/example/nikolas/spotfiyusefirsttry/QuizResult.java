@@ -8,6 +8,7 @@ public class QuizResult {
     public QuizResult(int pointsP1) {
         this.pointsP1 = pointsP1;
     }
+    public QuizResult(){};
 
     public void setPointsP2(int pointsP2) {
         this.pointsP2 = pointsP2;

@@ -282,7 +282,13 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
         setTotalTime(minutes,seconds,(int) millis);
         final TextView pointView = findViewById(R.id.Points);
-        pointView.setText(""+this.points);
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                pointView.setText(""+points);
+            }
+        });
 //        Connection connection = new Connection(quiz,button);
 
     }
@@ -294,6 +300,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
             @Override
             public void onDataChange(DataSnapshot snap) {
                 quizGame =snap.getValue(QuizGame.class);
+
                 try {
                     joinQuiz(0);
                 } catch (InterruptedException e) {

@@ -24,6 +24,7 @@ public class QuizSummary extends AppCompatActivity {
     String vs;
     String me;
     String quizID;
+    String quizIDrev;
     QuizGame quizGame;
     int points;
     QuizResult quizResult;
@@ -39,7 +40,7 @@ public class QuizSummary extends AppCompatActivity {
         me = getIntent().getExtras().getString("me");
         vs = getIntent().getExtras().getString("vs");
         quizID = me+"-"+vs+"-"+playlistID;
-
+        quizIDrev = vs+"-"+me+"-"+playlistID;
         setSummary();
         setButtons();
         if(!getIntent().getExtras().getBoolean("invite")){
@@ -47,7 +48,7 @@ public class QuizSummary extends AppCompatActivity {
             sendQuiz();
             sendInvitation();
         } else {
-//            sendResult();
+            sendSecondResult();
         }
     }
 
@@ -108,15 +109,11 @@ public class QuizSummary extends AppCompatActivity {
 
     }
 
-    void sendResult(){
-
-
-
-
-        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Users").child(vs)
-                .child("games");
-
-        myRef.child(quizID).setValue(quizID);
-
+    void sendSecondResult(){
+        QuizResult quizResult=quizGame.getQuizResult();
+        quizResult.setPointsP2(points);
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Quiz").child
+                (quizIDrev);
+        myRef.child("quizResult").setValue(quizResult);
     }
 }

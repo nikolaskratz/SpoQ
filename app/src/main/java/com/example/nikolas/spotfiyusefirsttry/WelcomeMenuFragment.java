@@ -11,8 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class WelcomeMenuFragment extends Fragment implements View.OnClickListener {
@@ -32,6 +38,7 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
         view.findViewById(R.id.welcomeMenu_playWithFriend_bt).setOnClickListener(this);
         view.findViewById(R.id.signout_button).setOnClickListener(this);
         view.findViewById(R.id.playQuizDebug).setOnClickListener(this);
+        view.findViewById(R.id.joinQuizDebug).setOnClickListener(this);
 
         return view;
     }
@@ -55,5 +62,36 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
                 Log.d(TAG, "current user id: "+userID);
                 startActivity(intent);
             }
+            //DEBUG only (to join a quiz invite by A1; only as A2!)
+            else if(i == R.id.joinQuizDebug){
+                Log.d(TAG, "join");
+                getQuizID();
+            }
+    }
+
+    public void getQuizID(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child
+                ("games");
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                String quizID = snap.getChildren().iterator().next().getValue(String.class);
+                String vs = quizID.split("-")[0];
+                Intent intent = new Intent(getActivity(), PlayQuiz.class);
+                intent.putExtra("vs",vs);
+                intent.putExtra("me",FirebaseAuth.getInstance().getCurrentUser().getUid());
+                intent.putExtra("invite",true);
+                intent.putExtra("quizID",quizID);
+                Log.d(TAG, "quizID: "+quizID);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("myTag", "Failed to read value.");
+            }
+        });
     }
 }
