@@ -19,10 +19,11 @@ public class UserManager extends Application implements Subject {
     private static final UserManager ourInstance = new UserManager();
 
     private static final String TAG = "UserManager_debug";
-
+    String userIdentity = null;
 
     private List<Observer> observers;
     private boolean statusChanged;
+
     private boolean friendsListLoaded = false;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -40,7 +41,7 @@ public class UserManager extends Application implements Subject {
     FirebaseAuth userAuth = FirebaseAuth.getInstance();
     String userID = userAuth.getCurrentUser().getUid();
     DatabaseReference myRef = database.getReference("Users").child(userID);
-    DatabaseReference myRefIdentities = database.getReference("Identities");
+    DatabaseReference myRefIdentities = database.getReference();
 
 
 
@@ -55,29 +56,34 @@ public class UserManager extends Application implements Subject {
     private UserManager(){}
 
     public Boolean getFriend(String nickname) {
-        ArrayList<String> ids = new ArrayList<String>();
-        myRefIdentities.child(nickname);
+
+        //myRefIdentities.child(nickname);
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot childSnapshot: dataSnapshot.getChildren()) {
-                    ids.add(childSnapshot.getValue().toString());
+                for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
+                    userIdentity = (String) messageSnapshot.child(nickname).getValue();
 
                 }
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+
             }
         };
         myRefIdentities.addListenerForSingleValueEvent(postListener);
 
-        Log.d(TAG, "getFriend: " + ids.size());
+        Log.d(TAG, "found: " + userIdentity);
 
-        return true;
+        if (userIdentity != null){
+            Log.d(TAG, "found: " + userIdentity);
+            return true;
+        }
+        else return false;
+
     }
 
     // returns all information about currently logged in user
