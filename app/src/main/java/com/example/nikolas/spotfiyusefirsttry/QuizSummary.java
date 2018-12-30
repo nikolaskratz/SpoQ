@@ -49,6 +49,7 @@ public class QuizSummary extends AppCompatActivity {
             sendInvitation();
         } else {
             sendSecondResult();
+            removeInvite();
         }
     }
 
@@ -115,5 +116,12 @@ public class QuizSummary extends AppCompatActivity {
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Quiz").child
                 (quizIDrev);
         myRef.child("quizResult").setValue(quizResult);
+    }
+
+    //not working
+    void removeInvite(){
+        FirebaseDatabase.getInstance().getReference("Users").child(me)
+                .child("games").child(quizID).removeValue();
+
     }
 }

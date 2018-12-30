@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class RecyclerViewInvitationAdapter extends RecyclerView.Adapter<RecyclerViewInvitationAdapter.ViewHolder> {
     private ArrayList<String> inviteData;
+    private static ClickListener clickListener;
 
     public RecyclerViewInvitationAdapter(ArrayList<String> inviteData) {
         this.inviteData = inviteData;
@@ -44,14 +45,21 @@ public class RecyclerViewInvitationAdapter extends RecyclerView.Adapter<Recycler
     }
 
     // inner class to hold a reference to each item of RecyclerView
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public Button inviteButton;
 
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
             inviteButton = (Button) itemLayoutView.findViewById(R.id.inviteButton);
+            inviteButton.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View view) {
+            clickListener.onItemClick(getAdapterPosition(), view);
+        }
+
     }
 
 
@@ -59,5 +67,14 @@ public class RecyclerViewInvitationAdapter extends RecyclerView.Adapter<Recycler
     @Override
     public int getItemCount() {
         return inviteData.size();
+    }
+
+    public void setOnItemClickListener(ClickListener clickListener) {
+        RecyclerViewInvitationAdapter.clickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        void onItemClick(int position, View v);
+//        void onItemLongClick(int position, View v);
     }
 }

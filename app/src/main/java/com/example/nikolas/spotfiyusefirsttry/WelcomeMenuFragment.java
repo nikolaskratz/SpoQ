@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,22 +42,11 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
 
         view =  inflater.inflate(R.layout.fragment_welcome_menu, container, false);
 
-        //rv setup
-//        RecyclerView inviteRecyclerView = (RecyclerView) view.findViewById(R.id.rvInvites);
-//        inviteData = new ArrayList<>();
-//        inviteData.add(new InviteData("abc"));
-//        inviteData.add(new InviteData("def"));
-//        inviteRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-//        RecyclerViewInvitationAdapter recyclerViewInvitationAdapter = new
-//                RecyclerViewInvitationAdapter(inviteData);
-//        inviteRecyclerView.setAdapter(recyclerViewInvitationAdapter);
-
         getInvites();
 
         view.findViewById(R.id.welcomeMenu_playWithFriend_bt).setOnClickListener(this);
         view.findViewById(R.id.signout_button).setOnClickListener(this);
         view.findViewById(R.id.playQuizDebug).setOnClickListener(this);
-        view.findViewById(R.id.joinQuizDebug).setOnClickListener(this);
 
         return view;
     }
@@ -80,37 +70,6 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
             Log.d(TAG, "current user id: "+userID);
             startActivity(intent);
         }
-        //DEBUG only (to join a quiz invite by A1; only as A2!)
-        else if(i == R.id.joinQuizDebug){
-            Log.d(TAG, "join");
-            getQuizID();
-        }
-    }
-
-    public void getQuizID(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child
-                ("games");
-        Log.d(TAG, "getting QuizID");
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snap) {
-                String quizID = snap.getChildren().iterator().next().getValue(String.class);
-                String vs = quizID.split("-")[0];
-                Intent intent = new Intent(getActivity(), PlayQuiz.class);
-                intent.putExtra("vs",vs);
-                intent.putExtra("me",FirebaseAuth.getInstance().getCurrentUser().getUid());
-                intent.putExtra("invite",true);
-                intent.putExtra("quizID",quizID);
-                Log.d(TAG, "quizID: "+quizID);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w("myTag", "Failed to read value.");
-            }
-        });
     }
 
     public void getInvites(){
@@ -122,15 +81,17 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
             public void onDataChange(DataSnapshot snap) {
 
                 ArrayList<String> invites = new ArrayList<>();
+                ArrayList<String> iDs = new ArrayList<>();
                 Iterator i = snap.getChildren().iterator();
                 while(i.hasNext()){
                     DataSnapshot d = (DataSnapshot) i.next();
                     String inv = (String) d.getValue();
+                    iDs.add(inv);
                     String vs = inv.split("-")[0];
                     invites.add(vs);
                     Log.e("Iterating", "invite: "+inv);
                 }
-                getNicknames(invites);
+                getNicknames(invites,iDs);
             }
 
             @Override
@@ -140,7 +101,7 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
         });
     }
 
-    public void getNicknames(ArrayList<String> invites){
+    public void getNicknames(ArrayList<String> invites,ArrayList<String> iDs){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("IdentitiesREV");
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -151,7 +112,7 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
                     inviteNames.add((String) snap.child(i).getValue());
                 }
 
-                setUpRV(inviteNames);
+                setUpRV(inviteNames,iDs);
             }
 
             @Override
@@ -161,12 +122,31 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
         });
     }
 
-    public void setUpRV(ArrayList<String> invites){
+    public void setUpRV(ArrayList<String> invites,ArrayList<String> iDs){
         RecyclerView inviteRecyclerView = (RecyclerView) view.findViewById(R.id.rvInvites);
 
         inviteRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         RecyclerViewInvitationAdapter recyclerViewInvitationAdapter = new
                 RecyclerViewInvitationAdapter(invites);
         inviteRecyclerView.setAdapter(recyclerViewInvitationAdapter);
+
+        recyclerViewInvitationAdapter.setOnItemClickListener(new RecyclerViewInvitationAdapter
+                .ClickListener() {
+            @Override
+            public void onItemClick(int position, View v) {
+                String quizID = iDs.get(position);
+                String vs = quizID.split("-")[0];
+                Log.d("click check", "onItemClick: " + invites.get(position));
+                Log.d("click check", "onItemClick: " + quizID);
+                Intent intent = new Intent(getActivity(), PlayQuiz.class);
+                intent.putExtra("vs",vs);
+                intent.putExtra("me",FirebaseAuth.getInstance().getCurrentUser().getUid());
+                intent.putExtra("invite",true);
+                intent.putExtra("quizID",quizID);
+                startActivity(intent);
+
+
+            }
+        });
     }
 }

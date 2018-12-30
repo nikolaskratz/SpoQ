@@ -61,25 +61,17 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginBottom="8dp"
-        android:text="Debug: Play vs a2"
-        app:layout_constraintBottom_toTopOf="@+id/welcomeMenu_playWithFriend_bt"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/joinQuizDebug"
-        android:layout_width="173dp"
-        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Debug: Join as A2"
+        android:text="Debug: Play vs a2"
         app:layout_constraintBottom_toTopOf="@+id/welcomeMenu_playWithFriend_bt"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
         android:layout_width="330dp"
-        android:layout_height="139dp"
+        android:layout_height="162dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
