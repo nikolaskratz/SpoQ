@@ -101,7 +101,7 @@ public class UserManager extends Application implements Subject {
     // TODO: 28/12/18 IMPLEMENT SHARED PREFS
     private void initUserInfoSharedPrefObject() {
 
-       // jsonInString = gson.toJson(userInfo);
+        // jsonInString = gson.toJson(userInfo);
         SharedPreferences sharedPref = getSharedPreferences("PREFERENCE_1", Context.MODE_PRIVATE);
         sharedPref.edit().putString("UserInfoObjectJson", jsonInString).apply();
         Log.d(TAG, "initUserInfoSharedPrefObject: OK");
