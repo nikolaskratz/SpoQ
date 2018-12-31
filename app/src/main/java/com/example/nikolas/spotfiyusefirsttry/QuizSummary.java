@@ -120,8 +120,9 @@ public class QuizSummary extends AppCompatActivity {
 
     //not working
     void removeInvite(){
+        Log.e("removeInvite","removing, me: "+me+" quizID: "+quizIDrev);
         FirebaseDatabase.getInstance().getReference("Users").child(me)
-                .child("games").child(quizID).removeValue();
+                .child("games").child(quizIDrev).removeValue();
 
     }
 }

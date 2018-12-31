@@ -13,4 +13,12 @@ public class QuizResult {
     public void setPointsP2(int pointsP2) {
         this.pointsP2 = pointsP2;
     }
+
+    public int getPointsP1() {
+        return pointsP1;
+    }
+
+    public int getPointsP2() {
+        return pointsP2;
+    }
 }

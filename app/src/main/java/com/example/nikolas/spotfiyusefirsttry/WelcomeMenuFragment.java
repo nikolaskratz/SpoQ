@@ -43,6 +43,7 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
         view =  inflater.inflate(R.layout.fragment_welcome_menu, container, false);
 
         getInvites();
+        getResults();
 
         view.findViewById(R.id.welcomeMenu_playWithFriend_bt).setOnClickListener(this);
         view.findViewById(R.id.signout_button).setOnClickListener(this);
@@ -76,7 +77,7 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child
                 ("games");
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snap) {
 
@@ -112,7 +113,7 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
                     inviteNames.add((String) snap.child(i).getValue());
                 }
 
-                setUpRV(inviteNames,iDs);
+                setUpRVInvite(inviteNames,iDs);
             }
 
             @Override
@@ -122,7 +123,7 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
         });
     }
 
-    public void setUpRV(ArrayList<String> invites,ArrayList<String> iDs){
+    public void setUpRVInvite(ArrayList<String> invites,ArrayList<String> iDs){
         RecyclerView inviteRecyclerView = (RecyclerView) view.findViewById(R.id.rvInvites);
 
         inviteRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -146,7 +147,103 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
                 startActivity(intent);
 
 
+
             }
         });
+    }
+
+    public void getResults(){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child
+                ("games");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+
+                ArrayList<String> p1ID = new ArrayList<>();
+                ArrayList<String> p2ID = new ArrayList<>();
+                ArrayList<String> iDs = new ArrayList<>();
+                Iterator i = snap.getChildren().iterator();
+                while(i.hasNext()){
+                    DataSnapshot d = (DataSnapshot) i.next();
+                    String inv = (String) d.getValue();
+                    iDs.add(inv);
+                    String p1 = inv.split("-")[0];
+                    p1ID.add(p1);
+                    String p2 = inv.split("-")[1];
+                    p2ID.add(p2);
+                    Log.e("getResults", "p1: "+p1+"me: "+p2);
+                    Log.e("getResults", "quizID "+inv);
+                }
+                getPlayernames(iDs,p1ID,p2ID);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("myTag", "Failed to read value.");
+            }
+        });
+    }
+
+    public void getPlayernames(ArrayList<String> iDs, ArrayList<String> p1ID, ArrayList<String>
+            p2ID){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Identities");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                ArrayList<String> p1Names = new ArrayList<>();
+                ArrayList<String> p2Names = new ArrayList<>();
+                for(String i : p1ID){
+                    p1Names.add((String) snap.child(i).getValue());
+                }
+                for(String i : p2ID){
+                    p2Names.add((String) snap.child(i).getValue());
+                }
+                getPoints(iDs,p1Names,p2Names);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("myTag", "Failed to read value.");
+            }
+        });
+    }
+
+    public void getPoints(ArrayList<String> iDs, ArrayList<String> p1Names, ArrayList<String>
+            p2Names){
+
+        ArrayList<Integer> pointsP1 = new ArrayList<>();
+        ArrayList<Integer> pointsP2 = new ArrayList<>();
+        for(String id : iDs) {
+            DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Quiz").child(id);
+            myRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snap) {
+                    pointsP1.add(snap.getValue(QuizGame.class).getQuizResult().getPointsP1());
+                    pointsP2.add(snap.getValue(QuizGame.class).getQuizResult().getPointsP2());
+                    if(pointsP1.size()==iDs.size()){
+                        setUpRVResult(pointsP1,pointsP2,p1Names,p2Names);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.w("myTag", "Failed to read value.");
+                }
+            });
+        }
+
+    }
+
+    public void setUpRVResult(ArrayList<Integer> pointsP1,ArrayList<Integer> pointsP2,
+                              ArrayList<String> p1Names, ArrayList<String> p2Names){
+        RecyclerView resultRecyclerView = (RecyclerView) view.findViewById(R.id.rvResults);
+
+        resultRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        RecyclerViewResultAdapter recyclerViewResultAdapter = new
+                RecyclerViewResultAdapter(pointsP1,pointsP2,p1Names,p2Names);
+        resultRecyclerView.setAdapter(recyclerViewResultAdapter);
+
     }
 }
