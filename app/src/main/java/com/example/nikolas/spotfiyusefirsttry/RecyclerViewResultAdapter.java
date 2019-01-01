@@ -1,7 +1,9 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -40,6 +42,7 @@ public class RecyclerViewResultAdapter extends RecyclerView.Adapter<RecyclerView
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 
 //        viewHolder.vsPlayer.setText(vsData.get(position));
+        Log.d("setup", "nameP1:"+p1.get(position)+" pointsP1:"+p1Points.get(position));
         viewHolder.nameP1.setText(p1.get(position));
         viewHolder.nameP2.setText(p2.get(position));
         viewHolder.pointsP1.setText(""+p1Points.get(position));

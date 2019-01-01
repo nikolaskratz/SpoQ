@@ -44,7 +44,7 @@ public class QuizSummary extends AppCompatActivity {
         setSummary();
         setButtons();
         if(!getIntent().getExtras().getBoolean("invite")){
-            quizResult = new QuizResult(points);
+            quizResult = new QuizResult(points,quizID,me,vs);
             sendQuiz();
             sendInvitation();
         } else {
@@ -97,6 +97,9 @@ public class QuizSummary extends AppCompatActivity {
         quizGame.setQuizResult(quizResult);
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Quiz");
         myRef.child(quizID).setValue(quizGame);
+
+        DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Users").child(me);
+        myRef2.child("results").child(quizID).setValue(quizResult);
     }
 
     void sendInvitation(){
@@ -116,9 +119,14 @@ public class QuizSummary extends AppCompatActivity {
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Quiz").child
                 (quizIDrev);
         myRef.child("quizResult").setValue(quizResult);
+
+        DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Users").child(me);
+        myRef2.child("results").child(quizIDrev).setValue(quizResult);
+
+        DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("Users").child(vs);
+        myRef3.child("results").child(quizIDrev).setValue(quizResult);
     }
 
-    //not working
     void removeInvite(){
         Log.e("removeInvite","removing, me: "+me+" quizID: "+quizIDrev);
         FirebaseDatabase.getInstance().getReference("Users").child(me)

@@ -25,6 +25,8 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 
 public class WelcomeMenuFragment extends Fragment implements View.OnClickListener {
@@ -155,27 +157,43 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
     public void getResults(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child
-                ("games");
+                ("results");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snap) {
 
                 ArrayList<String> p1ID = new ArrayList<>();
                 ArrayList<String> p2ID = new ArrayList<>();
+                ArrayList<Integer> p1Points = new ArrayList<>();
+                ArrayList<Integer> p2Points = new ArrayList<>();
                 ArrayList<String> iDs = new ArrayList<>();
+                ArrayList<String> p1Names = new ArrayList<>();
+                ArrayList<String> p2Names = new ArrayList<>();
                 Iterator i = snap.getChildren().iterator();
                 while(i.hasNext()){
                     DataSnapshot d = (DataSnapshot) i.next();
-                    String inv = (String) d.getValue();
-                    iDs.add(inv);
-                    String p1 = inv.split("-")[0];
+                    String quizID = d.getValue(QuizResult.class).getQuizID();
+                    Log.e("getResults", "quizID "+quizID);
+                    Integer p1P = d.getValue(QuizResult.class).getPointsP1();
+                    Integer p2P = d.getValue(QuizResult.class).getPointsP2();
+                    String p1 = quizID.split("-")[0];
+                    String p2 = quizID.split("-")[1];
+
+                    //still the ID and not the name
+                    String p1Name = d.getValue(QuizResult.class).getP1Name();
+                    String p2Name = d.getValue(QuizResult.class).getP2Name();
+
+                    iDs.add(quizID);
+                    p1Points.add(p1P);
+                    p2Points.add(p2P);
                     p1ID.add(p1);
-                    String p2 = inv.split("-")[1];
                     p2ID.add(p2);
-                    Log.e("getResults", "p1: "+p1+"me: "+p2);
-                    Log.e("getResults", "quizID "+inv);
+                    p1Names.add(p1Name);
+                    p2Names.add(p2Name);
                 }
-                getPlayernames(iDs,p1ID,p2ID);
+
+                setUpRVResult(p1Points,p2Points,p1Names,p2Names);
+//                getPlayernames(iDs,p1ID,p2ID,p1Points,p2Points);
             }
 
             @Override
@@ -186,21 +204,33 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
     }
 
     public void getPlayernames(ArrayList<String> iDs, ArrayList<String> p1ID, ArrayList<String>
-            p2ID){
+            p2ID, ArrayList<Integer> p1Points, ArrayList<Integer> p2Points){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Identities");
+        DatabaseReference myRef = database.getReference("IdentitiesRev");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snap) {
                 ArrayList<String> p1Names = new ArrayList<>();
                 ArrayList<String> p2Names = new ArrayList<>();
-                for(String i : p1ID){
-                    p1Names.add((String) snap.child(i).getValue());
+//                for(String i : p1ID){
+                for(int i=0; i<p1ID.size(); i++){
+//                    Log.e("getPlayernames","p1: "+p1ID.get(i)+" size: "+p1ID.size());
+                    Log.e("getPlayernames",""+i);
+                    String p1SingleID = p1ID.get(i);
+                    String p1Name = (String) snap.child(p1SingleID).getValue();
+                    p1Names.add(p1Name);
+                    if(p1Names.size()==p1ID.size()){
+                        for(int j=0; j<p2ID.size(); j++){
+                            p2Names.add((String) snap.child(p2ID.get(j)).getValue());
+                            Log.e("getPlayernames",""+j);
+                            if(p2Names.size()==p2ID.size()){
+                                setUpRVResult(p1Points,p2Points,p1Names,p2Names);
+                            }
+                        }
+                    }
                 }
-                for(String i : p2ID){
-                    p2Names.add((String) snap.child(i).getValue());
-                }
-                getPoints(iDs,p1Names,p2Names);
+
+
             }
 
             @Override
@@ -208,32 +238,6 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
                 Log.w("myTag", "Failed to read value.");
             }
         });
-    }
-
-    public void getPoints(ArrayList<String> iDs, ArrayList<String> p1Names, ArrayList<String>
-            p2Names){
-
-        ArrayList<Integer> pointsP1 = new ArrayList<>();
-        ArrayList<Integer> pointsP2 = new ArrayList<>();
-        for(String id : iDs) {
-            DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Quiz").child(id);
-            myRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snap) {
-                    pointsP1.add(snap.getValue(QuizGame.class).getQuizResult().getPointsP1());
-                    pointsP2.add(snap.getValue(QuizGame.class).getQuizResult().getPointsP2());
-                    if(pointsP1.size()==iDs.size()){
-                        setUpRVResult(pointsP1,pointsP2,p1Names,p2Names);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.w("myTag", "Failed to read value.");
-                }
-            });
-        }
-
     }
 
     public void setUpRVResult(ArrayList<Integer> pointsP1,ArrayList<Integer> pointsP2,

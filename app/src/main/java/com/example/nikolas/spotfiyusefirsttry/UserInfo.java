@@ -1,7 +1,9 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserInfo {
     private String nickname;
@@ -10,7 +12,7 @@ public class UserInfo {
     private String email;
     private ArrayList<Friend> friends;
     private ArrayList<Object> games;
-    private List<QuizResult> results;
+    private Map<String,QuizResult> results;
 
 
 
@@ -28,11 +30,11 @@ public class UserInfo {
         friends.add(new Friend("Hc4Xpv88wYQWG3QoSqo0qjpov4r2","a2"));
         friends.add(new Friend("0test0","t0-dont use"));
 
-        this.results = new ArrayList<>();
+        this.results = new HashMap<String,QuizResult>();
     }
 
     public UserInfo(){
-        this.results = new ArrayList<>();
+        this.results = new HashMap<String,QuizResult>();
         this.friends = new ArrayList<>();
         this.games = new ArrayList<>();
     }
@@ -58,7 +60,7 @@ public class UserInfo {
 //        return games;
 //    }
 
-    public List<QuizResult> getResults() {
+    public Map<String,QuizResult> getResults() {
         return results;
     }
 }
