@@ -32,10 +32,7 @@ public class RecyclerViewInvitationAdapter extends RecyclerView.Adapter<Recycler
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-
         viewHolder.inviteButton.setText(inviteData.get(position));
-
-
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -66,6 +63,6 @@ public class RecyclerViewInvitationAdapter extends RecyclerView.Adapter<Recycler
 
     public interface ClickListener {
         void onItemClick(int position, View v);
-//        void onItemLongClick(int position, View v);
+        //void onItemLongClick(int position, View v);
     }
 }

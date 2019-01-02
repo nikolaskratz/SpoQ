@@ -6,10 +6,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 public class QuizLobbyActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "QuizLobbyActivity_debug";
+    RecyclerView recyclerView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +23,7 @@ public class QuizLobbyActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void initRecyclerView() {
-        RecyclerView recyclerView = findViewById(R.id.lobby_recycler_view);
+        recyclerView = findViewById(R.id.lobby_recycler_view);
         RecyclerViewFriendsAdapter adapter = new RecyclerViewFriendsAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -28,6 +31,9 @@ public class QuizLobbyActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
-        // TODO: 09/12/2018 implement listeners for lobby
+        int itemPosition = recyclerView.getChildAdapterPosition(v);
+        Log.d(TAG, "onClick: " + itemPosition);
+
+        // need reference to the list element  
     }
 }

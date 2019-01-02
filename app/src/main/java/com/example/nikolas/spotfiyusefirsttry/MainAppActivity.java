@@ -65,6 +65,8 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
         adapter.addFragment(new WelcomeMenuFragment());
         adapter.addFragment(new FriendsFragment());
         viewPager.setAdapter(adapter);
+        // to set default fragment
+        viewPager.setCurrentItem(1);
 }
 
     @Override
@@ -123,20 +125,12 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
          * Returns a new instance of this fragment for the given section
          * number.
          */
+
         public static PlaceholderFragment newInstance(int sectionNumber) {
-/*          // I have to test it later
-
-            if (sectionNumber == 2 ){
-
-
-            }*/
-
                 PlaceholderFragment fragment = new PlaceholderFragment();
                 Bundle args = new Bundle();
                 args.putInt(ARG_SECTION_NUMBER, sectionNumber);
                 fragment.setArguments(args);
-
-
             return fragment;
         }
 

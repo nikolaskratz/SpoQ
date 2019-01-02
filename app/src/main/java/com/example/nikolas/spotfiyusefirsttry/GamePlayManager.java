@@ -11,6 +11,4 @@ public interface GamePlayManager {
 
     public void proceed();
 
-
-
 }
