@@ -105,7 +105,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
      }
 
-
     @Override
     public void onClick(View v) {
         // TODO: 09/12/2018 implement listeners for friends
