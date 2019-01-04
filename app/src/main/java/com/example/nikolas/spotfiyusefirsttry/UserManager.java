@@ -23,7 +23,6 @@ public class UserManager extends Application implements Subject {
 
     private List<Observer> observers;
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     private boolean statusChanged;
 
@@ -31,17 +30,21 @@ public class UserManager extends Application implements Subject {
     //private UserInfo userInfo;
     String jsonInString;
 
-
     UserInfo userInfo = new UserInfo();
     RecyclerViewFriendsAdapter adapterA;
     FirebaseAuth userAuth = FirebaseAuth.getInstance();
-    String userID = userAuth.getCurrentUser().getUid();
 
+    private String userID = userAuth.getCurrentUser().getUid();
+
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
     //reference to User object in firebase
     DatabaseReference myRef = database.getReference("Users").child(userID);
 
-
     private UserManager(){}
+
+    public String getUserID() {
+        return userID;
+    }
 
     public static UserManager getInstance() {
         return ourInstance;

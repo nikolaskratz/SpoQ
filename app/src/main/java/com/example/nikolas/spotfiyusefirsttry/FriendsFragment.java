@@ -27,7 +27,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private String valueEt;
 
-
     RecyclerView recyclerView;
 
     @Override
@@ -49,7 +48,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
         UserManager.getInstance().unregister(this);
     }
 
-    // TODO: 29/12/18 To fix: refresh friends list while switching account, prevent adding yoursel to the list
+    // TODO: 1/4/2019 reset data when signed out
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -69,12 +68,27 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
                             public void onSuccess(DataSnapshot dataSnapshot) {
                                 for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
                                     String userIdentity = (String) messageSnapshot.child(valueEt).getValue();
-                                    if(userIdentity != null) {
-                                        Log.d(TAG, "onSuccess: " + userIdentity);
-                                        UserManager.getInstance().writeNewFriend(database.getReference().
-                                                child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
-                                                child("friends").child(String.valueOf(UserManager.getInstance().
-                                                userInfo.getFriends().size())), valueEt, userIdentity);
+                                    //null -> missing user in db
+
+//                                    if  ( userIdentity.equals(UserManager.getInstance().getUserID())){
+//                                        Log.d(TAG, "onSuccess: You can't add yourself " + userIdentity + " " + UserManager.getInstance().getUserID());
+//                                    }
+                                     if(userIdentity != null) {
+                                        if  (UserManager.getInstance().getUserID().equals(userIdentity) )
+                                            Log.d(TAG, "onSuccess: " + " can't add" );
+
+                                            // TODO: 1/4/2019 prevent adding existing users 
+//                                        else if ( ) {
+//
+//                                        }
+                                        else {
+                                            Log.d(TAG, "onSuccess: " + userIdentity);
+                                            Log.d(TAG, "onSuccess: " + UserManager.getInstance().getUserID().equals(userIdentity));
+                                            UserManager.getInstance().writeNewFriend(database.getReference().
+                                                    child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
+                                                    child("friends").child(String.valueOf(UserManager.getInstance().
+                                                    userInfo.getFriends().size())), valueEt, userIdentity);
+                                        }
                                     }
                                 }
                             }
@@ -108,7 +122,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
     @Override
     public void onClick(View v) {
         // TODO: 09/12/2018 implement listeners for friends
-
     }
 
     @Override
