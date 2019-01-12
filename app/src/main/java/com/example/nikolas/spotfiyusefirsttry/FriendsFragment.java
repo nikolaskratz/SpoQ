@@ -48,7 +48,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
         UserManager.getInstance().unregister(this);
     }
 
-    // TODO: 1/4/2019 reset data when signed out
+    // TODO: 1/4/2019 reset data when signed out / change the friends list structure.
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -62,27 +62,20 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                      valueEt = searchEt.getText().toString();
-                        Log.d(TAG, "onEditorAction: " + valueEt);
                         UserManager.getInstance().readData(database.getReference(), new OnGetDataListener() {
                             @Override
                             public void onSuccess(DataSnapshot dataSnapshot) {
                                 for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
                                     String userIdentity = (String) messageSnapshot.child(valueEt).getValue();
-                                    //null -> missing user in db
 
-//                                    if  ( userIdentity.equals(UserManager.getInstance().getUserID())){
-//                                        Log.d(TAG, "onSuccess: You can't add yourself " + userIdentity + " " + UserManager.getInstance().getUserID());
-//                                    }
                                      if(userIdentity != null) {
                                         if  (UserManager.getInstance().getUserID().equals(userIdentity) )
-                                            Log.d(TAG, "onSuccess: " + " can't add" );
+                                            Log.d(TAG, "You can't add yourself." );
 
-                                            // TODO: 1/4/2019 prevent adding existing users 
-//                                        else if ( ) {
-//
-//                                        }
+                                        else if (haveFriend(valueEt) ) {
+                                            Log.d(TAG, " You added already this friend." );
+                                        }
                                         else {
-                                            Log.d(TAG, "onSuccess: " + userIdentity);
                                             Log.d(TAG, "onSuccess: " + UserManager.getInstance().getUserID().equals(userIdentity));
                                             UserManager.getInstance().writeNewFriend(database.getReference().
                                                     child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
@@ -131,6 +124,14 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
             updatedView = false;
             initRecyclerView();
         }
+    }
 
+    // method checking if user has already friend in his list
+    private boolean haveFriend(String nickname) {
+        for (Friend a : UserManager.getInstance().userInfo.getFriends()) {
+            if(a.getNickname().equals(nickname))
+            return true;
+        }
+        return false;
     }
 }
