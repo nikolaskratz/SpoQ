@@ -23,6 +23,7 @@ import retrofit.client.Response;
 
 public class PlaylistSelect extends AppCompatActivity {
 
+    private static final String TAG = "PlaylistSelect_debug";
     String playlistID;
     String playlistUser;
 

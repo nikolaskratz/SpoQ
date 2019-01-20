@@ -10,11 +10,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class QuizLobbyActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "QuizLobbyActivity_debug";
     RecyclerView recyclerView;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
 
     @Override
@@ -32,15 +35,35 @@ public class QuizLobbyActivity extends AppCompatActivity implements View.OnClick
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
+
     @Override
     public void onClick(View v) {
         int itemPosition = recyclerView.getChildAdapterPosition(v);
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        //debug > this way you can gat user nickname in playlist select
-        //String f = UserManager.getInstance().getUserInfo().getFriends().get(itemPosition).getNickname();
+        String friend = UserManager.getInstance().getUserInfo().getFriends().get(itemPosition).getNickname();
 
         Intent intent = new Intent(this, PlaylistSelect.class);
-        intent.putExtra("againstUser", Integer.toString(itemPosition));
-        startActivity(intent);
+
+        UserManager.getInstance().readData(database.getReference(), new OnGetDataListener() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
+                    String userIdentity = (String) messageSnapshot.child(friend).getValue();
+                    if(userIdentity != null) {
+                        intent.putExtra("me", userID);
+                        intent.putExtra("vs", userIdentity);
+                        startActivity(intent);
+                    }
+            }}
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onFailure() {
+            }
+        });
     }
+
 }
