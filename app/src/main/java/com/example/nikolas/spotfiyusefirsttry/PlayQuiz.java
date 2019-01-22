@@ -89,8 +89,6 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         playlistSelect = PlaylistSelect.getPlaylistSelect();
         playQuiz=this;
         timerTextView = (TextView) findViewById(R.id.timer);
-
-
     }
 
     @Override
@@ -112,7 +110,6 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                         if(invite) {
                             receiveQuiz();
                         } else {
-
                             playlistID = PlaylistSelect.getPlaylistSelect().getPlaylistID();
                             playlistUser = PlaylistSelect.getPlaylistSelect().getPlaylistUser();
                             getPlaylistTracks(playlistID,playlistUser);

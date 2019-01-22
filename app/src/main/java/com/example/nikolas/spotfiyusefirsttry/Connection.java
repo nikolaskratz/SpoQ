@@ -11,11 +11,9 @@ public class Connection {
     private Quiz quiz;
     private int randomNumber;
 
-
     DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("quiz");
 
     public Connection(Quiz quiz, int randomNumber) {
-
         this.quiz = quiz;
         this.randomNumber = randomNumber;
         sendData();

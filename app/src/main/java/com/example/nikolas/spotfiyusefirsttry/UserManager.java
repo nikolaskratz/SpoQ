@@ -17,12 +17,14 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class UserManager extends Application implements Subject {
-    private static final UserManager ourInstance = new UserManager();
+
+
+    //private static final UserManager ourInstance = new UserManager();
+    private static  UserManager ourInstance;
 
     private static final String TAG = "UserManager_debug";
 
     private List<Observer> observers;
-
 
     private boolean statusChanged;
 
@@ -46,8 +48,15 @@ public class UserManager extends Application implements Subject {
         return userID;
     }
 
-    public static UserManager getInstance() {
+    public static UserManager getInstance(){
+            if (ourInstance  == null) {
+                ourInstance = new UserManager();
+            }
         return ourInstance;
+    }
+
+    public void clearInstance() {
+        ourInstance = null;
     }
 
     public void getAdapter(RecyclerViewFriendsAdapter adapter) {

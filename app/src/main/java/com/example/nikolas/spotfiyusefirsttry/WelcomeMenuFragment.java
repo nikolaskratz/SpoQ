@@ -36,8 +36,6 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
     private static final String TAG = "WelcomeMenu";
     View view;
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -62,6 +60,9 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
         }
         else if (i == R.id.signout_button)  {
             userAuth.signOut();
+
+            // this method must be always invoked when the user is signing out <-- to clear singleton
+            UserManager.getInstance().clearInstance();
             startActivity(new Intent(getActivity(), SignInActivity.class));
         }
         //DEBUG only (to reach the playlistselecter)
