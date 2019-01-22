@@ -31,7 +31,6 @@ import java.util.Map;
 
 public class WelcomeMenuFragment extends Fragment implements View.OnClickListener {
 
-
     private FirebaseAuth userAuth = FirebaseAuth.getInstance();
     private static final String TAG = "WelcomeMenu";
     View view;

@@ -6,62 +6,68 @@
     android:layout_height="match_parent"
     tools:context=".SignUpActivity">
 
-    <ImageView
-        android:id="@+id/user_profile_img"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profile_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_marginTop="32dp"
+        android:src="@drawable/spotifyicon"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/spotifyicon"
-         />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <EditText
         android:id="@+id/sign_up_nickname_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:ems="10"
-        android:inputType="textPersonName"
         android:hint="@string/sign_up_form_nickname"
-        app:layout_constraintEnd_toEndOf="@+id/user_profile_img"
-        app:layout_constraintStart_toStartOf="@+id/user_profile_img"
-        app:layout_constraintTop_toBottomOf="@+id/user_profile_img" />
+        android:inputType="textPersonName"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/profile_image"
+        app:layout_constraintStart_toStartOf="@+id/profile_image"
+        app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
     <EditText
         android:id="@+id/sign_up_email_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:ems="10"
         android:hint="@string/sign_up_form_email"
         android:inputType="textEmailAddress"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="@+id/sign_up_nickname_et"
         app:layout_constraintStart_toStartOf="@+id/sign_up_nickname_et"
         app:layout_constraintTop_toBottomOf="@+id/sign_up_nickname_et" />
 
     <EditText
         android:id="@+id/sign_up_password1_et"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:ems="10"
         android:hint="@string/sign_up_form_password1"
         android:inputType="textPassword"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="@+id/sign_up_email_et"
         app:layout_constraintStart_toStartOf="@+id/sign_up_email_et"
         app:layout_constraintTop_toBottomOf="@+id/sign_up_email_et" />
 
     <EditText
         android:id="@+id/sign_up_password2_et"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:ems="10"
         android:hint="@string/sign_up_form_password_confirm"
         android:inputType="textPassword"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="@+id/sign_up_password1_et"
         app:layout_constraintStart_toStartOf="@+id/sign_up_password1_et"
         app:layout_constraintTop_toBottomOf="@+id/sign_up_password1_et" />
@@ -70,7 +76,7 @@
         android:id="@+id/sign_up_submit_b"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:text="@string/sign_up_submit_b"
         app:layout_constraintEnd_toEndOf="@+id/sign_up_password2_et"
         app:layout_constraintHorizontal_bias="1.0"
