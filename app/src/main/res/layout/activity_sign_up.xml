@@ -21,6 +21,7 @@
 
 
     <EditText
+        android:background="@drawable/edit_text_background"
         android:id="@+id/sign_up_nickname_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,6 +35,7 @@
         app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
     <EditText
+        android:background="@drawable/edit_text_background"
         android:id="@+id/sign_up_email_et"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,7 +50,7 @@
 
     <EditText
         android:id="@+id/sign_up_password1_et"
-
+        android:background="@drawable/edit_text_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -62,7 +64,7 @@
 
     <EditText
         android:id="@+id/sign_up_password2_et"
-
+        android:background="@drawable/edit_text_background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"

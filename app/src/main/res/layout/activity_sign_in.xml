@@ -8,6 +8,7 @@
 
 
     <EditText
+        android:background="@drawable/edit_text_background"
         android:padding="10dp"
         android:id="@+id/signIn_form_email_et"
         android:layout_width="wrap_content"
@@ -22,6 +23,7 @@
         />
 
     <EditText
+        android:background="@drawable/edit_text_background"
         android:padding="10dp"
         android:id="@+id/signIn_form_password_et"
         android:layout_width="wrap_content"

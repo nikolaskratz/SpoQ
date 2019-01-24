@@ -76,28 +76,24 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d("MyTag", "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             updateUI(user);
 
                         } else {
-
                             // If sign in fails, display a message to the user.
                             Log.w("MyTag","signInWithEmail:failure", task.getException());
-                            Toast.makeText(SignInActivity.this, "Authentication failed.",
+                            Toast.makeText(SignInActivity.this, "Wrong email or password!",
                                     Toast.LENGTH_SHORT).show();
                             // create object in shared preferences
-
                         }
-
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(SignInActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
+//  seems to be not useful
+//                        if (!task.isSuccessful()) {
+//                            Toast.makeText(SignInActivity.this, "Authentication failed.",
+//                                    Toast.LENGTH_SHORT).show();
+//                        }
                     }
                 });
-
     }
 
     private boolean validateForm() {

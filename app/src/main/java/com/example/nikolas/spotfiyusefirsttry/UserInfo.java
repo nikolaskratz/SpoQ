@@ -39,7 +39,6 @@ public class UserInfo {
         this.games = new ArrayList<>();
     }
 
-
     public String getNickname() {
         return nickname;
     }
