@@ -19,21 +19,20 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.auth.FirebaseAuthException;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "SignUpActivity_debug";
-    private static int RESULT_LOAD_IMG = 1;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private EditText nicknameEt;
@@ -43,21 +42,34 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private ImageView profileImage;
     private String profileImageString;
 
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+
     private boolean validateForm() {
 
         boolean valid = true;
 
         String nickname = nicknameEt.getText().toString();
         String email = emailEt.getText().toString();
+        String pass1 = passwordEt.getText().toString();
+        String pass2 = verifyPasswordEt.getText().toString();
 
         // NICKNAME
-        if (nickname.length() < 3) {
-            nicknameEt.setError("Too short.");
+        if (nicknameExists()){
+            nicknameEt.setError("This nickname exists.");
+            valid = false;
+        }
+        
+        else if (containsWhitespace(nickname)) {
+            nicknameEt.setError("Whitespaces not allowed.");
+            valid = false;
+        }
+        else if (nickname.length() < 3) {
+            nicknameEt.setError("Must be longer than 3.");
             valid = false;
         }
 
         else if(nickname.length() > 15) {
-            nicknameEt.setError("Too long.");
+            nicknameEt.setError("Must be shorter than 15.");
             valid = false;
         }
 
@@ -72,23 +84,49 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             valid = false;
         }
 
-//        if (TextUtils.isEmpty(email)) {
-//            emailEt.setError("Required.");
-//            valid = false;
-//        } else {
-//            emailEt.setError(null);
-//        }
-//
-//        if (e instanceof FirebaseAuthWeakPasswordException);
-//        String password = passwordEt.getText().toString();
-//        if (TextUtils.isEmpty(password)) {
-//            passwordEt.setError(e.getMessage());
-//            valid = false;
-//        } else {
-//            passwordEt.setError(null);
-//        }
+        //PASSWORD
+        if (!pass1.equals(pass2)) {
+            verifyPasswordEt.setError("Passwords are not matching");
+            valid = false;
+        }
+
+         else if (passwordEt.length() < 6) {
+             passwordEt.setError("Must be longer than 5.");
+             valid = false;
+         }
 
         return valid;
+    }
+
+    private boolean nicknameExists() {
+//        FirebaseOperator.getInstance().readData(database.getReference().child("Identities"), new OnGetDataListener() {
+//            @Override
+//            public void onSuccess(DataSnapshot dataSnapshot) {
+//                Log.d(TAG, "onSuccess: " + dataSnapshot);
+//
+//            }
+//
+//            @Override
+//            public void onStart() {
+//            }
+//
+//            @Override
+//            public void onFailure() {
+//            }
+//        });
+
+        return false;
+    }
+
+    // Check if has whitespaces in a string.
+    private Boolean containsWhitespace(String nickname) {
+
+        for (char ch: nickname.toCharArray()) {
+            if(Character.isWhitespace(ch)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -114,7 +152,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     protected void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
 
-
         if (resultCode == RESULT_OK) {
             try {
                 final Uri imageUri = data.getData();
@@ -125,6 +162,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
                 //profileImage.setImageBitmap(Bitmap.createScaledBitmap(selectedImage,  (int)(selectedImage.getWidth()*0.4), (int)(selectedImage.getHeight()*0.4), false));
                 profileImage.setImageBitmap(selectedImage);
+
                 //converting Bitmap to String stream
                 profileImageString = BitMapToString(selectedImage);
 
@@ -148,42 +186,49 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         else if (i == R.id.profile_image) {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             photoPickerIntent.setType("image/*");
+            int RESULT_LOAD_IMG = 1;
             startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
         }
     }
-
-    // TODO: 29/11/2018 Implement passwords comparision, nickname has to be checked if already exists.
 
     private void createAccount(final String nickname, String email, String password, String verifyPassword) {
         if (!validateForm()) {
             return;
         }
 
-        Log.d("MyTag", "createAccount:" + email);
-        // add validation
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
 
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("MyTag", "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
 
+                            // Sign in success, update UI with the signed - in user's information
+                            FirebaseUser user = mAuth.getCurrentUser();
                             addUserToFirebase(user, nickname, email);
-                            updateUI(user);
+
+                            updateUI();
                         } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("MyTag", "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(SignUpActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
+                                //Firebase validation
+                                try {
+                                    throw task.getException();
+                                }
+                                catch(FirebaseAuthWeakPasswordException e) {
+                                    passwordEt.setError("Weak password");
+                                }
+                                catch(FirebaseAuthInvalidCredentialsException e) {
+                                    emailEt.setError("Wrong format.");
+                                }
+                                catch(FirebaseAuthUserCollisionException e) {
+                                    emailEt.setError("This email exists.");
+                                }
+                                catch(Exception e) {
+                                    Log.e(TAG, e.getMessage());
+                                }
                         }
                     }
                 });
     }
-
     private void addUserToFirebase(FirebaseUser firebaseuser, String nickname, String email ) {
         if  (firebaseuser == null) return;
 
@@ -191,16 +236,17 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         String uid = firebaseuser.getUid();
 
         //create new UserInfo object
-        UserInfo userInfo = new UserInfo(nickname,0,profileImageString, email);
+        UserInfo userInfo = new UserInfo(nickname,0, profileImageString, email);
         mDatabase.child(uid).setValue(userInfo);
 
         // add new identity
         mDatabase = FirebaseDatabase.getInstance().getReference("Identities");
-        mDatabase.child(nickname).setValue(uid);
-        
+        mDatabase.child(nickname).child("uid").setValue(uid);
+        mDatabase.child(nickname).child("nickname").setValue(nickname);
+
     }
 
-    private void updateUI(FirebaseUser user) {
+    private void updateUI() {
         startActivity( new Intent(this, MainAppActivity.class));
     }
 

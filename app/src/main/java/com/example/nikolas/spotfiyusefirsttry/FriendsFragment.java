@@ -48,8 +48,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
         UserManager.getInstance().unregister(this);
     }
 
-    // TODO: 1/4/2019 reset data when signed out / change the friends list structure.
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
