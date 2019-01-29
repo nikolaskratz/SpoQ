@@ -34,9 +34,11 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
         emailEt = findViewById(R.id.signIn_form_email_et);
         passwordEt = findViewById(R.id.signIn_form_password_et);
+
         // Initialize listeners on buttons
         findViewById(R.id.signIn_signIn_b).setOnClickListener(this);
         findViewById(R.id.signIn_signUp_b).setOnClickListener(this);
+        findViewById(R.id.signIn_reset_b).setOnClickListener(this);
     }
 
     // Check if user is signed in (non-null) and update UI accordingly.
@@ -62,6 +64,20 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             }
             else if (i == R.id.signIn_signUp_b) {
                 startActivity( new Intent(this, SignUpActivity.class));
+            }
+            else if ( i == R.id.signIn_reset_b) {
+
+                Log.d("CustomTag", "send mail: ");
+
+                // TODO: 1/29/2019 Create a new activity for reset password   
+                
+//                auth.sendPasswordResetEmail(emailAddress).then(function() {
+//                    // Email sent.
+//                }).catch(function(error) {
+//                    // An error happened.
+//                });
+
+
             }
     }
 

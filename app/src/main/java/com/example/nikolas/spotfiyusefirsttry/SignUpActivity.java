@@ -182,7 +182,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         if (!hasFocus && nicknameEt.length() > 0){
             nicknameExists(nicknameEt.getText().toString());
         }
-
     }
 
     @Override
@@ -251,8 +250,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         // add new identity
         mDatabase = FirebaseDatabase.getInstance().getReference("Identities");
-        mDatabase.child(nickname).child("uid").setValue(uid);
-        mDatabase.child(nickname).child("nickname").setValue(nickname);
+        mDatabase.child(nickname).setValue(uid);
 
     }
 

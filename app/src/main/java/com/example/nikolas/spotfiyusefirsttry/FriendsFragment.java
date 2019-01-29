@@ -57,31 +57,32 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
         searchEt.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                      valueEt = searchEt.getText().toString();
-                        UserManager.getInstance().readData(database.getReference(), new OnGetDataListener() {
+
+                    FirebaseOperator.getInstance().readData(database.getReference().child("Identities").child(valueEt), new OnGetDataListener() {
+
                             @Override
                             public void onSuccess(DataSnapshot dataSnapshot) {
-                                for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
-                                    String userIdentity = (String) messageSnapshot.child(valueEt).getValue();
 
-                                     if(userIdentity != null) {
-                                        if  (UserManager.getInstance().getUserID().equals(userIdentity) )
-                                            Log.d(TAG, "You can't add yourself." );
+                               Object queryResult = dataSnapshot.getValue();
 
-                                        else if (haveFriend(valueEt) ) {
-                                            Log.d(TAG, " You added already this friend." );
-                                        }
-                                        else {
-                                            Log.d(TAG, "onSuccess: " + UserManager.getInstance().getUserID().equals(userIdentity));
-                                            UserManager.getInstance().writeNewFriend(database.getReference().
-                                                    child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
-                                                    child("friends").child(String.valueOf(UserManager.getInstance().
-                                                    userInfo.getFriends().size())), valueEt, userIdentity);
-                                        }
-                                    }
-                                }
+                                     if(queryResult != null) {
+                                         if (UserManager.getInstance().getUserID().equals(queryResult))
+                                             Log.d(TAG, "You can't add yourself.");
+
+                                         else if (haveFriend(valueEt)) {
+                                             Log.d(TAG, " You added already this friend.");
+                                         } else {
+                                             Log.d(TAG, "onSuccess: " + UserManager.getInstance().getUserID().equals(queryResult));
+                                             UserManager.getInstance().writeNewFriend(database.getReference().
+                                                     child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
+                                                     child("friends").child(String.valueOf(UserManager.getInstance().
+                                                     userInfo.getFriends().size())), valueEt, queryResult.toString());
+                                         }
+                                     }
                             }
                             @Override
                             public void onStart() {

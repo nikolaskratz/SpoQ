@@ -19,8 +19,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:background="@drawable/edit_text_background"
@@ -56,5 +55,15 @@
         app:layout_constraintEnd_toEndOf="@+id/signIn_form_password_et"
         app:layout_constraintStart_toStartOf="@+id/signIn_signIn_b"
         app:layout_constraintTop_toBottomOf="@+id/signIn_signIn_b" />
+
+    <Button
+        android:id="@+id/signIn_reset_b"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Reset password"
+        app:layout_constraintEnd_toEndOf="@+id/signIn_signUp_b"
+        app:layout_constraintStart_toStartOf="@+id/signIn_signUp_b"
+        app:layout_constraintTop_toBottomOf="@+id/signIn_signUp_b" />
 
 </android.support.constraint.ConstraintLayout>
