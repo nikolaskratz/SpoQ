@@ -30,7 +30,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
+public class SignUpActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
     private static final String TAG = "SignUpActivity_debug";
     private FirebaseAuth mAuth;
@@ -54,12 +54,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         String pass2 = verifyPasswordEt.getText().toString();
 
         // NICKNAME
-        if (nicknameExists()){
-            nicknameEt.setError("This nickname exists.");
-            valid = false;
-        }
+        // if user exists is an async task. The logic is the onFocusChanged Listener.
         
-        else if (containsWhitespace(nickname)) {
+        if (containsWhitespace(nickname)) {
             nicknameEt.setError("Whitespaces not allowed.");
             valid = false;
         }
@@ -98,24 +95,26 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         return valid;
     }
 
-    private boolean nicknameExists() {
-//        FirebaseOperator.getInstance().readData(database.getReference().child("Identities"), new OnGetDataListener() {
-//            @Override
-//            public void onSuccess(DataSnapshot dataSnapshot) {
-//                Log.d(TAG, "onSuccess: " + dataSnapshot);
-//
-//            }
-//
-//            @Override
-//            public void onStart() {
-//            }
-//
-//            @Override
-//            public void onFailure() {
-//            }
-//        });
+    private boolean nicknameExists(String nickname) {
 
-        return false;
+        FirebaseOperator.getInstance().readData(database.getReference().child("Identities").child(nickname), new OnGetDataListener() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null){
+                    nicknameEt.setError("Nickname in use!");
+                }
+            }
+
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onFailure() {
+            }
+        });
+
+        return true;
     }
 
     // Check if has whitespaces in a string.
@@ -146,6 +145,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         findViewById(R.id.sign_up_submit_b).setOnClickListener(this);
         findViewById(R.id.profile_image).setOnClickListener(this);
+
+        nicknameEt.setOnFocusChangeListener(this);
     }
 
     @Override
@@ -175,6 +176,15 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             Toast.makeText(SignUpActivity.this, "You haven't picked Image",Toast.LENGTH_LONG).show();
         }
     }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (!hasFocus && nicknameEt.length() > 0){
+            nicknameExists(nicknameEt.getText().toString());
+        }
+
+    }
+
     @Override
     public void onClick(View v) {
         int i = v.getId();
@@ -258,6 +268,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         String temp= Base64.encodeToString(b, Base64.DEFAULT);
         return temp;
     }
+
 
 
 }
