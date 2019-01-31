@@ -68,16 +68,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
             else if ( i == R.id.signIn_reset_b) {
 
                 Log.d("CustomTag", "send mail: ");
-
-                // TODO: 1/29/2019 Create a new activity for reset password   
-                
-//                auth.sendPasswordResetEmail(emailAddress).then(function() {
-//                    // Email sent.
-//                }).catch(function(error) {
-//                    // An error happened.
-//                });
-
-
+                startActivity( new Intent(this, PasswordRecoveryActivity.class));
             }
     }
 
