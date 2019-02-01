@@ -29,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Objects;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
@@ -149,6 +150,13 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         nicknameEt.setOnFocusChangeListener(this);
     }
 
+    // Plan for pictures :
+    // Get pic
+    // Croop it
+    // Compress -find best compressing algo
+    // send it to FB
+
+
     @Override
     protected void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
@@ -220,7 +228,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                         } else {
                                 //Firebase validation
                                 try {
-                                    throw task.getException();
+                                    throw Objects.requireNonNull(task.getException());
                                 }
                                 catch(FirebaseAuthWeakPasswordException e) {
                                     passwordEt.setError("Weak password");

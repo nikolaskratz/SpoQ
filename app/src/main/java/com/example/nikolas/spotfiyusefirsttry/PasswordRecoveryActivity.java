@@ -7,10 +7,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Objects;
 
 public class PasswordRecoveryActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -19,14 +20,12 @@ public class PasswordRecoveryActivity extends AppCompatActivity implements View.
     private Button recoveryBt;
     private FirebaseAuth mAuth;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_recovery);
 
         mAuth = FirebaseAuth.getInstance();
-
         emailEt = findViewById(R.id.pass_rec_et);
         recoveryBt = findViewById(R.id.pass_rec_bt);
 
@@ -36,26 +35,25 @@ public class PasswordRecoveryActivity extends AppCompatActivity implements View.
     @Override
     public void onClick(View v) {
         int i = v.getId();
-
         if (i == recoveryBt.getId()) {
-            Log.d(TAG, "onClick:  ACTION");
             sendRecoveryEmail();
         }
     }
 
     private void sendRecoveryEmail() {
         if (emailEt.length() > 0) {
-            String emailAddress = "kojandreas@gmail.com";
-
             mAuth.sendPasswordResetEmail(emailEt.getText().toString())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Log.d(TAG, "Email sent.");
+                            } else {
+                                try {
+                                    throw Objects.requireNonNull(task.getException());
+                                } catch (Exception e) {
+                                    emailEt.setError( e.getLocalizedMessage());
+                                }
                             }
-                        }
-                    });
-        }
+                        }});
+        }}
     }
-}
