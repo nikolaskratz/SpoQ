@@ -1,9 +1,11 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,6 +46,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private String profileImageString;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private Intent CropIntent;
+    private Uri imageUri;
 
     private boolean validateForm() {
 
@@ -156,29 +160,70 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     // Compress -find best compressing algo
     // send it to FB
 
+    private void CropImage() {
+        try {
+            CropIntent = new Intent("com.android.camera.action.CROP");
+            Log.d(TAG, "CropImage:   FAIL" + imageUri);
+            CropIntent.setDataAndType(imageUri, "image/*");
+            CropIntent.putExtra("crop","true");
+            CropIntent.putExtra("outputX", 180);
+            CropIntent.putExtra("outputY", 180);
+            CropIntent.putExtra("aspectX", 3);
+            CropIntent.putExtra("aspectY", 4);
+            CropIntent.putExtra("scaleUpIfNeeded", true);
+            CropIntent.putExtra("return-data", true);
+
+            startActivityForResult(CropIntent,1 );
+        }
+        catch (ActivityNotFoundException ex) {
+            Log.d(TAG, "CropImage:   exception");
+        }
+    }
 
     @Override
     protected void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: res " + resultCode );
+        Log.d(TAG, "onActivityResult: req " + reqCode );
 
-        if (resultCode == RESULT_OK) {
-            try {
-                final Uri imageUri = data.getData();
-                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
 
-                // TODO: 1/24/2019 implement better solution for profile image. Another thread? Compressing after pressing sing up? Cropping?
+        if (resultCode == -1 && reqCode == 1) {
+            CropImage();
+        }
+        else if (reqCode == 2 ) {
+            imageUri = data.getData();
+        }
+        else if (reqCode == 1) {
+                if(data != null){
+                    Bundle bundle = data.getExtras();
+                    Bitmap bitmap = bundle.getParcelable("data");
+                    profileImage.setImageBitmap(bitmap);
+                }
 
-                //profileImage.setImageBitmap(Bitmap.createScaledBitmap(selectedImage,  (int)(selectedImage.getWidth()*0.4), (int)(selectedImage.getHeight()*0.4), false));
-                profileImage.setImageBitmap(selectedImage);
 
-                //converting Bitmap to String stream
-                profileImageString = BitMapToString(selectedImage);
 
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                Toast.makeText(SignUpActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
-            }
+//            try {
+//
+//                imageUri = data.getData();
+//                Log.d(TAG, "onActivityResult 1: " + imageUri);
+//                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+//                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+//                Log.d(TAG, "onActivityResult 2: " + imageUri);
+//                // TODO: 1/24/2019 implement better solution for profile image. Another thread? Compressing after pressing sing up? Cropping?
+//
+//                //profileImage.setImageBitmap(Bitmap.createScaledBitmap(selectedImage,  (int)(selectedImage.getWidth()*0.4), (int)(selectedImage.getHeight()*0.4), false));
+//                CropImage();
+//                profileImage.setImageBitmap(selectedImage);
+//
+//                //converting Bitmap to String stream
+//                //profileImageString = BitMapToString(selectedImage);
+//
+//
+//
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//                Toast.makeText(SignUpActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+//            }
 
         }else {
             Toast.makeText(SignUpActivity.this, "You haven't picked Image",Toast.LENGTH_LONG).show();
