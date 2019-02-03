@@ -29,9 +29,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.Objects;
+
+// TODO: 2/3/2019  add on focus change listener to email edittext and call async the auth
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
@@ -43,6 +43,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private EditText passwordEt;
     private EditText verifyPasswordEt;
     private ImageView profileImage;
+
+    // TODO: 2/3/2019 this sting must have default vale => default profile picture should be loaded from this
     private String profileImageString;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -154,22 +156,16 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         nicknameEt.setOnFocusChangeListener(this);
     }
 
-    // Plan for pictures :
-    // Get pic
-    // Croop it
-    // Compress -find best compressing algo
-    // send it to FB
-
     private void CropImage() {
         try {
+
             CropIntent = new Intent("com.android.camera.action.CROP");
-            Log.d(TAG, "CropImage:   FAIL" + imageUri);
             CropIntent.setDataAndType(imageUri, "image/*");
             CropIntent.putExtra("crop","true");
             CropIntent.putExtra("outputX", 180);
             CropIntent.putExtra("outputY", 180);
-            CropIntent.putExtra("aspectX", 3);
-            CropIntent.putExtra("aspectY", 4);
+            CropIntent.putExtra("aspectX", 2);
+            CropIntent.putExtra("aspectY", 2);
             CropIntent.putExtra("scaleUpIfNeeded", true);
             CropIntent.putExtra("return-data", true);
 
@@ -179,54 +175,31 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             Log.d(TAG, "CropImage:   exception");
         }
     }
-
+    // request code for crop intent, activity for result = 1
     @Override
     protected void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
-        Log.d(TAG, "onActivityResult: res " + resultCode );
-        Log.d(TAG, "onActivityResult: req " + reqCode );
 
-
-        if (resultCode == -1 && reqCode == 1) {
+        if (resultCode == -1 && reqCode == 2) {
+            imageUri = data.getData();
             CropImage();
         }
-        else if (reqCode == 2 ) {
-            imageUri = data.getData();
-        }
         else if (reqCode == 1) {
-                if(data != null){
-                    Bundle bundle = data.getExtras();
-                    Bitmap bitmap = bundle.getParcelable("data");
-                    profileImage.setImageBitmap(bitmap);
-                }
+            if(data != null){
+                Bundle bundle = data.getExtras();
+                assert bundle != null;
+                Bitmap bitmap = bundle.getParcelable("data");
 
+                assert bitmap != null;
 
+                // create an array of bytes , compress the profile, set the profile picture
+                ByteArrayOutputStream baos = new  ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.WEBP,100,baos);
+                profileImage.setImageBitmap(bitmap);
 
-//            try {
-//
-//                imageUri = data.getData();
-//                Log.d(TAG, "onActivityResult 1: " + imageUri);
-//                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-//                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-//                Log.d(TAG, "onActivityResult 2: " + imageUri);
-//                // TODO: 1/24/2019 implement better solution for profile image. Another thread? Compressing after pressing sing up? Cropping?
-//
-//                //profileImage.setImageBitmap(Bitmap.createScaledBitmap(selectedImage,  (int)(selectedImage.getWidth()*0.4), (int)(selectedImage.getHeight()*0.4), false));
-//                CropImage();
-//                profileImage.setImageBitmap(selectedImage);
-//
-//                //converting Bitmap to String stream
-//                //profileImageString = BitMapToString(selectedImage);
-//
-//
-//
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//                Toast.makeText(SignUpActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
-//            }
-
-        }else {
-            Toast.makeText(SignUpActivity.this, "You haven't picked Image",Toast.LENGTH_LONG).show();
+                byte [] b = baos.toByteArray();
+                profileImageString = Base64.encodeToString(b, Base64.DEFAULT);
+            }
         }
     }
 
@@ -248,8 +221,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         else if (i == R.id.profile_image) {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             photoPickerIntent.setType("image/*");
-            int RESULT_LOAD_IMG = 1;
-            startActivityForResult(photoPickerIntent, RESULT_LOAD_IMG);
+            startActivityForResult(photoPickerIntent, 2);
         }
     }
 
@@ -311,15 +283,23 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         startActivity( new Intent(this, MainAppActivity.class));
     }
 
-    public String BitMapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos = new  ByteArrayOutputStream();
-        // quality  100 = best quality, 0 = worst quality
-        bitmap.compress(Bitmap.CompressFormat.PNG,30, baos);
-        byte [] b=baos.toByteArray();
-        String temp= Base64.encodeToString(b, Base64.DEFAULT);
-        return temp;
-    }
-
-
-
 }
+
+
+/*
+Convert Bitmap to ByteArray:-
+
+Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+ByteArrayOutputStream stream = new ByteArrayOutputStream();
+bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+byte[] byteArray = stream.toByteArray();
+
+Convert ByteArray to Bitmap:-
+
+Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+ImageView image = (ImageView) findViewById(R.id.imageView1);
+
+image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(),
+                image.getHeight(), false));
+
+ */
