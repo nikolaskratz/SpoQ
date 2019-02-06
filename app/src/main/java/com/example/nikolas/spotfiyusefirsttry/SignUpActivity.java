@@ -31,8 +31,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.io.ByteArrayOutputStream;
 import java.util.Objects;
 
-// TODO: 2/3/2019  add on focus change listener to email edittext and call async the auth
-
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener, View.OnFocusChangeListener {
 
     private static final String TAG = "SignUpActivity_debug";
@@ -284,7 +282,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 }
-
 
 /*
 Convert Bitmap to ByteArray:-
