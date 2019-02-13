@@ -76,11 +76,10 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
                                          else if (haveFriend(valueEt)) {
                                              Log.d(TAG, " You added already this friend.");
                                          } else {
-                                             Log.d(TAG, "onSuccess: " + UserManager.getInstance().getUserID().equals(queryResult));
+
                                              UserManager.getInstance().writeNewFriend(database.getReference().
                                                      child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
-                                                     child("friends").child(String.valueOf(UserManager.getInstance().
-                                                     userInfo.getFriends().size())), valueEt, queryResult.toString());
+                                                     child("friends").child(valueEt), valueEt, queryResult.toString());
                                          }
                                      }
                             }
@@ -101,6 +100,10 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
         });
 
         initRecyclerView();
+
+    }
+
+    private void getProfile() {
 
     }
 
@@ -125,12 +128,13 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
         }
     }
 
+    // TODO: 13/2/19 after changing friend structure it has to be reimplemented
     // method checking if user has already friend in his list
     private boolean haveFriend(String nickname) {
-        for (Friend a : UserManager.getInstance().userInfo.getFriends()) {
-            if(a.getNickname().equals(nickname))
-            return true;
-        }
+//        for (Friend a : UserManager.getInstance().userInfo.getFriendsHash())) {
+//            if(a.getNickname().equals(nickname))
+//            return true;
+//        }
         return false;
     }
 }

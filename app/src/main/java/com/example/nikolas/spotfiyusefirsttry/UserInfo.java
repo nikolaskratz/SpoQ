@@ -1,5 +1,7 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +12,7 @@ public class UserInfo {
     private int points;
     private String profileImg;
     private String email;
-    private ArrayList<Friend> friends;
+    private HashMap<String,Friend> friends;
     private ArrayList<Object> games;
     private Map<String,QuizResult> results;
 
@@ -21,22 +23,20 @@ public class UserInfo {
         this.points = points;
         this.profileImg = profileImg;
         this.email=email;
-        this.friends = new ArrayList<>();
+
+        this.friends = new HashMap<String,Friend>();
         this.games = new ArrayList<>();
-
-        //only for debuggin purpose i am adding hardcoded friends here, later it will be via the
-        // fragment
-        friends.add(new Friend("5CJQUtHyefdGeGKTKdpZoNEL04G2","a1"));
-        friends.add(new Friend("Hc4Xpv88wYQWG3QoSqo0qjpov4r2","a2"));
-        friends.add(new Friend("0test0","t0-dont use"));
-
         this.results = new HashMap<String,QuizResult>();
     }
 
     public UserInfo(){
         this.results = new HashMap<String,QuizResult>();
-        this.friends = new ArrayList<>();
+        this.friends = new HashMap<String,Friend>();
         this.games = new ArrayList<>();
+    }
+
+    public HashMap<String, Friend> getFriends() {
+        return friends;
     }
 
     public String getNickname() {
@@ -51,13 +51,13 @@ public class UserInfo {
         return profileImg;
     }
 
-    public ArrayList<Friend> getFriends() {
-        return friends;
-    }
-
-//    public List<String> getGames() {
-//        return games;
+//    public ArrayList<Friend> getFriends() {
+//        return friends;
 //    }
+
+    //    public List<String> getGames() {
+    //        return games;
+    //    }
 
     public Map<String,QuizResult> getResults() {
         return results;

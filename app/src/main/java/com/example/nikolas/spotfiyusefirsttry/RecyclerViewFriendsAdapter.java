@@ -16,12 +16,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+//import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerViewFriendsAdapter.ViewHolder>{
     private static final String TAG = "RecyclerViewFriendsAdap";
-    private ArrayList<Friend> friends;
+    private HashMap<String,Friend> friends;
     private ArrayList<String> profilePictures;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -30,36 +31,11 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
     View.OnClickListener onClickListener;
 
     public RecyclerViewFriendsAdapter(View.OnClickListener onClickListener) {
+        Log.d(TAG, "RecyclerViewFriendsAdapter: TEXT" + UserManager.getInstance().getUserInfo().getFriends());
         this.onClickListener = onClickListener;
         profilePictures = new ArrayList<>();
         this.friends = UserManager.getInstance().getUserInfo().getFriends();
 
-        // get all the profile pictures
-        for (Friend friend:friends) {
-            FirebaseOperator.getInstance().readData(database.getReference().child("Users").child(friend.getUserID()).child("profileImg"), new OnGetDataListener() {
-                @Override
-                public void onSuccess(DataSnapshot dataSnapshot) {
-                    //Log.d(TAG, "RecyclerViewFriendsAdapter: " + dataSnapshot.getValue());
-                    if( dataSnapshot.getValue() != null){
-                        //Log.d(TAG, "RecyclerViewFriendsAdapter: 2 " + dataSnapshot.getValue());
-
-                        profilePictures.add(dataSnapshot.getValue().toString());
-
-                    }
-                }
-
-                @Override
-                public void onStart() {
-
-                }
-
-                @Override
-                public void onFailure() {
-
-                }
-            });
-
-        }
     }
 
     @NonNull
@@ -77,9 +53,23 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
             Log.d(TAG, "Profiles:" + picture);
         }
 
-        viewHolder.userName.setText(friends.get(i).getNickname());
 
-        viewHolder.profilePicture.setImageBitmap(toBitmap(profilePictures.get(i).getBytes()));
+        /*
+         LinkedHashMap<String,String> linkedHashMap = new LinkedHashMap<String,String>();
+
+        linkedHashMap.put("key0","value0");
+        linkedHashMap.put("key1","value1");
+        linkedHashMap.put("key2","value2");
+
+        int pos = 1;
+        String value = (new ArrayList<String>(linkedHashMap.values())).get(pos);
+         */
+
+
+        // change data structure to LinkedHashMap
+        viewHolder.userName.setText(friends.get("Andreas").getNickname());
+
+        //viewHolder.profilePicture.setImageBitmap(toBitmap(profilePictures.get(i).getBytes()));
 
 
 
@@ -93,14 +83,14 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
 
     public class  ViewHolder extends RecyclerView.ViewHolder {
 
-        CircleImageView profilePicture;
+        //CircleImageView profilePicture;
         TextView userName;
         ConstraintLayout elementLayout;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             userName = itemView.findViewById(R.id.recyclerFriends_userName);
-            profilePicture = itemView.findViewById(R.id.recyclerFriends_profilePicture);
+            //profilePicture = itemView.findViewById(R.id.recyclerFriends_profilePicture);
             elementLayout = itemView.findViewById(R.id.recyclerFriends_layout);
         }
     }
