@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 //import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -25,10 +26,19 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
     private HashMap<String,Friend> friends;
     private ArrayList<String> profilePictures;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-
+    private HashMap<String,String> modelList;
 
     Bitmap profileBmp;
     View.OnClickListener onClickListener;
+
+    public static void printMap(HashMap mp) {
+        Iterator it = mp.entrySet().iterator();
+        while (it.hasNext()) {
+            HashMap.Entry pair = (HashMap.Entry)it.next();
+            Log.d(TAG, "printMap:" + pair.getKey() + " = " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+    }
 
     public RecyclerViewFriendsAdapter(View.OnClickListener onClickListener) {
         Log.d(TAG, "RecyclerViewFriendsAdapter: TEXT" + UserManager.getInstance().getUserInfo().getFriends());
@@ -36,6 +46,9 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
         profilePictures = new ArrayList<>();
         this.friends = UserManager.getInstance().getUserInfo().getFriends();
 
+        //Log.d(TAG, "TEST " + friends.entrySet().iterator().);
+        //this is temporary solution
+        printMap(friends);
     }
 
     @NonNull
@@ -49,29 +62,12 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
 
-        for (String picture:profilePictures) {
+        for (String picture:profilePictures)
             Log.d(TAG, "Profiles:" + picture);
         }
-
-
-        /*
-         LinkedHashMap<String,String> linkedHashMap = new LinkedHashMap<String,String>();
-
-        linkedHashMap.put("key0","value0");
-        linkedHashMap.put("key1","value1");
-        linkedHashMap.put("key2","value2");
-
-        int pos = 1;
-        String value = (new ArrayList<String>(linkedHashMap.values())).get(pos);
-         */
-
-
+        Log.d(TAG, "onBindViewHolder: ");
         // change data structure to LinkedHashMap
-        viewHolder.userName.setText(friends.get("Andreas").getNickname());
-
-        //viewHolder.profilePicture.setImageBitmap(toBitmap(profilePictures.get(i).getBytes()));
-
-
+        viewHolder.userName.setText(friends.get("a1").getNickname());
 
         viewHolder.elementLayout.setOnClickListener(onClickListener);
     }
@@ -102,4 +98,5 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
         //image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(), image.getHeight(), false));
         return bmp;
     }
+
 }

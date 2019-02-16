@@ -93,7 +93,7 @@ public class UserManager extends Application implements Subject {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 userInfo = dataSnapshot.getValue(UserInfo.class);
-                Log.d(TAG, "onDataChange: "+ userInfo.getFriends());
+                 Log.d(TAG, "onDataChange: "+ userInfo.getFriends());
                 notifyObservers();
             }
 

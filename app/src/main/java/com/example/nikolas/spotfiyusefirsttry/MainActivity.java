@@ -58,21 +58,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         //Main activity instance for later use in other classes via MainAcitvity.getInstance()
         ins=this;
 
-
-
-        
         setUpAuthentication();
 
         setUpBroadcast();
 
         setUpButtons();
-
-
     }
 
     public void getPlaylistTracks(String playlistID, String playlistUser, final GamePlayManager gamePlayManager)  {
@@ -332,8 +325,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
     //init the broadcastreceiver
     public void setUpBroadcast(){

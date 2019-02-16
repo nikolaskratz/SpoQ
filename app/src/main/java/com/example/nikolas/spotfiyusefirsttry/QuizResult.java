@@ -8,6 +8,7 @@ public class QuizResult {
     String p1Name;
     String p2Name;
 
+
     public QuizResult(int pointsP1,String quizID,String p1Name, String p2Name) {
         this.pointsP1 = pointsP1;
         this.quizID=quizID;
