@@ -13,19 +13,30 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 public class QuizLobbyActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "QuizLobbyActivity_debug";
     RecyclerView recyclerView;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private HashMap<String,Friend> friends;
+    private  ArrayList keys;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        this.friends = UserManager.getInstance().getUserInfo().getFriends();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz_lobby);
+        keys = new ArrayList<String>(friends.keySet());
 
         initRecyclerView();
+
     }
 
     private void initRecyclerView() {
@@ -41,7 +52,7 @@ public class QuizLobbyActivity extends AppCompatActivity implements View.OnClick
         int itemPosition = recyclerView.getChildAdapterPosition(v);
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        String friend = UserManager.getInstance().getUserInfo().getFriends().get(itemPosition).getNickname();
+        String friend = keys.get(itemPosition).toString() ;
 
         Intent intent = new Intent(this, PlaylistSelect.class);
 
@@ -53,6 +64,8 @@ public class QuizLobbyActivity extends AppCompatActivity implements View.OnClick
                     if(userIdentity != null) {
                         intent.putExtra("me", userID);
                         intent.putExtra("vs", userIdentity);
+                        Log.d(TAG, "onSuccess: " + userID);
+                        Log.d(TAG, "onSuccess: " + userIdentity);
                         startActivity(intent);
                     }
             }}

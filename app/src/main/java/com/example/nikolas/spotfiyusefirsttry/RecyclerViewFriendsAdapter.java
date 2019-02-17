@@ -9,15 +9,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 //import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -26,29 +25,19 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
     private HashMap<String,Friend> friends;
     private ArrayList<String> profilePictures;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private HashMap<String,String> modelList;
+    private Iterator<Map.Entry<String, Friend>> iter;
+
 
     Bitmap profileBmp;
     View.OnClickListener onClickListener;
 
-    public static void printMap(HashMap mp) {
-        Iterator it = mp.entrySet().iterator();
-        while (it.hasNext()) {
-            HashMap.Entry pair = (HashMap.Entry)it.next();
-            Log.d(TAG, "printMap:" + pair.getKey() + " = " + pair.getValue());
-            it.remove(); // avoids a ConcurrentModificationException
-        }
-    }
 
     public RecyclerViewFriendsAdapter(View.OnClickListener onClickListener) {
-        Log.d(TAG, "RecyclerViewFriendsAdapter: TEXT" + UserManager.getInstance().getUserInfo().getFriends());
+        //Log.d(TAG, "RecyclerViewFriendsAdapter: TEXT" + UserManager.getInstance().getUserInfo().getFriends().keySet().iterator().next());
         this.onClickListener = onClickListener;
         profilePictures = new ArrayList<>();
         this.friends = UserManager.getInstance().getUserInfo().getFriends();
-
-        //Log.d(TAG, "TEST " + friends.entrySet().iterator().);
-        //this is temporary solution
-        printMap(friends);
+        iter = friends.entrySet().iterator();
     }
 
     @NonNull
@@ -62,12 +51,11 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
 
-        for (String picture:profilePictures)
-            Log.d(TAG, "Profiles:" + picture);
+        if(iter.hasNext()){
+            Map.Entry<String, Friend> pair = (Map.Entry<String, Friend>) iter.next();
+            Log.d(TAG, "onBindViewHolder:  " + pair.getKey() + " = " + pair.getValue() );
+            viewHolder.userName.setText(pair.getKey());
         }
-        Log.d(TAG, "onBindViewHolder: ");
-        // change data structure to LinkedHashMap
-        viewHolder.userName.setText(friends.get("a1").getNickname());
 
         viewHolder.elementLayout.setOnClickListener(onClickListener);
     }
