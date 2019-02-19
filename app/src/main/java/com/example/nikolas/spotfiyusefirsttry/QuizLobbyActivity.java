@@ -19,17 +19,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class QuizLobbyActivity extends AppCompatActivity implements View.OnClickListener{
+public class QuizLobbyActivity extends AppCompatActivity implements View.OnClickListener, Observer{
 
     private static final String TAG = "QuizLobbyActivity_debug";
     RecyclerView recyclerView;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private HashMap<String,Friend> friends;
     private  ArrayList keys;
+    private boolean updatedView = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        UserManager.getInstance().register(this);
         this.friends = UserManager.getInstance().getUserInfo().getFriends();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz_lobby);
@@ -38,6 +40,11 @@ public class QuizLobbyActivity extends AppCompatActivity implements View.OnClick
         initRecyclerView();
 
     }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        UserManager.getInstance().unregister(this);
+    }
 
     private void initRecyclerView() {
         recyclerView = findViewById(R.id.lobby_recycler_view);
@@ -45,7 +52,6 @@ public class QuizLobbyActivity extends AppCompatActivity implements View.OnClick
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
-
 
     @Override
     public void onClick(View v) {
@@ -56,7 +62,8 @@ public class QuizLobbyActivity extends AppCompatActivity implements View.OnClick
 
         Intent intent = new Intent(this, PlaylistSelect.class);
 
-        UserManager.getInstance().readData(database.getReference(), new OnGetDataListener() {
+
+        FirebaseOperator.getInstance().readData(database.getReference(), new OnGetDataListener() {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
                 for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
@@ -69,14 +76,26 @@ public class QuizLobbyActivity extends AppCompatActivity implements View.OnClick
                         startActivity(intent);
                     }
             }}
+
             @Override
             public void onStart() {
+
             }
 
             @Override
             public void onFailure() {
+
             }
         });
+
     }
 
+    @Override
+    public void update(boolean checked) {
+        updatedView = checked;
+        if(updatedView){
+            updatedView = false;
+            initRecyclerView();
+        }
+    }
 }

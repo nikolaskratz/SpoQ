@@ -21,7 +21,6 @@ import java.util.concurrent.CountDownLatch;
 
 public class UserManager extends Application implements Subject {
 
-
     //private static final UserManager ourInstance = new UserManager();
     private static  UserManager ourInstance;
 
@@ -81,8 +80,8 @@ public class UserManager extends Application implements Subject {
         });
     }
 
-    public void writeNewFriend(DatabaseReference ref, String userID , String nickname ) {
-        ref.setValue(new Friend(nickname,userID));
+    public void writeNewFriend(DatabaseReference ref, String userID , String nickname, String profile ) {
+        ref.setValue(new Friend(nickname,userID,profile));
     }
 
     // returns all information about currently logged in user
@@ -145,16 +144,6 @@ public class UserManager extends Application implements Subject {
     public void notifyObservers() {
         for (final Observer observer : observers) {
             observer.update(statusChanged = true);
-        }
-    }
-    public Bitmap StringToBitMap(String encodedString){
-        try {
-            byte [] encodeByte= Base64.decode(encodedString,Base64.DEFAULT);
-            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
-        } catch(Exception e) {
-            e.getMessage();
-            return null;
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,15 +15,22 @@ import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.util.Base64;
 
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Objects;
 
 
 public class FriendsFragment extends Fragment implements View.OnClickListener, Observer {
 
     private static final String TAG = "FriendsFragment_debug";
+    Bitmap bmp;
+    String profileString;
     private RecyclerViewFriendsAdapter friendsListAdapter;
     private boolean updatedView = false;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -32,7 +41,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-                // Inflate the layout for this fragment
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
         // register observer
@@ -67,6 +76,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
                             @Override
                             public void onSuccess(DataSnapshot dataSnapshot) {
 
+                                //queryResult stores userID of the user typed in the input box, null if the user doesn't exist
                                Object queryResult = dataSnapshot.getValue();
 
                                      if(queryResult != null) {
@@ -77,9 +87,35 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
                                              Log.d(TAG, " You added already this friend.");
                                          } else {
 
-                                             UserManager.getInstance().writeNewFriend(database.getReference().
-                                                     child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
-                                                     child("friends").child(valueEt), valueEt, queryResult.toString());
+                                             //getProfilePicture(queryResult.toString());
+                                             //Log.d(TAG, "Bmp: " + profileString);
+
+                                             FirebaseOperator.getInstance().readData(database.getReference().child("Users")
+                                                     .child(queryResult.toString()).child("profileImg"), new OnGetDataListener() {
+                                                 @Override
+                                                 public void onSuccess(DataSnapshot dataSnapshot) {
+
+                                                     profileString = dataSnapshot.getValue().toString();
+
+
+                                                     UserManager.getInstance().writeNewFriend(database.getReference().
+                                                             child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
+                                                             child("friends").child(valueEt), valueEt, queryResult.toString(), profileString);
+
+                                                 }
+
+                                                 @Override
+                                                 public void onStart() {
+
+                                                 }
+
+                                                 @Override
+                                                 public void onFailure() {
+
+                                                 }
+                                             });
+
+
                                          }
                                      }
                             }
@@ -136,5 +172,9 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
 //            return true;
 //        }
         return false;
+    }
+
+    private void getProfilePicture(String userID) {
+
     }
 }

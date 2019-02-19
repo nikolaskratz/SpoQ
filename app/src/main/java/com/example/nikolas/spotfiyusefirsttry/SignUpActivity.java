@@ -170,7 +170,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             startActivityForResult(CropIntent,1 );
         }
         catch (ActivityNotFoundException ex) {
-            Log.d(TAG, "CropImage:   exception");
+            Log.d(TAG, "CropImage: exception");
         }
     }
     // request code for crop intent, activity for result = 1
@@ -263,6 +263,10 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
     private void addUserToFirebase(FirebaseUser firebaseuser, String nickname, String email ) {
         if  (firebaseuser == null) return;
+
+
+        //TEMPORARY
+        if(profileImageString == null) profileImageString = "XXX";
 
         //get user ID from firebase auth.
         String uid = firebaseuser.getUid();
