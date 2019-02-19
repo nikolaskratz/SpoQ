@@ -10,21 +10,34 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.ArrayList;
 
 public class RecyclerViewResultAdapter extends RecyclerView.Adapter<RecyclerViewResultAdapter.ViewHolder> {
 //    private ArrayList<String> vsData;
+    private static ClickListener clickListener;
     private ArrayList<Integer> p1Points;
     private ArrayList<Integer> p2Points;
     private ArrayList<String> p1;
     private ArrayList<String> p2;
+    private ArrayList<String> p1ID;
+    private ArrayList<String> p2ID;
+
+    private String userID;
 
     public RecyclerViewResultAdapter(ArrayList<Integer> p1Points, ArrayList<Integer> p2Points,
-                                     ArrayList<String> p1, ArrayList<String> p2) {
+                                     ArrayList<String> p1, ArrayList<String> p2,
+                                     ArrayList<String> p1ID, ArrayList<String> p2ID) {
         this.p1Points = p1Points;
         this.p2Points = p2Points;
         this.p1 = p1;
         this.p2 = p2;
+        this.p1ID=p1ID;
+        this.p2ID=p2ID;
+
+        FirebaseAuth userAuth = FirebaseAuth.getInstance();
+        userID = userAuth.getCurrentUser().getUid();
     }
 
     @Override
@@ -40,52 +53,73 @@ public class RecyclerViewResultAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
+        Log.d("recyclerviewadapt", "positition: "+position);
+        if(p2Points.get(position)==310) {
+            viewHolder.vs.setText("Waiting for "+p2.get(position)+" to play...");
+        } else if(userID.equals(p1ID.get(position))) {
+            if(p1Points.get(position)<p2Points.get(position)){
+                viewHolder.vs.setText("Loss against "+p2.get(position)+"!");
+                Log.d("losscheck", "p2posi; p2points:"+p2Points.get(position));
+
+            } else if (p1Points.get(position)>p2Points.get(position)){
+                viewHolder.vs.setText("Victory against "+p2.get(position)+"!");
+            } else viewHolder.vs.setText("Draw against "+p2.get(position)+"!");
+        } else {
+            if(p1Points.get(position)<p2Points.get(position)){
+                viewHolder.vs.setText("Victory against "+p1.get(position)+"!");
+            } else if (p1Points.get(position)>p2Points.get(position)) {
+                viewHolder.vs.setText("Loss" + " against "+p1.get(position)+"!");
+            } else viewHolder.vs.setText("Draw" + " against "+p1.get(position)+"!");
+        }
 
 //        viewHolder.vsPlayer.setText(vsData.get(position));
         Log.d("setup", "nameP1:"+p1.get(position)+" pointsP1:"+p1Points.get(position));
-        viewHolder.nameP1.setText(p1.get(position));
-        viewHolder.nameP2.setText(p2.get(position));
-        viewHolder.pointsP1.setText(""+p1Points.get(position));
-        viewHolder.pointsP2.setText(""+p2Points.get(position));
+//        viewHolder.nameP1.setText(p1.get(position));
+//        viewHolder.nameP2.setText(p2.get(position));
+//        viewHolder.pointsP1.setText(""+p1Points.get(position));
+//        viewHolder.pointsP2.setText(""+p2Points.get(position));
 
 
     }
 
-//    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-//        public TextView vsPlayer;
-        public TextView nameP1;
-        public TextView nameP2;
-        public TextView pointsP1;
-        public TextView pointsP2;
+        public TextView vs;
+//        public TextView nameP1;
+//        public TextView nameP2;
+//        public TextView pointsP1;
+//        public TextView pointsP2;
 
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
-            nameP1 = (TextView) itemLayoutView.findViewById(R.id.nameP1);
-            nameP2 = (TextView) itemLayoutView.findViewById(R.id.nameP2);
-            pointsP1 = (TextView) itemLayoutView.findViewById(R.id.pointsP1);
-            pointsP2 = (TextView) itemLayoutView.findViewById(R.id.pointsP2);
+            itemView.setOnClickListener(this);
+//            nameP1 = (TextView) itemLayoutView.findViewById(R.id.nameP1);
+//            nameP2 = (TextView) itemLayoutView.findViewById(R.id.nameP2);
+//            pointsP1 = (TextView) itemLayoutView.findViewById(R.id.pointsP1);
+//            pointsP2 = (TextView) itemLayoutView.findViewById(R.id.pointsP2);
+            vs = (TextView) itemLayoutView.findViewById(R.id.vs);
         }
 
-//        @Override
-//        public void onClick(View view) {
-//            clickListener.onItemClick(getAdapterPosition(), view);
-//        }
+        @Override
+        public void onClick(View view) {
+            clickListener.onItemClick(getAdapterPosition(), view);
+        }
 
     }
 
     @Override
     public int getItemCount() {
+
         return p1Points.size();
+
     }
 
-//    public void setOnItemClickListener(ClickListener clickListener) {
-//        RecyclerViewInvitationAdapter.clickListener = clickListener;
-//    }
-//
-//    public interface ClickListener {
-//        void onItemClick(int position, View v);
-////        void onItemLongClick(int position, View v);
-//    }
+    public void setOnItemClickListener(ClickListener clickListener) {
+        RecyclerViewResultAdapter.clickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        void onItemClick(int position, View v);
+//        void onItemLongClick(int position, View v);
+    }
 }

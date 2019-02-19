@@ -13,6 +13,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
@@ -45,6 +46,7 @@ public class QuizSummary extends AppCompatActivity {
         setButtons();
         if(!getIntent().getExtras().getBoolean("invite")){
             quizResult = new QuizResult(points,quizID,me,vs);
+            quizResult.setPointsP2(310);
             sendQuiz();
             sendInvitation();
         } else {
@@ -100,6 +102,8 @@ public class QuizSummary extends AppCompatActivity {
 
         DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Users").child(me);
         myRef2.child("results").child(quizID).setValue(quizResult);
+        myRef2.child("results").child(quizID).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
     }
 
     void sendInvitation(){
@@ -122,9 +126,11 @@ public class QuizSummary extends AppCompatActivity {
 
         DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Users").child(me);
         myRef2.child("results").child(quizIDrev).setValue(quizResult);
+        myRef2.child("results").child(quizIDrev).child("timestamp").setValue(ServerValue.TIMESTAMP);
 
         DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("Users").child(vs);
         myRef3.child("results").child(quizIDrev).setValue(quizResult);
+        myRef3.child("results").child(quizIDrev).child("timestamp").setValue(ServerValue.TIMESTAMP);
     }
 
     void removeInvite(){

@@ -1,5 +1,7 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import java.sql.Timestamp;
+
 public class QuizResult {
 
     int pointsP1;
@@ -7,6 +9,7 @@ public class QuizResult {
     String quizID;
     String p1Name;
     String p2Name;
+    Long timestamp;
 
 
     public QuizResult(int pointsP1,String quizID,String p1Name, String p2Name) {
@@ -39,5 +42,13 @@ public class QuizResult {
 
     public String getP2Name() {
         return p2Name;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 }

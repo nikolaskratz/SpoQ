@@ -17,4 +17,24 @@
         <item name="android:background">@drawable/button_pressed_correct</item>
     </style>
 
+    <style name="QuizResultDialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowBackground">@drawable/dialog_border</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowTitleStyle">@style/QRDTitle</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+    </style>
+
+
+    <style name="QRDTitle">
+        <item name="android:textColor">@color/SongButtonColor</item>
+        <item name="android:textSize">30dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
