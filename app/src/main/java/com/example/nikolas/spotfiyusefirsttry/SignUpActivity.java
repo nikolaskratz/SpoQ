@@ -3,9 +3,7 @@ package com.example.nikolas.spotfiyusefirsttry;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,7 +14,6 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -44,7 +41,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     // TODO: 2/3/2019 this sting must have default vale => default profile picture should be loaded from this
     private String profileImageString;
-
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private Intent CropIntent;
     private Uri imageUri;
@@ -264,9 +260,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private void addUserToFirebase(FirebaseUser firebaseuser, String nickname, String email ) {
         if  (firebaseuser == null) return;
 
-
         //TEMPORARY
-        if(profileImageString == null) profileImageString = "XXX";
+        if(profileImageString == null) profileImageString = "default";
 
         //get user ID from firebase auth.
         String uid = firebaseuser.getUid();
@@ -286,21 +281,3 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 }
-
-/*
-Convert Bitmap to ByteArray:-
-
-Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
-ByteArrayOutputStream stream = new ByteArrayOutputStream();
-bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-byte[] byteArray = stream.toByteArray();
-
-Convert ByteArray to Bitmap:-
-
-Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-ImageView image = (ImageView) findViewById(R.id.imageView1);
-
-image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(),
-                image.getHeight(), false));
-
- */

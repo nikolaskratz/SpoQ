@@ -23,6 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -139,10 +140,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
 
     }
 
-    private void getProfile() {
-
-    }
-
     public void initRecyclerView() {
         recyclerView = getView().findViewById(R.id.friends_recycler_view);
         friendsListAdapter = new RecyclerViewFriendsAdapter(this);
@@ -152,6 +149,9 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
 
     @Override
     public void onClick(View v) {
+
+        int itemPosition = recyclerView.getChildAdapterPosition(v);
+        Log.d(TAG, "onClick: " + recyclerView.getChildAdapterPosition(v));
         // TODO: 09/12/2018 implement listeners for friends
     }
 
@@ -164,17 +164,8 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
         }
     }
 
-    // TODO: 13/2/19 after changing friend structure it has to be reimplemented
-    // method checking if user has already friend in his list
     private boolean haveFriend(String nickname) {
-//        for (Friend a : UserManager.getInstance().userInfo.getFriendsHash())) {
-//            if(a.getNickname().equals(nickname))
-//            return true;
-//        }
-        return false;
+        return UserManager.getInstance().userInfo.getFriends().keySet().contains(nickname);
     }
 
-    private void getProfilePicture(String userID) {
-
-    }
 }

@@ -16,7 +16,7 @@ public class FirebaseOperator {
     }
 
     /**
-     * Procedure which is looking for specific value under specific location.
+     * Procedure which is fetching data under specific location.
      *
      * @param ref - reference to the Firebase, e.g. FirebaseDatabase.getInstance().getReference()
      * @param listener - data listener (Interface) e.g. new OnGetDataListener()
