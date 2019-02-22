@@ -30,8 +30,6 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private Iterator<Map.Entry<String, Friend>> iter;
     private Bitmap bmp;
-
-    Bitmap profileBmp;
     View.OnClickListener onClickListener;
 
 
@@ -50,6 +48,15 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_list_item_friends, viewGroup, false);
         ViewHolder holder = new ViewHolder(view);
+
+// get the item to change the layout
+
+//        if (viewType == 1) {
+//            // inflate your first item layout & return that viewHolder
+//        } else {
+//            // inflate your second item layout & return that viewHolder
+//        }
+
         return holder;
     }
 
@@ -60,8 +67,6 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
             Map.Entry<String, Friend> pair = iter.next();
             viewHolder.userName.setText(pair.getKey());
 
-
-            //Log.d(TAG, "profile: "+ friends.get(pair.getKey()).getProfilePicture());
             byte[] byteArray = Base64.decode(friends.get(pair.getKey()).getProfilePicture(), 0);
             Log.d(TAG, "onSuccess: " + byteArray);
 
@@ -70,8 +75,16 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
 
             viewHolder.profilePicture.setImageBitmap(bmp);
         }
-
         viewHolder.elementLayout.setOnClickListener(onClickListener);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+
+//        if (position == 0) return 1;
+//        else return 2;
+
     }
 
     @Override
@@ -91,14 +104,6 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
             profilePicture = itemView.findViewById(R.id.recyclerFriends_profilePicture);
             elementLayout = itemView.findViewById(R.id.recyclerFriends_layout);
         }
-    }
-
-    private Bitmap toBitmap (byte[] ProfileInByteArray ) {
-        Bitmap bmp = BitmapFactory.decodeByteArray(ProfileInByteArray, 0, ProfileInByteArray.length);
-        //ImageView image = (ImageView) findViewById(R.id.imageView1);
-
-        //image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(), image.getHeight(), false));
-        return bmp;
     }
 
 }

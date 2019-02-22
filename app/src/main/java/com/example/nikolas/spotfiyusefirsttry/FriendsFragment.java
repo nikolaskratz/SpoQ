@@ -150,9 +150,25 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
     @Override
     public void onClick(View v) {
 
-        int itemPosition = recyclerView.getChildAdapterPosition(v);
+        //int itemPosition = recyclerView.getChildAdapterPosition(v);
         Log.d(TAG, "onClick: " + recyclerView.getChildAdapterPosition(v));
         // TODO: 09/12/2018 implement listeners for friends
+
+        friendsListAdapter.notifyDataSetChanged();
+        String item = "Pig";
+        int insertIndex = 1;
+        UserManager.getInstance().userInfo.getFriends().put(item, new Friend("abc","abc","x"));
+        friendsListAdapter.notifyItemInserted(insertIndex);
+
+        Log.d(TAG, "onClick: " + UserManager.getInstance().userInfo.getFriends().keySet());
+        //friendsListAdapter.notifyDataSetChanged();
+        //int removeIndex = 2;
+
+        //friendsListAdapter.notifyItemRemoved(removeIndex);
+
+        //int updateIndex = 2;
+        //UserManager.getInstance().userInfo.getFriends().replace("abc",ag));
+        //friendsListAdapter.notifyItemChanged(updateIndex);
     }
 
     @Override

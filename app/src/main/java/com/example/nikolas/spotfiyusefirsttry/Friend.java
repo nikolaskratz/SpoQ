@@ -6,10 +6,10 @@ public class Friend {
     private String nickname;
     private String profilePicture;
 
-    public Friend(String userID, String nickname, String profile) {
+    public Friend(String userID, String nickname, String profilePicture) {
         this.userID = userID;
         this.nickname = nickname;
-        this.profilePicture = profile;
+        this.profilePicture = profilePicture;
     }
 
     public Friend(){}
