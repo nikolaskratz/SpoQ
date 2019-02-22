@@ -23,10 +23,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Arrays;
-import java.util.Objects;
-
-
 public class FriendsFragment extends Fragment implements View.OnClickListener, Observer {
 
     private static final String TAG = "FriendsFragment_debug";
@@ -147,18 +143,25 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
      }
 
+
     @Override
     public void onClick(View v) {
 
+        int i = recyclerView.getChildAdapterPosition(v);
+
+        RecyclerViewFriendsAdapter.modElementClickedState(i, RecyclerViewFriendsAdapter.elementState.DETAILS );
+
+        friendsListAdapter.notifyItemChanged(i);
+
         //int itemPosition = recyclerView.getChildAdapterPosition(v);
-        Log.d(TAG, "onClick: " + recyclerView.getChildAdapterPosition(v));
+        //Log.d(TAG, "onClick: " + recyclerView.getChildAdapterPosition(v));
         // TODO: 09/12/2018 implement listeners for friends
 
-        friendsListAdapter.notifyDataSetChanged();
-        String item = "Pig";
-        int insertIndex = 1;
-        UserManager.getInstance().userInfo.getFriends().put(item, new Friend("abc","abc","x"));
-        friendsListAdapter.notifyItemInserted(insertIndex);
+        //friendsListAdapter.notifyDataSetChanged();
+        //String item = "Pig";
+        //int insertIndex = 1;
+        //UserManager.getInstance().userInfo.getFriends().put(item, new Friend("abc","abc","x"));
+        //friendsListAdapter.notifyItemInserted(insertIndex);
 
         Log.d(TAG, "onClick: " + UserManager.getInstance().userInfo.getFriends().keySet());
         //friendsListAdapter.notifyDataSetChanged();

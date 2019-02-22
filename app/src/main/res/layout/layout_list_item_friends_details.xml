@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="140dp"
     android:layout_marginTop="10dp"
     android:background="@drawable/background_list_item_friends"
     android:id="@+id/recyclerFriends_layout"
@@ -25,17 +25,19 @@
 
     <TextView
         android:id="@+id/recyclerFriends_userName"
-        android:background="@color/colorPrimaryDark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
+        android:layout_marginStart="132dp"
+        android:layout_marginLeft="132dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:background="@color/colorPrimaryDark"
         android:text="USER_NAME X"
         android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/recyclerFriends_profilePicture"
         app:layout_constraintTop_toTopOf="parent" />
+
+    Im
 
 </android.support.constraint.ConstraintLayout>
