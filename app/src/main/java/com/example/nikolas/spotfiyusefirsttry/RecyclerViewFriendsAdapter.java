@@ -21,44 +21,40 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-//import de.hdodenhof.circleimageview.CircleImageView;
-
 public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerViewFriendsAdapter.ViewHolder>{
     private static final String TAG = "RecyclerViewFriendsAdap";
     private HashMap<String,Friend> friends;
     private ArrayList<String> profilePictures;
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private Iterator<Map.Entry<String, Friend>> iter;
     private Bitmap bmp;
-    private static ArrayList<elementState> elementClickedState;
+    private static ArrayList<Boolean> viewStatusList;
     private View.OnClickListener onClickListener;
 
-    public enum elementState {
-        DEFAULT,
-        DETAILS
-    }
+    // logic for changing view type
+    public static Boolean changeViewType(int pos) {
 
-    public static void modElementClickedState(int pos, elementState el) {
+        Boolean item = viewStatusList.get(pos);
 
-        //add change to iterator
-        for (elementState elementState :elementClickedState){
-            if(elementState == RecyclerViewFriendsAdapter.elementState.DETAILS)
-                Log.d(TAG, "modElementClickedState: ok");
+        if (item) {
+            viewStatusList.set(pos, false);
+            return true;
         }
+        else {
+            //new implementation
 
+            // check if  there is detailed view change it and to not and then change the clicked one
 
-        //check if this item is already detailed, if yes return to default
-        if(elementClickedState.get(pos) == elementState.DETAILS)
-            elementClickedState.set(pos, elementState.DEFAULT);
-        else
-            elementClickedState.set(pos, RecyclerViewFriendsAdapter.elementState.DETAILS);
-        // first check if its already def, cannot be more detailed views than one
+            //search for already detailed views
+            for (int i = 0; i < viewStatusList.size(); i++) {
 
-        Log.d(TAG, "RecyclerViewFriendsAdapter: " + elementClickedState);
+                if (viewStatusList.get(i)) {
+                    return false;
+                }
+            }
+            viewStatusList.set(pos, true);
+            return true;
+        }
     }
-
-
-
 
     public RecyclerViewFriendsAdapter(View.OnClickListener onClickListener) {
 
@@ -70,38 +66,41 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
         //set the iterator to read keys of the hashmap
         iter = friends.entrySet().iterator();
 
-        elementClickedState = new ArrayList<>();
+        viewStatusList = new ArrayList<>();
         for (int i = 0; i < friends.size(); i++) {
-            elementClickedState.add(i, elementState.DEFAULT);
+            viewStatusList.add(i, false);
         }
-
-        Log.d(TAG, "RecyclerViewFriendsAdapter: " + elementClickedState);
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-//        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_list_item_friends, viewGroup, false);
-//        ViewHolder holder = new ViewHolder(view);
 
-        if (elementClickedState.get(i) == elementState.DETAILS ) {
+        if (i == 2) {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_list_item_friends_details, viewGroup, false);
-            ViewHolder holder = new ViewHolder(view);
-
-            return holder;
+            return new ViewHolder(view);
 
         } else {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_list_item_friends, viewGroup, false);
-            ViewHolder holder = new ViewHolder(view);
-            return holder;
+            return new ViewHolder(view);
         }
-
 
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
 
+
+        if(viewHolder.getItemViewType() == 1){
+            //Log.d(TAG, "normal: ");
+        }
+
+        else{
+            //Log.d(TAG, "detailed");
+        }
+
+
+        // for view 1
         if(iter.hasNext()){
             Map.Entry<String, Friend> pair = iter.next();
             viewHolder.userName.setText(pair.getKey());
@@ -117,11 +116,18 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
         viewHolder.elementLayout.setOnClickListener(onClickListener);
     }
 
+
+    // this method sets view type to onBindViewHolder
+    // for default view (false) set 2
+    // for detailed view (true) set 1
+
     @Override
     public int getItemViewType(int position) {
-        if(position == 1)return 1;
-        else return 2;
-        //return super.getItemViewType(position);
+
+        if(viewStatusList.get(position)){
+            return 2;
+        }
+        else return 1;
     }
 
     @Override
@@ -141,8 +147,14 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
             profilePicture = itemView.findViewById(R.id.recyclerFriends_profilePicture);
             elementLayout = itemView.findViewById(R.id.recyclerFriends_layout);
         }
+    }
 
+    // ViewHolder for detailed view
+    public class ViewHolderDetailed extends RecyclerView.ViewHolder {
 
+        public ViewHolderDetailed(@NonNull View itemView) {
+            super(itemView);
+        }
     }
 
 }

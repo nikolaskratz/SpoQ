@@ -28,7 +28,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
     private static final String TAG = "FriendsFragment_debug";
     Bitmap bmp;
     String profileString;
-    private RecyclerViewFriendsAdapter friendsListAdapter;
+    public RecyclerViewFriendsAdapter friendsListAdapter;
     private boolean updatedView = false;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private String valueEt;
@@ -149,9 +149,10 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
 
         int i = recyclerView.getChildAdapterPosition(v);
 
-        RecyclerViewFriendsAdapter.modElementClickedState(i, RecyclerViewFriendsAdapter.elementState.DETAILS );
+        if(RecyclerViewFriendsAdapter.changeViewType(i)) {
+            friendsListAdapter.notifyItemChanged(i);
+        }
 
-        friendsListAdapter.notifyItemChanged(i);
 
         //int itemPosition = recyclerView.getChildAdapterPosition(v);
         //Log.d(TAG, "onClick: " + recyclerView.getChildAdapterPosition(v));
@@ -163,7 +164,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
         //UserManager.getInstance().userInfo.getFriends().put(item, new Friend("abc","abc","x"));
         //friendsListAdapter.notifyItemInserted(insertIndex);
 
-        Log.d(TAG, "onClick: " + UserManager.getInstance().userInfo.getFriends().keySet());
+        //Log.d(TAG, "onClick: " + UserManager.getInstance().userInfo.getFriends().keySet());
         //friendsListAdapter.notifyDataSetChanged();
         //int removeIndex = 2;
 
