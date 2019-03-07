@@ -6,37 +6,44 @@
     android:layout_height="140dp"
     android:layout_marginTop="10dp"
     android:background="@drawable/background_list_item_friends"
-    android:id="@+id/recyclerFriends_layout"
+    android:id="@+id/recyclerFriends_layout_detailed"
     >
 
     <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:background="@drawable/background_list_item_friends"
-        android:id="@+id/recyclerFriends_profilePicture"
+        android:id="@+id/recyclerFriends_profilePicture_detailed"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:background="@drawable/background_list_item_friends"
         android:src="@drawable/spotifyicon"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/recyclerFriends_userName"
+        android:id="@+id/recyclerFriends_userName_detailed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="132dp"
-        android:layout_marginLeft="132dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
         android:background="@color/colorPrimaryDark"
         android:text="USER_NAME X"
         android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="@+id/recyclerFriends_profilePicture_detailed"
+        app:layout_constraintStart_toEndOf="@+id/recyclerFriends_profilePicture_detailed"
+        app:layout_constraintTop_toTopOf="@+id/recyclerFriends_profilePicture_detailed" />
+
+    <ImageView
+        android:id="@+id/recyclerFriends_delete_detailed"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/recyclerFriends_profilePicture"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/baseline_delete_white_18dp" />
 
     Im
 

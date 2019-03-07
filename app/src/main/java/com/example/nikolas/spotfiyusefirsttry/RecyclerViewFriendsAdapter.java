@@ -11,9 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,7 +18,7 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerViewFriendsAdapter.ViewHolder>{
+public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private static final String TAG = "RecyclerViewFriendsAdap";
     private HashMap<String,Friend> friends;
     private ArrayList<String> profilePictures;
@@ -40,10 +37,6 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
             return true;
         }
         else {
-            //new implementation
-
-            // check if  there is detailed view change it and to not and then change the clicked one
-
             //search for already detailed views
             for (int i = 0; i < viewStatusList.size(); i++) {
 
@@ -74,52 +67,74 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 
         if (i == 2) {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_list_item_friends_details, viewGroup, false);
-            return new ViewHolder(view);
+            return new ViewHolderDetailed(view);
 
         } else {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_list_item_friends, viewGroup, false);
             return new ViewHolder(view);
         }
-
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
 
+        // fill defaultView with data -> iterating through the fiends hashmap
+        if (viewHolder.getItemViewType() == 1) {
+            ViewHolder viewHolderDefault = (ViewHolder) viewHolder;
 
-        if(viewHolder.getItemViewType() == 1){
-            //Log.d(TAG, "normal: ");
+            if (iter.hasNext()) {
+                Map.Entry<String, Friend> pair = iter.next();
+                viewHolderDefault.userName.setText(pair.getKey());
+
+                byte[] byteArray = Base64.decode(friends.get(pair.getKey()).getProfilePicture(), 0);
+                bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+
+                viewHolderDefault.profilePicture.setImageBitmap(bmp);
+            }
+            viewHolderDefault.elementLayout.setOnClickListener(onClickListener);
         }
+        //fill detailed view with data -> after choosing a friend, showing respective details
+        else {
 
-        else{
-            //Log.d(TAG, "detailed");
-        }
+            //get the detailed View position
+            int position = 0;
+            for (Boolean element: viewStatusList)
+            {
+                if(element == Boolean.TRUE){
+                    break;
+                }
+                else{
+                    position++;
+                }
+            }
 
+            //user from friends list
+            Object key =null;
+            int count = 0;
+            for(Object key1 : friends.keySet())
+            {
+                if(count == position)
+                  key=key1;
+                count++;
+            }
 
-        // for view 1
-        if(iter.hasNext()){
-            Map.Entry<String, Friend> pair = iter.next();
-            viewHolder.userName.setText(pair.getKey());
+            Log.d(TAG, "onBindViewHolder: " + key);
 
-            byte[] byteArray = Base64.decode(friends.get(pair.getKey()).getProfilePicture(), 0);
-           // Log.d(TAG, "onSuccess: " + byteArray);
+            ViewHolderDetailed viewHolderDetailed = (ViewHolderDetailed) viewHolder;
 
+            viewHolderDetailed.userNameDet.setText(friends.get(key).getNickname());
+
+            byte[] byteArray = Base64.decode(friends.get(key).getProfilePicture(),0);
             bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-            //Log.d(TAG, "onSuccess: " + bmp);
+            viewHolderDetailed.profilePictureDet.setImageBitmap(bmp);
 
-            viewHolder.profilePicture.setImageBitmap(bmp);
+            viewHolderDetailed.elementLayoutDet.setOnClickListener(onClickListener);
         }
-        viewHolder.elementLayout.setOnClickListener(onClickListener);
     }
-
-
-    // this method sets view type to onBindViewHolder
-    // for default view (false) set 2
-    // for detailed view (true) set 1
 
     @Override
     public int getItemViewType(int position) {
@@ -135,7 +150,8 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
         return friends.size();
     }
 
-    public class  ViewHolder extends RecyclerView.ViewHolder  {
+    // ViewHolder for default view
+    public class ViewHolder extends RecyclerView.ViewHolder  {
 
         CircleImageView profilePicture;
         TextView userName;
@@ -148,13 +164,19 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
             elementLayout = itemView.findViewById(R.id.recyclerFriends_layout);
         }
     }
-
+    
     // ViewHolder for detailed view
     public class ViewHolderDetailed extends RecyclerView.ViewHolder {
 
+        CircleImageView profilePictureDet;
+        TextView userNameDet;
+        ConstraintLayout elementLayoutDet;
+
         public ViewHolderDetailed(@NonNull View itemView) {
             super(itemView);
+            userNameDet = itemView.findViewById(R.id.recyclerFriends_userName_detailed);
+            profilePictureDet = itemView.findViewById(R.id.recyclerFriends_profilePicture_detailed);
+            elementLayoutDet = itemView.findViewById(R.id.recyclerFriends_layout_detailed);
         }
     }
-
 }

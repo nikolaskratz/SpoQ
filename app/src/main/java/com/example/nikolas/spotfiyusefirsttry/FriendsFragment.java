@@ -84,8 +84,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
                                              Log.d(TAG, " You added already this friend.");
                                          } else {
 
-                                             //getProfilePicture(queryResult.toString());
-                                             //Log.d(TAG, "Bmp: " + profileString);
 
                                              FirebaseOperator.getInstance().readData(database.getReference().child("Users")
                                                      .child(queryResult.toString()).child("profileImg"), new OnGetDataListener() {
@@ -93,7 +91,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
                                                  public void onSuccess(DataSnapshot dataSnapshot) {
 
                                                      profileString = dataSnapshot.getValue().toString();
-
 
                                                      UserManager.getInstance().writeNewFriend(database.getReference().
                                                              child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
@@ -111,8 +108,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
 
                                                  }
                                              });
-
-
                                          }
                                      }
                             }
@@ -153,26 +148,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
             friendsListAdapter.notifyItemChanged(i);
         }
 
-
-        //int itemPosition = recyclerView.getChildAdapterPosition(v);
-        //Log.d(TAG, "onClick: " + recyclerView.getChildAdapterPosition(v));
-        // TODO: 09/12/2018 implement listeners for friends
-
-        //friendsListAdapter.notifyDataSetChanged();
-        //String item = "Pig";
-        //int insertIndex = 1;
-        //UserManager.getInstance().userInfo.getFriends().put(item, new Friend("abc","abc","x"));
-        //friendsListAdapter.notifyItemInserted(insertIndex);
-
-        //Log.d(TAG, "onClick: " + UserManager.getInstance().userInfo.getFriends().keySet());
-        //friendsListAdapter.notifyDataSetChanged();
-        //int removeIndex = 2;
-
-        //friendsListAdapter.notifyItemRemoved(removeIndex);
-
-        //int updateIndex = 2;
-        //UserManager.getInstance().userInfo.getFriends().replace("abc",ag));
-        //friendsListAdapter.notifyItemChanged(updateIndex);
     }
 
     @Override
