@@ -57,7 +57,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     int secondsTotal;
     int milliesTotal;
 
-    int points = 300;
+    int points = -5;
 
     int gamesPlayed=0;
     int correctAnswers=0;
@@ -93,7 +93,6 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
     @Override
     protected void onStart() {
-
         super.onStart();
         // Set the connection parameters
         ConnectionParams connectionParams =
@@ -112,6 +111,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                         } else {
                             playlistID = PlaylistSelect.getPlaylistSelect().getPlaylistID();
                             playlistUser = PlaylistSelect.getPlaylistSelect().getPlaylistUser();
+                            Log.e("getPlaylistTracksTest", "start2");
                             getPlaylistTracks(playlistID,playlistUser);
                         }
                     }
@@ -194,6 +194,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         seekTrack();
 
         startTime = System.currentTimeMillis();
+        final boolean[] correct = {false};
         timerHandler.postDelayed(timerRunnable, 0);
         runOnUiThread(new Runnable() {
 
@@ -213,11 +214,12 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                 if (button==3) {
                     songAButton.setBackgroundResource(R.drawable.button_pressed_correct);
                     correctAnswers++;
+                    correct[0] =true;
                 } else wrongAnswer(button,songAButton);
                 pauseTrack();
                 showCover();
                 try {
-                    nextGame();
+                    nextGame(correct[0]);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -230,11 +232,12 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                 if (button==2) {
                     songBButton.setBackgroundResource(R.drawable.button_pressed_correct);
                     correctAnswers++;
+                    correct[0] =true;
                 } else wrongAnswer(button,songBButton);
                 pauseTrack() ;
                 showCover();
                 try {
-                    nextGame();
+                    nextGame(correct[0]);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -247,11 +250,12 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                 if (button==1) {
                     songCButton.setBackgroundResource(R.drawable.button_pressed_correct);
                     correctAnswers++;
+                    correct[0] =true;
                 } else wrongAnswer(button,songCButton);
                 pauseTrack();
                 showCover();
                 try {
-                    nextGame();
+                    nextGame(correct[0]);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -264,11 +268,12 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                 if (button==0) {
                     songDButton.setBackgroundResource(R.drawable.button_pressed_correct);
                     correctAnswers++;
+                    correct[0] =true;
                 } else wrongAnswer(button,songDButton);
                 pauseTrack();
                 showCover();
                 try {
-                    nextGame();
+                    nextGame(correct[0]);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -277,7 +282,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         });
 
 
-        setTotalTime(minutes,seconds,(int) millis);
+        setTotalTime(minutes,seconds,(int) millis,correct[0]);
         final TextView pointView = findViewById(R.id.Points);
         runOnUiThread(new Runnable() {
 
@@ -361,7 +366,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         }
     }
 
-    public void nextGame() throws InterruptedException {
+    public void nextGame(boolean correct) throws InterruptedException {
         Thread thread = new Thread(new Runnable(){
             boolean invite= getIntent().getBooleanExtra("invite",false);
             @Override
@@ -387,7 +392,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    setTotalTime(minutes,seconds,(int) millis);
+                    setTotalTime(minutes,seconds,(int) millis,correct);
                     Intent intent = new Intent(PlayQuiz.this, QuizSummary.class);
                     intent.putExtra("Minutes", minutesTotal);
                     intent.putExtra("Seconds", secondsTotal);
@@ -443,14 +448,19 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         });
     }
 
-    void setTotalTime (int minutes, int seconds, int millies){
+    void setTotalTime (int minutes, int seconds, int millies, boolean correct){
         minutesTotal+=minutes;
         secondsTotal+=seconds;
         milliesTotal+=millies;
         TextView finalTimer = (TextView) findViewById(R.id.totalTimer);
-        finalTimer.setText(String.format("%d:%02d:%3d", minutesTotal, secondsTotal,
-                (milliesTotal%100)));
-        points=points-seconds*10;
+        finalTimer.setText(String.format("%d:%02d:%3d", minutesTotal, secondsTotal, (milliesTotal%100)));
+        int add;
+        if(seconds != 0 && 100/seconds>=10) {
+            add = 100/seconds;
+        } else add = 10;
+        if(correct) {
+            points = points + add;
+        } else points = points+5;
         Log.d(TAG, "points setter - total: "+points);
     }
 
