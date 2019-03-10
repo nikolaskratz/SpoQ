@@ -18,9 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.util.Base64;
-
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class FriendsFragment extends Fragment implements View.OnClickListener, Observer {
@@ -83,7 +81,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
                                          else if (haveFriend(valueEt)) {
                                              Log.d(TAG, " You added already this friend.");
                                          } else {
-
 
                                              FirebaseOperator.getInstance().readData(database.getReference().child("Users")
                                                      .child(queryResult.toString()).child("profileImg"), new OnGetDataListener() {
