@@ -18,6 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class QuizSummary extends AppCompatActivity {
@@ -42,7 +43,7 @@ public class QuizSummary extends AppCompatActivity {
         vs = getIntent().getExtras().getString("vs");
         quizID = me+"-"+vs+"-"+playlistID;
         quizIDrev = vs+"-"+me+"-"+playlistID;
-        setSummary();
+        getVsName();
         setButtons();
         if(!getIntent().getExtras().getBoolean("invite")){
             quizResult = new QuizResult(points,quizID,me,vs);
@@ -55,7 +56,27 @@ public class QuizSummary extends AppCompatActivity {
         }
     }
 
-    void setSummary(){
+    public void getVsName () {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("IdentitiesREV");
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                String vs;
+                String vsID =getIntent().getExtras().getString("vs");
+                vs= (String) snap.child(vsID).getValue();
+
+                setSummary(vs);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("myTag", "Failed to read value.");
+            }
+        });
+    }
+
+    void setSummary(String vs){
         int minutes = getIntent().getExtras().getInt("Minutes");
         int seconds = getIntent().getExtras().getInt("Seconds");
         int millis = getIntent().getExtras().getInt("Millis")%100;
@@ -63,33 +84,24 @@ public class QuizSummary extends AppCompatActivity {
         int wrong = getIntent().getExtras().getInt("Wrong Answers");
         points = getIntent().getExtras().getInt("Points");
 
-//        Log.e("abc132",""+points);
-
         TextView time = findViewById(R.id.time);
         time.setText(minutes+":"+seconds+":"+millis);
 
         TextView answers = findViewById(R.id.answerCount);
         answers.setText("Correct Answers: "+correct+"\nWrong Answers: "+wrong);
 
-        TextView vs = findViewById(R.id.vs);
-        vs.setText("You played vs: "+getIntent().getExtras().getString("vs"));
+        TextView vsView = findViewById(R.id.vsInfo);
+        vsView.setText(vs);
 
         TextView pointsView = findViewById(R.id.pointSummary);
         pointsView.setText(""+points);
     }
 
     void setButtons(){
-        final Button playAgainButton = (Button) findViewById(R.id.playAgainButton);
-        playAgainButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-               startActivity(new Intent(QuizSummary.this,PlayQuiz.class));
-               finish();
-            }
-        });
-        final Button differentPlaylist = (Button) findViewById(R.id.differentPlaylistButton);
+        final Button differentPlaylist = (Button) findViewById(R.id.homeButton);
         differentPlaylist.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivity(new Intent(QuizSummary.this,PlaylistSelect.class));
+                startActivity(new Intent(QuizSummary.this,MainAppActivity.class));
                 finish();
             }
         });

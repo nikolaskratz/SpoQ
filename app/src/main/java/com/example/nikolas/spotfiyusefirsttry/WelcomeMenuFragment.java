@@ -140,14 +140,17 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
                 .ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
-                String quizID = iDs.get(position);
-                String vs = quizID.split("-")[0];
-                Intent intent = new Intent(getActivity(), PlayQuiz.class);
-                intent.putExtra("vs", vs);
-                intent.putExtra("me", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                intent.putExtra("invite", true);
-                intent.putExtra("quizID", quizID);
-                startActivity(intent);
+                if(!iDs.isEmpty()) {
+                    String quizID = iDs.get(position);
+                    String vs = quizID.split("-")[0];
+                    Intent intent = new Intent(getActivity(), PlayQuiz.class);
+                    intent.putExtra("vs", vs);
+                    intent.putExtra("me", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    intent.putExtra("invite", true);
+                    intent.putExtra("quizID", quizID);
+                    startActivity(intent);
+                }
+
 
 
             }
