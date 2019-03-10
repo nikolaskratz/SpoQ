@@ -53,8 +53,9 @@ public class RecyclerViewResultAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        Log.d("recyclerviewadapt", "positition: "+position);
-        if(p2Points.get(position)==310) {
+        if(p1Points.isEmpty()) {
+            viewHolder.vs.setText("You haven't played any games yet!");
+        } else if(p2Points.get(position)==310) {
             viewHolder.vs.setText("Waiting for "+p2.get(position)+" to play...");
         } else if(userID.equals(p1ID.get(position))) {
             if(p1Points.get(position)<p2Points.get(position)){
@@ -73,7 +74,6 @@ public class RecyclerViewResultAdapter extends RecyclerView.Adapter<RecyclerView
         }
 
 //        viewHolder.vsPlayer.setText(vsData.get(position));
-        Log.d("setup", "nameP1:"+p1.get(position)+" pointsP1:"+p1Points.get(position));
 //        viewHolder.nameP1.setText(p1.get(position));
 //        viewHolder.nameP2.setText(p2.get(position));
 //        viewHolder.pointsP1.setText(""+p1Points.get(position));
@@ -109,9 +109,10 @@ public class RecyclerViewResultAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public int getItemCount() {
-
-        return p1Points.size();
-
+        int itemCount= p1Points.size();
+        if(itemCount>0) {
+            return itemCount;
+        } else return 1;
     }
 
     public void setOnItemClickListener(ClickListener clickListener) {

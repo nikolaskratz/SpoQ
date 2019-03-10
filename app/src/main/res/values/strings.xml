@@ -12,11 +12,11 @@
     <string name="sign_up_form_password1">Password</string>
     <string name="sign_up_form_password_confirm">Confirm password</string>
     <string name="sign_up_submit_b">Submit</string>
-    <string name="mainAppActivity_signOut_b">SIGN OUT</string>
+    <string name="mainAppActivity_signOut_b">Sign Out</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Here will be section with statistics </string>
-    <string name="play_with_friend">play with friend</string>
+    <string name="play_with_friend">Play with Friend</string>
     <string name="random_game">random game</string>
     <string name="statistics_title_fragment">Statistics</string>
     <string name="app_name">SpoQ</string>

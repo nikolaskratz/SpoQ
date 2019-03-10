@@ -18,31 +18,31 @@ public class RecyclerViewInvitationAdapter extends RecyclerView.Adapter<Recycler
         this.inviteData = inviteData;
     }
 
-
     @Override
     public RecyclerViewInvitationAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
-
-        View itemLayoutView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_invitations, null);
-
-                ViewHolder viewHolder = new ViewHolder(itemLayoutView);
+        View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_result, null);
+        ViewHolder viewHolder = new ViewHolder(itemLayoutView);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        viewHolder.inviteButton.setText(inviteData.get(position));
+        if(inviteData.isEmpty()){
+            viewHolder.vs.setText("You haven't been challenged yet!");
+        } else viewHolder.vs.setText("You've been challenged by: "+inviteData.get(position)+"!");
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public Button inviteButton;
+        public TextView vs;
 
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
-            inviteButton = (Button) itemLayoutView.findViewById(R.id.inviteButton);
-            inviteButton.setOnClickListener(this);
+            itemView.setOnClickListener(this);
+//            inviteButton = (Button) itemLayoutView.findViewById(R.id.inviteButton);
+//            inviteButton.setOnClickListener(this);
+            vs = (TextView) itemLayoutView.findViewById(R.id.vs);
         }
 
         @Override
@@ -54,7 +54,10 @@ public class RecyclerViewInvitationAdapter extends RecyclerView.Adapter<Recycler
 
     @Override
     public int getItemCount() {
-        return inviteData.size();
+        int itemCount= inviteData.size();
+        if(itemCount>0) {
+            return itemCount;
+        } else return 1;
     }
 
     public void setOnItemClickListener(ClickListener clickListener) {

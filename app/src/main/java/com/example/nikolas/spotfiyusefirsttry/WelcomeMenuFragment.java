@@ -57,7 +57,6 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
 
         view.findViewById(R.id.welcomeMenu_playWithFriend_bt).setOnClickListener(this);
         view.findViewById(R.id.signout_button).setOnClickListener(this);
-        view.findViewById(R.id.playQuizDebug).setOnClickListener(this);
 
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -76,14 +75,7 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
             UserManager.getInstance().clearInstance();
             startActivity(new Intent(getActivity(), SignInActivity.class));
         }
-        //DEBUG only (to reach the playlistselecter)
-        else if (i == R.id.playQuizDebug) {
-            Intent intent = new Intent(getActivity(), PlaylistSelect.class);
-            intent.putExtra("me", userID);
-            intent.putExtra("vs", "Hc4Xpv88wYQWG3QoSqo0qjpov4r2");
-            Log.d(TAG, "current user id: " + userID);
-            startActivity(intent);
-        }
+
     }
 
     public void getInvites() {
@@ -148,14 +140,17 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
                 .ClickListener() {
             @Override
             public void onItemClick(int position, View v) {
-                String quizID = iDs.get(position);
-                String vs = quizID.split("-")[0];
-                Intent intent = new Intent(getActivity(), PlayQuiz.class);
-                intent.putExtra("vs", vs);
-                intent.putExtra("me", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                intent.putExtra("invite", true);
-                intent.putExtra("quizID", quizID);
-                startActivity(intent);
+                if(!iDs.isEmpty()) {
+                    String quizID = iDs.get(position);
+                    String vs = quizID.split("-")[0];
+                    Intent intent = new Intent(getActivity(), PlayQuiz.class);
+                    intent.putExtra("vs", vs);
+                    intent.putExtra("me", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    intent.putExtra("invite", true);
+                    intent.putExtra("quizID", quizID);
+                    startActivity(intent);
+                }
+
 
 
             }
