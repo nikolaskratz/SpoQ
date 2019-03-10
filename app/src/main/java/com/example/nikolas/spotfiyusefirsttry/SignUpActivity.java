@@ -274,6 +274,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         mDatabase = FirebaseDatabase.getInstance().getReference("Identities");
         mDatabase.child(nickname).setValue(uid);
 
+        //add new IdentityREV
+        mDatabase = FirebaseDatabase.getInstance().getReference("IdentitiesREV");
+        mDatabase.child(uid).setValue(nickname);
+
+
     }
 
     private void updateUI() {
