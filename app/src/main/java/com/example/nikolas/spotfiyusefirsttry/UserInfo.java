@@ -17,7 +17,7 @@ public class UserInfo {
         this.nickname = nickname;
         this.points = points;
         this.profileImg = profileImg;
-        this.email=email;
+        this.email = email;
 
         this.friends = new HashMap<>();
         this.games = new ArrayList<>();
@@ -46,13 +46,6 @@ public class UserInfo {
         return profileImg;
     }
 
-    //    public ArrayList<Friend> getFriends() {
-    //        return friends;
-    //    }
-
-    //    public List<String> getGames() {
-    //        return games;
-    //    }
 
     public Map<String,QuizResult> getResults() {
         return results;

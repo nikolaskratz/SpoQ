@@ -48,7 +48,9 @@ public class QuizLobbyActivity extends AppCompatActivity implements View.OnClick
 
     private void initRecyclerView() {
         recyclerView = findViewById(R.id.lobby_recycler_view);
-        RecyclerViewFriendsAdapter adapter = new RecyclerViewFriendsAdapter(this);
+        RecyclerViewFriendsAdapter adapter = new RecyclerViewFriendsAdapter(
+
+        );
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

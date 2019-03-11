@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+
     private static final String TAG = "RecyclerViewFriendsAdap";
     private HashMap<String,Friend> friends;
     private ArrayList<String> profilePictures;
@@ -26,7 +28,17 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
     private Bitmap bmp;
     private static ArrayList<Boolean> viewStatusList;
     private View.OnClickListener onClickListener;
+    private OnItemClickListener changeViewListener;
+    private OnItemClickListener deleteListener;
 
+    //interface will forward our click from adapter to our main activity
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        changeViewListener = listener;
+    }
+
+    public void setOnItemDeleteListener(OnItemClickListener listener) {
+        deleteListener = listener;
+    }
     // logic for changing view type
     public static Boolean changeViewType(int pos) {
 
@@ -41,7 +53,9 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
             for (int i = 0; i < viewStatusList.size(); i++) {
 
                 if (viewStatusList.get(i)) {
-                    return false;
+                    viewStatusList.set(i,false);
+                    viewStatusList.set(pos,true);
+                    return true;
                 }
             }
             viewStatusList.set(pos, true);
@@ -49,10 +63,10 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
-    public RecyclerViewFriendsAdapter(View.OnClickListener onClickListener) {
+    public RecyclerViewFriendsAdapter() {
 
         //Log.d(TAG, "RecyclerViewFriendsAdapter: TEXT" + UserManager.getInstance().getUserInfo().getFriends().keySet().iterator().next());
-        this.onClickListener = onClickListener;
+
         profilePictures = new ArrayList<>();
         this.friends = UserManager.getInstance().getUserInfo().getFriends();
 
@@ -71,11 +85,11 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
 
         if (i == 2) {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_list_item_friends_details, viewGroup, false);
-            return new ViewHolderDetailed(view);
+            return new ViewHolderDetailed(view, deleteListener, changeViewListener);
 
         } else {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_list_item_friends, viewGroup, false);
-            return new ViewHolder(view);
+            return new ViewHolder(view, changeViewListener);
         }
     }
 
@@ -95,7 +109,6 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
 
                 viewHolderDefault.profilePicture.setImageBitmap(bmp);
             }
-            viewHolderDefault.elementLayout.setOnClickListener(onClickListener);
         }
         //fill detailed view with data -> after choosing a friend, showing respective details
         else {
@@ -131,8 +144,6 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
             byte[] byteArray = Base64.decode(friends.get(key).getProfilePicture(),0);
             bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             viewHolderDetailed.profilePictureDet.setImageBitmap(bmp);
-
-            viewHolderDetailed.elementLayoutDet.setOnClickListener(onClickListener);
         }
     }
 
@@ -157,11 +168,22 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
         TextView userName;
         ConstraintLayout elementLayout;
 
-        public ViewHolder(@NonNull View itemView)  {
+        public ViewHolder(@NonNull View itemView, OnItemClickListener listener)  {
             super(itemView);
             userName = itemView.findViewById(R.id.recyclerFriends_userName);
             profilePicture = itemView.findViewById(R.id.recyclerFriends_profilePicture);
             elementLayout = itemView.findViewById(R.id.recyclerFriends_layout);
+            elementLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(changeViewListener != null) {
+                        int position =getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION) {
+                            changeViewListener.onItemClick(v,position);
+                        }
+                    }
+                }
+            });
         }
     }
     
@@ -171,12 +193,39 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
         CircleImageView profilePictureDet;
         TextView userNameDet;
         ConstraintLayout elementLayoutDet;
+        ImageView deleteButton;
 
-        public ViewHolderDetailed(@NonNull View itemView) {
+        public ViewHolderDetailed(@NonNull View itemView, OnItemClickListener deleteListener , OnItemClickListener listener) {
             super(itemView);
             userNameDet = itemView.findViewById(R.id.recyclerFriends_userName_detailed);
             profilePictureDet = itemView.findViewById(R.id.recyclerFriends_profilePicture_detailed);
             elementLayoutDet = itemView.findViewById(R.id.recyclerFriends_layout_detailed);
+            deleteButton = itemView.findViewById(R.id.recyclerFriends_delete_detailed);
+
+            elementLayoutDet.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(changeViewListener != null) {
+                        int position =getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION) {
+                            changeViewListener.onItemClick(v,position);
+                        }
+                    }
+                }
+            });
+
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(deleteListener != null) {
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION) {
+                            deleteListener.onItemClick(v,position);
+                        }
+                    }
+                }
+            });
         }
     }
+
 }

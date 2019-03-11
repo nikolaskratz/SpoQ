@@ -1,7 +1,6 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,17 +14,16 @@ import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.util.Base64;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class FriendsFragment extends Fragment implements View.OnClickListener, Observer {
+
+public class FriendsFragment extends Fragment implements  Observer {
 
     private static final String TAG = "FriendsFragment_debug";
-    Bitmap bmp;
-    String profileString;
+    private String profileString;
     public RecyclerViewFriendsAdapter friendsListAdapter;
     private boolean updatedView = false;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -92,7 +90,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
                                                      UserManager.getInstance().writeNewFriend(database.getReference().
                                                              child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
                                                              child("friends").child(valueEt), valueEt, queryResult.toString(), profileString);
-
                                                  }
 
                                                  @Override
@@ -125,27 +122,38 @@ public class FriendsFragment extends Fragment implements View.OnClickListener, O
         });
 
         initRecyclerView();
-
     }
 
     public void initRecyclerView() {
         recyclerView = getView().findViewById(R.id.friends_recycler_view);
-        friendsListAdapter = new RecyclerViewFriendsAdapter(this);
+        friendsListAdapter = new RecyclerViewFriendsAdapter();
         recyclerView.setAdapter(friendsListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        //listener for delete button in recycler viewer
+        friendsListAdapter.setOnItemDeleteListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                //get the friends based on position in recycler viewer
+                String[] friendsStringArray = UserManager.getInstance().getUserInfo().getFriends().keySet().toArray(new String[0]);
+
+                String myUID = UserManager.getInstance().getUserID();
+
+                //deleting user
+                database.getReference().child("Users").child(myUID).child("friends").child(friendsStringArray[position]).removeValue();
+            }
+        });
+
+        friendsListAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Log.d(TAG, "onItemClick -> clicked pos:" + position);
+                if(RecyclerViewFriendsAdapter.changeViewType(position)) {
+                    friendsListAdapter.notifyItemChanged(position);
+                }
+            }
+        });
      }
-
-
-    @Override
-    public void onClick(View v) {
-
-        int i = recyclerView.getChildAdapterPosition(v);
-
-        if(RecyclerViewFriendsAdapter.changeViewType(i)) {
-            friendsListAdapter.notifyItemChanged(i);
-        }
-
-    }
 
     @Override
     public void update(boolean checked) {
