@@ -57,7 +57,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     int secondsTotal;
     int milliesTotal;
 
-    int points = -5;
+    int points = 0;
 
     int gamesPlayed=0;
     int correctAnswers=0;
@@ -216,6 +216,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     correctAnswers++;
                     correct[0] =true;
                 } else wrongAnswer(button,songAButton);
+                setTotalTime(minutes,seconds,(int) millis,correct[0]);
                 pauseTrack();
                 showCover();
                 try {
@@ -234,6 +235,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     correctAnswers++;
                     correct[0] =true;
                 } else wrongAnswer(button,songBButton);
+                setTotalTime(minutes,seconds,(int) millis,correct[0]);
                 pauseTrack() ;
                 showCover();
                 try {
@@ -252,6 +254,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     correctAnswers++;
                     correct[0] =true;
                 } else wrongAnswer(button,songCButton);
+                setTotalTime(minutes,seconds,(int) millis,correct[0]);
                 pauseTrack();
                 showCover();
                 try {
@@ -270,6 +273,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     correctAnswers++;
                     correct[0] =true;
                 } else wrongAnswer(button,songDButton);
+                setTotalTime(minutes,seconds,(int) millis,correct[0]);
                 pauseTrack();
                 showCover();
                 try {
@@ -281,8 +285,9 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
             }
         });
 
-
-        setTotalTime(minutes,seconds,(int) millis,correct[0]);
+//        Log.e("test2","after all buttons; s"+seconds+", correct:"+correct[0]);
+//        setTotalTime(minutes,seconds,(int) millis,correct[0]);
+//        Log.e("test2","complete");
         final TextView pointView = findViewById(R.id.Points);
         runOnUiThread(new Runnable() {
 
@@ -454,14 +459,22 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         milliesTotal+=millies;
         TextView finalTimer = (TextView) findViewById(R.id.totalTimer);
         finalTimer.setText(String.format("%d:%02d:%3d", minutesTotal, secondsTotal, (milliesTotal%100)));
+
         int add;
-        if(seconds != 0 && 100/seconds>=10) {
+        if(seconds==0) {
+            add = 100;
+            Log.e("test2","s=0");
+        } else if(100/seconds>=10) {
             add = 100/seconds;
+            Log.e("test2","100/s >=10");
         } else add = 10;
+
         if(correct) {
             points = points + add;
+            Log.e("test2","correct");
         } else points = points+5;
-        Log.d(TAG, "points setter - total: "+points);
+        Log.e("test2","finsih, result:"+correct+", points:"+points);
+
     }
 
     void resetButtonColor(){
