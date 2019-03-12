@@ -85,7 +85,7 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
 
         if (i == 2) {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_list_item_friends_details, viewGroup, false);
-            return new ViewHolderDetailed(view, deleteListener, changeViewListener);
+            return new ViewHolderDetailed(view, deleteListener);
 
         } else {
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_list_item_friends, viewGroup, false);
@@ -111,6 +111,7 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
             }
         }
         //fill detailed view with data -> after choosing a friend, showing respective details
+
         else {
 
             //get the detailed View position
@@ -186,7 +187,6 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
             });
         }
     }
-    
     // ViewHolder for detailed view
     public class ViewHolderDetailed extends RecyclerView.ViewHolder {
 
@@ -195,7 +195,7 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
         ConstraintLayout elementLayoutDet;
         ImageView deleteButton;
 
-        public ViewHolderDetailed(@NonNull View itemView, OnItemClickListener deleteListener , OnItemClickListener listener) {
+        public ViewHolderDetailed(@NonNull View itemView, OnItemClickListener deleteListener) {
             super(itemView);
             userNameDet = itemView.findViewById(R.id.recyclerFriends_userName_detailed);
             profilePictureDet = itemView.findViewById(R.id.recyclerFriends_profilePicture_detailed);

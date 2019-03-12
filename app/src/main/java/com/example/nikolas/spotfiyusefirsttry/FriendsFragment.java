@@ -90,6 +90,8 @@ public class FriendsFragment extends Fragment implements  Observer {
                                                      UserManager.getInstance().writeNewFriend(database.getReference().
                                                              child("Users").child(UserManager.getInstance().getCurrentUid().getUid()).
                                                              child("friends").child(valueEt), valueEt, queryResult.toString(), profileString);
+                                                     //clear edit text after adding a friend
+                                                     searchEt.getText().clear();
                                                  }
 
                                                  @Override

@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class QuizLobbyActivity extends AppCompatActivity implements View.OnClickListener, Observer{
+public class QuizLobbyActivity extends AppCompatActivity implements  Observer{
 
     private static final String TAG = "QuizLobbyActivity_debug";
     RecyclerView recyclerView;
@@ -48,48 +48,47 @@ public class QuizLobbyActivity extends AppCompatActivity implements View.OnClick
 
     private void initRecyclerView() {
         recyclerView = findViewById(R.id.lobby_recycler_view);
-        RecyclerViewFriendsAdapter adapter = new RecyclerViewFriendsAdapter(
-
-        );
+        RecyclerViewFriendsAdapter adapter = new RecyclerViewFriendsAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
-
-    @Override
-    public void onClick(View v) {
-        int itemPosition = recyclerView.getChildAdapterPosition(v);
-        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        String friend = keys.get(itemPosition).toString() ;
-
-        Intent intent = new Intent(this, PlaylistSelect.class);
-
-
-        FirebaseOperator.getInstance().readData(database.getReference(), new OnGetDataListener() {
+        adapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onSuccess(DataSnapshot dataSnapshot) {
-                for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
-                    String userIdentity = (String) messageSnapshot.child(friend).getValue();
-                    if(userIdentity != null) {
-                        intent.putExtra("me", userID);
-                        intent.putExtra("vs", userIdentity);
-                        Log.d(TAG, "onSuccess: " + userID);
-                        Log.d(TAG, "onSuccess: " + userIdentity);
-                        startActivity(intent);
+            public void onItemClick(View view, int position) {
+                int itemPosition = recyclerView.getChildAdapterPosition(view);
+                String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                String friend = keys.get(itemPosition).toString() ;
+
+                Intent intent = new Intent(getApplicationContext(), PlaylistSelect.class);
+
+
+                FirebaseOperator.getInstance().readData(database.getReference(), new OnGetDataListener() {
+                    @Override
+                    public void onSuccess(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
+                            String userIdentity = (String) messageSnapshot.child(friend).getValue();
+                            if(userIdentity != null) {
+                                intent.putExtra("me", userID);
+                                intent.putExtra("vs", userIdentity);
+                                Log.d(TAG, "onSuccess: " + userID);
+                                Log.d(TAG, "onSuccess: " + userIdentity);
+                                startActivity(intent);
+                            }
+                        }}
+
+                    @Override
+                    public void onStart() {
+
                     }
-            }}
 
-            @Override
-            public void onStart() {
+                    @Override
+                    public void onFailure() {
 
-            }
-
-            @Override
-            public void onFailure() {
+                    }
+                });
 
             }
         });
-
     }
 
     @Override
