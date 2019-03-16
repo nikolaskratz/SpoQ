@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,8 +18,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.SimpleShowcaseEventListener;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,6 +40,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class WelcomeMenuFragment extends Fragment implements View.OnClickListener {
@@ -52,6 +60,11 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
 
         view = inflater.inflate(R.layout.fragment_welcome_menu, container, false);
 
+
+//        if(isFirstTime()){
+           firstTimeAction();
+//        }
+
         getInvites();
         getResults();
 
@@ -61,6 +74,33 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         return view;
+    }
+
+    private void firstTimeAction(){
+
+        Button button = (Button) view.findViewById(R.id.welcomeMenu_playWithFriend_bt);
+        TextView srt = (TextView) view.findViewById(R.id.swipeRightTarget);
+        TextView slt = (TextView) view.findViewById(R.id.swipeLeftTarget);
+
+        ViewTarget target = new ViewTarget(R.id.swipeRightTarget, getActivity());
+        ShowcaseView sv = new ShowcaseView.Builder(getActivity())
+                .setTarget(new ViewTarget(srt))
+                .setContentText("Swipe Right to View and Add Friends")
+                .setStyle(R.style.CustomShowCaseStyle)
+                .setShowcaseEventListener(
+                        new SimpleShowcaseEventListener() {
+                            @Override
+                            public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+                                ShowcaseView sv1 = new ShowcaseView.Builder(getActivity())
+                                        .setTarget(new ViewTarget(slt))
+                                        .setContentTitle("Tutorial")
+                                        .setContentText("Swipe Left to see your Statistics")
+                                        .build();
+                            }
+                        }
+                )
+                .build();
+//        sv.forceTextPosition(ShowcaseView.BELOW_SHOWCASE);
     }
 
     @Override
@@ -76,6 +116,20 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
             startActivity(new Intent(getActivity(), SignInActivity.class));
         }
 
+    }
+
+    //checking if app is opend for the first time
+    private boolean isFirstTime() {
+        Log.e("firsttimetest","isfirsttime is checked");
+
+        SharedPreferences preferences = getActivity().getPreferences(MODE_PRIVATE);
+        boolean ranBefore = preferences.getBoolean("RanBefore", false);
+        if (!ranBefore) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("RanBefore", true);
+            editor.commit();
+        }
+        return !ranBefore;
     }
 
     public void getInvites() {
@@ -237,76 +291,6 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
         });
     }
 
-//    public void getPlayernames(ArrayList<String> iDs, ArrayList<String> p1ID, ArrayList<String>
-//            p2ID, ArrayList<Integer> p1Points, ArrayList<Integer> p2Points) {
-//
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        ArrayList<String> p1Names = new ArrayList<>();
-//        ArrayList<String> p2Names = new ArrayList<>();
-//        int i=0;
-//        for (String p1 : p1ID) {
-//            i++;
-//            int ik=i;
-//            Log.d("recyclerviewadapt", "durchlauf1: "+p1+"; p1ID size: "+p1ID.size());
-//            FirebaseOperator.getInstance().readData(database.getReference().child(
-//                    "IdentitiesREV").child(p1), new OnGetDataListener() {
-//
-//                @Override
-//                public void onSuccess(DataSnapshot dataSnapshot) {
-//                    Object queryResult = dataSnapshot.getValue();
-//                    if (queryResult != null) {
-//                        p1Names.add(queryResult.toString());
-//                        Log.d("recyclerviewadapt", "add1: " + p1);
-//
-//                        if (ik == p1ID.size()) {
-//                            int j = 0;
-//                            for (String p2 : p2ID) {
-//                                j++;
-//                                int jk = j;
-//                                Log.d("recyclerviewadapt", "durchlauf2: " + p2 + "; size: " + p2ID.size());
-//                                FirebaseOperator.getInstance().readData(database.getReference().child("IdentitiesREV").child(p2), new OnGetDataListener() {
-//
-//                                    @Override
-//                                    public void onSuccess(DataSnapshot dataSnapshot) {
-//                                        Object queryResult = dataSnapshot.getValue();
-//                                        if (queryResult != null) {
-//                                            p2Names.add(queryResult.toString());
-//                                            Log.d("recyclerviewadapt", "add2: " + p2);
-//
-//                                            if (jk == p2ID.size()) {
-//                                                Log.d("recyclerviewadapt", "p1P: " + p1Points.size());
-//                                                Log.d("recyclerviewadapt", "p2P: " + p2Points.size());
-//                                                Log.d("recyclerviewadapt", "p1N: " + p1Names.size());
-//                                                Log.d("recyclerviewadapt", "p2N: " + p2Names.size());
-//                                                setUpRVResult(p1Points, p2Points, p1Names, p2Names);
-//                                                saveResults(p1Names, p2Names, p1ID, p2ID, p1Points, p2Points,
-//                                                        iDs);
-//                                            }
-//                                        }
-//                                    }
-//
-//
-//                                    @Override
-//                                    public void onStart() {
-//                                    }
-//
-//                                    @Override
-//                                    public void onFailure() {
-//                                    }
-//                                });
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void onStart() { }
-//
-//                @Override
-//                public void onFailure() { }
-//            });
-//        }
-//    }
 
     private void saveResults(ArrayList<String> p1Names, ArrayList<String> p2Names, ArrayList<String> p1ID, ArrayList<String> p2ID, ArrayList<Integer> p1Points, ArrayList<Integer> p2Points, ArrayList<String> iDs) {
         results= new ArrayList<>();
@@ -324,31 +308,6 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
 
     }
 
-
-
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference("IdentitiesRev");
-//        myRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot snap) {
-//                ArrayList<String> p1Names = new ArrayList<>();
-//                ArrayList<String> p2Names = new ArrayList<>();
-//                Iterator i = snap.getChildren().iterator();
-//                while(i.hasNext()) {
-//                    DataSnapshot d = (DataSnapshot) i.next();
-//                    String test = d.getValue(String.class);
-//                    Log.d("getPlayerNames", "name: "+test);
-//                }
-//
-////                setUpRVResult(p1Points,p2Points,p1Names,p2Names);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//                Log.w("myTag", "Failed to read value.");
-//            }
-//        });
-//}
 
     public void setUpRVResult(ArrayList<Integer> pointsP1,ArrayList<Integer> pointsP2,
                               ArrayList<String> p1Names, ArrayList<String> p2Names,

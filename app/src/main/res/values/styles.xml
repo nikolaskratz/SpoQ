@@ -37,4 +37,19 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="CustomShowCaseStyle">
+        <item name="sv_backgroundColor">#75B3E5FC</item>
+        <item name="sv_showcaseColor">@android:color/black</item>
+        <item name="sv_buttonText">OK</item>
+        <item name="sv_tintButtonColor">false</item>
+        <item name="sv_titleTextAppearance">@style/CustomTitle</item>
+        <item name="sv_detailTextAppearance">@style/CustomTitle</item>
+    </style>
+
+    <style name="CustomTitle" parent="TextAppearance.ShowcaseView.Title">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">18dp</item>
+        <!--<item name="android:textAppearance">?android:attr/textAppearanceLarge</item>-->
+    </style>
+
 </resources>

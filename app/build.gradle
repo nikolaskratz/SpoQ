@@ -44,6 +44,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.5'
     implementation 'com.google.firebase:firebase-core:16.0.5'
     implementation 'com.google.firebase:firebase-auth:16.0.5'
+    implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
+
 
     // library for circle image views
     implementation 'de.hdodenhof:circleimageview:3.0.0'
