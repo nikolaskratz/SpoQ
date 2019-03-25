@@ -41,9 +41,11 @@ public class QuizSummary extends AppCompatActivity {
         String playlistID= quizGame.getQuizList().get(0).getPlaylistID();
         me = getIntent().getExtras().getString("me");
         vs = getIntent().getExtras().getString("vs");
+        points = getIntent().getExtras().getInt("Points");
         quizID = me+"-"+vs+"-"+playlistID;
         quizIDrev = vs+"-"+me+"-"+playlistID;
         getVsName();
+        setStats();
         setButtons();
         if(!getIntent().getExtras().getBoolean("invite")){
             quizResult = new QuizResult(points,quizID,me,vs);
@@ -54,6 +56,34 @@ public class QuizSummary extends AppCompatActivity {
             sendSecondResult();
             removeInvite();
         }
+    }
+
+    //save totalPoints & increase totalGamesPlayed
+    public void setStats(){
+        DatabaseReference writeRef = FirebaseDatabase.getInstance().getReference("Users").child(me).child("Stats");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Users").child(me).child("Stats");
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                Object v = snap.child("totalPoints").getValue();
+                if(v!=null){
+                    Long totalPoints = (Long) snap.child("totalPoints").getValue()+points;
+                    Long totalGames = (Long) snap.child("totalGames").getValue()+1;
+                    writeRef.child("totalPoints").setValue(totalPoints);
+                    writeRef.child("totalGames").setValue(totalGames);
+                } else {
+                    writeRef.child("totalPoints").setValue(points);
+                    writeRef.child("totalGames").setValue(1);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("myTag", "Failed to read value.");
+            }
+        });
     }
 
     public void getVsName () {
@@ -82,7 +112,6 @@ public class QuizSummary extends AppCompatActivity {
         int millis = getIntent().getExtras().getInt("Millis")%100;
         int correct = getIntent().getExtras().getInt("Correct Answers");
         int wrong = getIntent().getExtras().getInt("Wrong Answers");
-        points = getIntent().getExtras().getInt("Points");
 
         TextView time = findViewById(R.id.time);
         time.setText(minutes+":"+seconds+":"+millis);
@@ -114,6 +143,7 @@ public class QuizSummary extends AppCompatActivity {
 
         DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Users").child(me);
         myRef2.child("results").child(quizID).setValue(quizResult);
+        myRef2.child("results").child(quizID).child("timestamp").setValue(ServerValue.TIMESTAMP);
         myRef2.child("results").child(quizID).child("timestamp").setValue(ServerValue.TIMESTAMP);
 
     }
