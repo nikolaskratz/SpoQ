@@ -15,9 +15,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import com.spotify.android.appremote.api.ConnectionParams;
-import com.spotify.android.appremote.api.Connector;
-import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -208,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
     //moving to select playlist intent
     public void selectPlaylist(View view){
-        Intent intent = new Intent(MainActivity.this, PlaylistSelect.class);
+        Intent intent = new Intent(MainActivity.this, PlaylistSelectActivity.class);
         startActivity(intent);
     }
 
@@ -247,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         playF1.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, PlaylistSelect.class);
+                Intent intent = new Intent(MainActivity.this, PlaylistSelectActivity.class);
                 intent.putExtra("me",currentPlayer);
                 playerToChallenge=friends.get(0);
                 intent.putExtra("vs",playerToChallenge);
@@ -259,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         playF2.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, PlaylistSelect.class);
+                Intent intent = new Intent(MainActivity.this, PlaylistSelectActivity.class);
                 intent.putExtra("me",currentPlayer);
                 playerToChallenge=friends.get(1);
                 intent.putExtra("vs",playerToChallenge);

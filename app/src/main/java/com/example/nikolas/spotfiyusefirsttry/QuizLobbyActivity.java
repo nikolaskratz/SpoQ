@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -15,9 +14,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class QuizLobbyActivity extends AppCompatActivity implements  Observer{
 
@@ -59,7 +55,7 @@ public class QuizLobbyActivity extends AppCompatActivity implements  Observer{
 
                 String friend = keys.get(itemPosition).toString() ;
 
-                Intent intent = new Intent(getApplicationContext(), PlaylistSelect.class);
+                Intent intent = new Intent(getApplicationContext(), PlaylistSelectActivity.class);
 
 
                 FirebaseOperator.getInstance().readData(database.getReference(), new OnGetDataListener() {

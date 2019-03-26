@@ -1,6 +1,7 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
-public class InviteData {
+public class
+InviteData {
 
     private String invitationBy;
 

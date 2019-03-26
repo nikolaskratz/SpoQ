@@ -20,31 +20,39 @@ import kaaes.spotify.webapi.android.models.PlaylistTrack;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.client.UrlConnectionClient;
 
-public class PlaylistSelect extends AppCompatActivity {
+public class PlaylistSelectActivity extends AppCompatActivity {
 
-    private static final String TAG = "PlaylistSelect_debug";
+    private static final String TAG = "PlaylistSelectDebug";
+
     String playlistID;
     String playlistUser;
-
     PlaylistInfo playlistInfo = new PlaylistInfo();
     private Button b1,b2,b3,b4,b5,b6,b7,b8;
-
     private static final String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
     private static final String REDIRECT_URI = "testschema://callback";
     private static final int REQUEST_CODE = 1337;
-    private String authToken;
 
-    public static PlaylistSelect playlistSelect;
+    public static PlaylistSelectActivity playlistSelect;
+
+    private String authToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_select);
-        playlistSelect=this;
 
+        // setting up authentication to fetch authToken
         setUpAuthentication();
 
+
+        //SpotifyWebApiUtils.getAuthToken();
+
+        //debug
+        //SpotifyWebApiUtils.fetchFeaturedPlaylists("limit=5","country=SE");
+
+        playlistSelect = this;
         initControl();
         setPlaylistNameButton();
         listen();
@@ -67,25 +75,25 @@ public class PlaylistSelect extends AppCompatActivity {
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            Log.e("authDebug", "reached auth, response: "+response.getType());
+            Log.i(TAG, "reached auth, response: "+response.getType());
 
             switch (response.getType()) {
                 // Response was successful and contains auth token
                 case TOKEN:
                     authToken = response.getAccessToken();
-                    Log.e("authDebug", "reached token");
+                    Log.i(TAG, "reached token" + authToken);
                     // Handle successful response
                     break;
 
                 // Auth flow returned an error
                 case ERROR:
-                    Log.e("authDebug", "reached error");
+                    Log.i(TAG, "reached error");
                     // Handle error response
                     break;
 
                 // Most likely auth flow was cancelled
                 default:
-                    Log.e("authDebug", "reached default");
+                    Log.i(TAG, "reached default");
                     // Handle other cases
             }
         }
@@ -212,12 +220,12 @@ public class PlaylistSelect extends AppCompatActivity {
         return playlistUser;
     }
 
-    public static PlaylistSelect getPlaylistSelect() {
+    public static PlaylistSelectActivity getPlaylistSelect() {
         return playlistSelect;
     }
 
     void startQuiz(){
-        Intent intent = new Intent(PlaylistSelect.this, PlayQuiz.class);
+        Intent intent = new Intent(PlaylistSelectActivity.this, PlayQuiz.class);
         intent.putExtra("me",getIntent().getExtras().getString("me"));
         intent.putExtra("vs",getIntent().getExtras().getString("vs"));
         startActivity(intent);

@@ -5,6 +5,10 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <!-- permissions for connecting to spotify api-->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,7 +18,7 @@
         android:theme="@style/MyTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".PasswordRecoveryActivity"></activity>
-        <activity android:name=".PlaylistSelect" />
+        <activity android:name=".PlaylistSelectActivity" />
         <activity android:name=".PlayQuiz" />
         <activity
             android:name=".MainAppActivity"
