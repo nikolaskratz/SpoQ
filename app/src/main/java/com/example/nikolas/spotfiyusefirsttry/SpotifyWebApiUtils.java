@@ -24,7 +24,7 @@ public class SpotifyWebApiUtils {
 
 
     // testing with full response
-    private static final String  QUERY_AUTH_TOKEN = "https://accounts.spotify.com/authorize?client_id=2b034014a25644488ec9b5e285abf490&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&scope=user-read-private%20user-read-email&state=34fFs29kd09";
+    private static final String  QUERY_AUTH_TOKEN = "https://accounts.spotify.com/authorize?client_id=2b034014a25644488ec9b5e285abf490&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&scope=streaming";
 
     public SpotifyWebApiUtils() {}
 
@@ -34,9 +34,9 @@ public class SpotifyWebApiUtils {
         final String QUERY_BASE = "https://api.spotify.com/v1/browse/featured-playlists";
 
         // get auth token
-        String authToken = getAuthToken();
+        //String authToken = getAuthToken();
 
-        Log.d(TAG, "fetchFeaturedPlaylists: " + authToken);
+        //Log.d(TAG, "fetchFeaturedPlaylists: " + authToken);
 
         // creating a url to fetch data
         //URL requestURL = prepareURLforQuery(QUERY_BASE,authToken,param);
@@ -44,10 +44,27 @@ public class SpotifyWebApiUtils {
         // make httpRequest to fetch the data
     }
 
-    public static String getAuthToken() {
+    public static String getData(String requestUrl) {
+        String testData = "";
+
+        //Log.d(TAG, "getData: " + token);
+        URL urlForToken = getURLfromString(requestUrl);
+
+        try {
+            testData = makeHttpRequest(urlForToken);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return testData;
+    }
+
+
+    public static String getAuthToken(String requestUrl) {
         String authToken = "";
 
-        URL urlForToken = getURLfromString(QUERY_AUTH_TOKEN);
+        URL urlForToken = getURLfromString(requestUrl);
 
         try {
             authToken = makeHttpRequest(urlForToken);
@@ -136,6 +153,8 @@ public class SpotifyWebApiUtils {
         }
         return newURL;
     }
+
+
 
 
 }

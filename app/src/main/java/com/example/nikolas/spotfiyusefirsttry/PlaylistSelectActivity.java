@@ -1,11 +1,16 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.accounts.AccountManager;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -26,6 +31,9 @@ public class PlaylistSelectActivity extends AppCompatActivity {
 
     private static final String TAG = "PlaylistSelectDebug";
 
+    private static final String  QUERY_AUTH_TOKEN = "https://accounts.spotify.com/authorize?client_id=2b034014a25644488ec9b5e285abf490&response_type=code&redirect_uri=testschema://callback";
+
+    TextView textView;
     String playlistID;
     String playlistUser;
     PlaylistInfo playlistInfo = new PlaylistInfo();
@@ -43,11 +51,11 @@ public class PlaylistSelectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_select);
 
+        AsyncTaskDebug asyncTaskDebug = new AsyncTaskDebug();
+        asyncTaskDebug.execute(QUERY_AUTH_TOKEN);
+
         // setting up authentication to fetch authToken
         setUpAuthentication();
-
-
-        //SpotifyWebApiUtils.getAuthToken();
 
         //debug
         //SpotifyWebApiUtils.fetchFeaturedPlaylists("limit=5","country=SE");
@@ -58,12 +66,33 @@ public class PlaylistSelectActivity extends AppCompatActivity {
         listen();
     }
 
+    //asyncTask for debugging purposes
+
+    private class AsyncTaskDebug extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            //Log.d(TAG, "doInBackground: " + strings[1]);
+            return SpotifyWebApiUtils.getData(strings[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.d(TAG, "RESPONSE_FROM_SPOTIFY: " + s);
+        }
+    }
+
+
     //set up authentication (Web)
     public void setUpAuthentication(){
         AuthenticationRequest.Builder builder =
                 new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"streaming"});
         AuthenticationRequest request = builder.build();
+
+
+        //AuthenticationClient.openLoginInBrowser(this, request);
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
@@ -75,14 +104,18 @@ public class PlaylistSelectActivity extends AppCompatActivity {
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            Log.i(TAG, "reached auth, response: "+response.getType());
+            //Log.i(TAG, "reached auth, response: "+response.getType());
 
             switch (response.getType()) {
                 // Response was successful and contains auth token
                 case TOKEN:
                     authToken = response.getAccessToken();
-                    Log.i(TAG, "reached token" + authToken);
-                    // Handle successful response
+                    Log.i(TAG, "reached token " + authToken);
+
+                    AsyncTaskDebug asyncTaskDebug = new AsyncTaskDebug();
+                    asyncTaskDebug.execute("https://api.spotify.com/v1/browse/featured-playlists");
+                    // start async task here ?
+
                     break;
 
                 // Auth flow returned an error
