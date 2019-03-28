@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -45,14 +47,16 @@ public class PlaylistSelectActivity extends AppCompatActivity {
     public static PlaylistSelectActivity playlistSelect;
 
     private String authToken;
+    private WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_select);
 
-        AsyncTaskDebug asyncTaskDebug = new AsyncTaskDebug();
-        asyncTaskDebug.execute(QUERY_AUTH_TOKEN);
+
+        //AsyncTaskDebug asyncTaskDebug = new AsyncTaskDebug();
+       // asyncTaskDebug.execute(QUERY_AUTH_TOKEN);
 
         // setting up authentication to fetch authToken
         setUpAuthentication();
@@ -73,8 +77,8 @@ public class PlaylistSelectActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
 
-            //Log.d(TAG, "doInBackground: " + strings[1]);
-            return SpotifyWebApiUtils.getData(strings[0]);
+            Log.d(TAG, "doInBackground: " + strings[1]);
+            return SpotifyWebApiUtils.getData(strings[0],strings[1]);
         }
 
         @Override
@@ -113,7 +117,7 @@ public class PlaylistSelectActivity extends AppCompatActivity {
                     Log.i(TAG, "reached token " + authToken);
 
                     AsyncTaskDebug asyncTaskDebug = new AsyncTaskDebug();
-                    asyncTaskDebug.execute("https://api.spotify.com/v1/browse/featured-playlists");
+                    asyncTaskDebug.execute("https://api.spotify.com/v1/browse/featured-playlists", authToken);
                     // start async task here ?
 
                     break;
