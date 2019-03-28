@@ -1,9 +1,13 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
@@ -11,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,10 +57,51 @@ public class StatisticsFragment extends Fragment {
 //        Log.d(TAG, "onCreateView: " + UserManager.getInstance().userInfo.getPoints());
 
         putStats(view);
+        feedback(view);
 
         return view;
     }
 
+
+    void feedback(View view){
+        Button feedbackBtn = (Button) view.findViewById(R.id.feedback_bt_stats);
+        feedbackBtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Feedback");
+
+                final EditText input = new EditText(getContext());
+                builder.setView(input);
+
+                builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendFeedback(input.getText().toString());
+                    }
+                });
+
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+                Button b = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                Drawable buttonDrwbl = getResources().getDrawable(R.drawable.feedback_dialog_button);
+                b.setBackground(buttonDrwbl);
+                b.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+
+                int textViewId = dialog.getContext().getResources().getIdentifier("android:id/alertTitle", null, null);
+                TextView tv = (TextView) dialog.findViewById(textViewId);
+                tv.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+
+            }
+        });
+    }
+
+    void sendFeedback(String feedbackTxt){
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Feedback");
+        myRef.child(userID).setValue(feedbackTxt);
+    }
 
     void putStats(View view) {
         TextView totalPointsView = (TextView) view.findViewById(R.id.total_points_stats);
