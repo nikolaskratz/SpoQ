@@ -11,6 +11,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+import retrofit.client.UrlConnectionClient;
+
 
 //GET https://accounts.spotify.com/authorize?client_id=5fe01282e44241328a84e7c5cc169165&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&scope=user-read-private%20user-read-email&state=34fFs29kd09
 
@@ -44,19 +46,19 @@ public class SpotifyWebApiUtils {
         // make httpRequest to fetch the data
     }
 
-    public static String getData(String requestUrl) {
+    public static String getData(String requestUrl , String authToken) {
         String testData = "";
 
-        //Log.d(TAG, "getData: " + token);
+        Log.d(TAG, "getData: " + authToken);
         URL urlForToken = getURLfromString(requestUrl);
 
         try {
-            testData = makeHttpRequest(urlForToken);
+            testData = makeHttpRequestSpotify(urlForToken, authToken);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
+        Log.d(TAG, "getData: " + testData);
         return testData;
     }
 
@@ -76,6 +78,53 @@ public class SpotifyWebApiUtils {
         return authToken;
     }
 
+    private static String makeHttpRequestSpotify(URL requestURL, String authToken) throws IOException{
+        String serverResponse = "";
+
+        if(requestURL == null) {
+            Log.e(TAG, "URL is empty.");
+            return serverResponse;
+        }
+
+        HttpURLConnection urlConnection = null;
+        InputStream inputStream = null;
+
+        try {
+
+            urlConnection = (HttpURLConnection) requestURL.openConnection();
+            urlConnection.setRequestProperty("Accept","application/json");
+            urlConnection.setRequestProperty("Content-Type","application/json");
+            urlConnection.setRequestProperty("Authorization: ","Bearer " + authToken);
+            urlConnection.setReadTimeout(10000);
+            urlConnection.setConnectTimeout(15000);
+            urlConnection.setRequestMethod("GET");
+
+            urlConnection.connect();
+
+            // if the data is fetched
+            if (urlConnection.getResponseCode() == 200) {
+                inputStream = urlConnection.getInputStream();
+                serverResponse = readFromStream(inputStream);
+            }
+            else {
+                Log.e(TAG, "Problem with the response, Response code:  " + urlConnection.getResponseCode());
+            }
+
+        } catch (IOException e) {
+            Log.e(TAG, "Problem with retrieving JSON response ", e );
+        } finally {
+            if (urlConnection != null){
+                urlConnection.disconnect();
+            }
+            if (inputStream != null){
+                inputStream.close();
+            }
+        }
+        return serverResponse;
+
+
+    }
+
     private static String makeHttpRequest(URL requestURL) throws IOException {
         String serverResponse = "";
 
@@ -92,6 +141,7 @@ public class SpotifyWebApiUtils {
             urlConnection.setReadTimeout(10000);
             urlConnection.setConnectTimeout(15000);
             urlConnection.setRequestMethod("GET");
+
             urlConnection.connect();
 
             // if the data is fetched
