@@ -1,6 +1,12 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,17 +46,44 @@ public class SpotifyWebApiUtils {
 
         ArrayList<Playlist> playlistList = new ArrayList<Playlist>();
         playlistList = parseFeaturedPlaylists(featuredPlaylistsJSON);
-
+        //Log.d(TAG, "getFeaturedPlaylists: " + parseFeaturedPlaylists(featuredPlaylistsJSON));
         return playlistList;
     }
 
     private static ArrayList<Playlist> parseFeaturedPlaylists(String featuredPlaylistsJSON) {
-        Log.d(TAG, "parseFeaturedPlaylists: " + featuredPlaylistsJSON);
 
+        ArrayList<Playlist> playlists = new ArrayList<Playlist>();
 
+        try {
+            JSONObject root = new JSONObject(featuredPlaylistsJSON);
+            JSONArray playlistsList = root.optJSONObject("playlists").optJSONArray("items");
 
+            for(int i = 0; i < playlistsList.length(); i++){
+                JSONObject playlistFeatures = playlistsList.getJSONObject(i);
 
-        return new ArrayList<Playlist>();
+                String playlistID = playlistFeatures.optString("id");
+
+                String playlistName = playlistFeatures.optString("name");
+
+                JSONObject image = playlistFeatures.getJSONArray("images").getJSONObject(0);;
+
+                String playlistCoverUrl = image.optString("url");
+
+                URL url = getURLfromString(playlistCoverUrl);
+                Bitmap bmp = null;
+                try {
+                    bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                playlists.add(new Playlist(playlistName,bmp,playlistID));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return playlists;
     }
 
     //TODO refactor this function to more generic

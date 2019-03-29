@@ -47,7 +47,7 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
     private static final int REQUEST_CODE = 1337;
     private static final int PLAYLIST_LOADER_ID = 1;
 
-    private static final String FEATURED_PLAYLIST_URL = "https://api.spotify.com/v1/browse/featured-playlists";
+    private static final String FEATURED_PLAYLIST_URL = "https://api.spotify.com/v1/browse/featured-playlists?limit=9";
 
     public static PlaylistSelectActivity playlistSelect;
 

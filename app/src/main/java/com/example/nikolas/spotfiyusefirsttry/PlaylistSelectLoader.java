@@ -27,7 +27,7 @@ public class PlaylistSelectLoader extends AsyncTaskLoader<List<Playlist>> {
 
         List<Playlist> playlists = SpotifyWebApiUtils.getFeaturedPlaylists(url, authToken);
 
-        Log.d(TAG, "loadInBackground: " + playlists);
+        Log.d(TAG, "loadInBackground: " + playlists.size());
         return playlists;
     }
 
