@@ -2,8 +2,10 @@ package com.example.nikolas.spotfiyusefirsttry;
 
 import android.accounts.AccountManager;
 import android.content.Intent;
+import android.content.Loader;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -29,7 +31,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.client.UrlConnectionClient;
 
-public class PlaylistSelectActivity extends AppCompatActivity {
+public class PlaylistSelectActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Playlist>> {
 
     private static final String TAG = "PlaylistSelectDebug";
 
@@ -43,50 +45,42 @@ public class PlaylistSelectActivity extends AppCompatActivity {
     private static final String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
     private static final String REDIRECT_URI = "testschema://callback";
     private static final int REQUEST_CODE = 1337;
+    private static final int PLAYLIST_LOADER_ID = 1;
+
+    private static final String FEATURED_PLAYLIST_URL = "https://api.spotify.com/v1/browse/featured-playlists";
 
     public static PlaylistSelectActivity playlistSelect;
 
     private String authToken;
-    private WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_playlist_select);
-
-
-        //AsyncTaskDebug asyncTaskDebug = new AsyncTaskDebug();
-       // asyncTaskDebug.execute(QUERY_AUTH_TOKEN);
-
-        // setting up authentication to fetch authToken
-        setUpAuthentication();
-
-        //debug
-        //SpotifyWebApiUtils.fetchFeaturedPlaylists("limit=5","country=SE");
-
         playlistSelect = this;
+
+        setUpAuthentication();
         initControl();
         setPlaylistNameButton();
         listen();
     }
 
-    //asyncTask for debugging purposes
-
-    private class AsyncTaskDebug extends AsyncTask<String,Void,String> {
-
-        @Override
-        protected String doInBackground(String... strings) {
-
-            Log.d(TAG, "doInBackground: " + strings[1]);
-            return SpotifyWebApiUtils.getData(strings[0],strings[1]);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            Log.d(TAG, "RESPONSE_FROM_SPOTIFY: " + s);
-        }
+    // implemenation of LoadManager interface for new playlistLoader
+    @Override
+    public Loader<List<Playlist>> onCreateLoader(int id, Bundle args) {
+        return new PlaylistSelectLoader(this, FEATURED_PLAYLIST_URL , authToken);
     }
 
+    @Override
+    public void onLoadFinished(Loader<List<Playlist>> loader, List<Playlist> data) {
+        Log.d(TAG, "onLoadFinished: " + data.size());
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Playlist>> loader) {
+
+    }
 
     //set up authentication (Web)
     public void setUpAuthentication(){
@@ -94,10 +88,6 @@ public class PlaylistSelectActivity extends AppCompatActivity {
                 new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"streaming"});
         AuthenticationRequest request = builder.build();
-
-
-        //AuthenticationClient.openLoginInBrowser(this, request);
-
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
 
@@ -114,11 +104,11 @@ public class PlaylistSelectActivity extends AppCompatActivity {
                 // Response was successful and contains auth token
                 case TOKEN:
                     authToken = response.getAccessToken();
-                    Log.i(TAG, "reached token " + authToken);
 
-                    AsyncTaskDebug asyncTaskDebug = new AsyncTaskDebug();
-                    asyncTaskDebug.execute("https://api.spotify.com/v1/browse/featured-playlists", authToken);
-                    // start async task here ?
+                    //Log.i(TAG, "reached token " + authToken);
+
+                    LoaderManager loaderManager = getLoaderManager();
+                    loaderManager.initLoader(PLAYLIST_LOADER_ID,null,this);
 
                     break;
 

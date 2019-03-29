@@ -10,75 +10,51 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
-import retrofit.client.UrlConnectionClient;
-
-//test
-//GET https://accounts.spotify.com/authorize?client_id=5fe01282e44241328a84e7c5cc169165&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&scope=user-read-private%20user-read-email&state=34fFs29kd09
 
 public class SpotifyWebApiUtils {
 
     private static final String TAG = "SpotifyWebApiUtilsDebug";
-
     private static final String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
     private static final String REDIRECT_URI = "testschema://callback";
     private static final int REQUEST_CODE = 1337;
-
 
     // testing with full response
     private static final String  QUERY_AUTH_TOKEN = "https://accounts.spotify.com/authorize?client_id=2b034014a25644488ec9b5e285abf490&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&scope=streaming";
 
     public SpotifyWebApiUtils() {}
 
-    public static void fetchFeaturedPlaylists(String... param){
+    public static ArrayList<Playlist> getFeaturedPlaylists (String requestUrl , String authToken) {
+        String featuredPlaylistsJSON = "";
 
-        //declaring the base query form for request
-        final String QUERY_BASE = "https://api.spotify.com/v1/browse/featured-playlists";
-
-        // get auth token
-        //String authToken = getAuthToken();
-
-        //Log.d(TAG, "fetchFeaturedPlaylists: " + authToken);
-
-        // creating a url to fetch data
-        //URL requestURL = prepareURLforQuery(QUERY_BASE,authToken,param);
-
-        // make httpRequest to fetch the data
-    }
-
-    public static String getData(String requestUrl , String authToken) {
-        String testData = "";
-
-        Log.d(TAG, "getData: " + authToken);
+        // create URL object from link in a string format
         URL urlForToken = getURLfromString(requestUrl);
 
+        // make HTTP call to get the data
         try {
-            testData = makeHttpRequestSpotify(urlForToken, authToken);
+            featuredPlaylistsJSON = makeHttpRequestForPlaylists(urlForToken, authToken);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "getData: " + testData);
-        return testData;
+        ArrayList<Playlist> playlistList = new ArrayList<Playlist>();
+        playlistList = parseFeaturedPlaylists(featuredPlaylistsJSON);
+
+        return playlistList;
     }
 
-
-    public static String getAuthToken(String requestUrl) {
-        String authToken = "";
-
-        URL urlForToken = getURLfromString(requestUrl);
-
-        try {
-            authToken = makeHttpRequest(urlForToken);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private static ArrayList<Playlist> parseFeaturedPlaylists(String featuredPlaylistsJSON) {
+        Log.d(TAG, "parseFeaturedPlaylists: " + featuredPlaylistsJSON);
 
 
-        return authToken;
+
+
+        return new ArrayList<Playlist>();
     }
 
-    private static String makeHttpRequestSpotify(URL requestURL, String authToken) throws IOException{
+    //TODO refactor this function to more generic
+    private static String makeHttpRequestForPlaylists(URL requestURL, String authToken) throws IOException{
         String serverResponse = "";
 
         if(requestURL == null) {
@@ -90,7 +66,6 @@ public class SpotifyWebApiUtils {
         InputStream inputStream = null;
 
         try {
-
             urlConnection = (HttpURLConnection) requestURL.openConnection();
             urlConnection.setRequestProperty("Accept","application/json");
             urlConnection.setRequestProperty("Content-Type","application/json");
@@ -101,7 +76,7 @@ public class SpotifyWebApiUtils {
 
             urlConnection.connect();
 
-            // if the data is fetched
+            // positive response from the server
             if (urlConnection.getResponseCode() == 200) {
                 inputStream = urlConnection.getInputStream();
                 serverResponse = readFromStream(inputStream);
@@ -121,10 +96,9 @@ public class SpotifyWebApiUtils {
             }
         }
         return serverResponse;
-
-
     }
 
+    // redundant method
     private static String makeHttpRequest(URL requestURL) throws IOException {
         String serverResponse = "";
 
@@ -141,10 +115,8 @@ public class SpotifyWebApiUtils {
             urlConnection.setReadTimeout(10000);
             urlConnection.setConnectTimeout(15000);
             urlConnection.setRequestMethod("GET");
-
             urlConnection.connect();
 
-            // if the data is fetched
             if (urlConnection.getResponseCode() == 200) {
                 inputStream = urlConnection.getInputStream();
                 serverResponse = readFromStream(inputStream);
@@ -203,8 +175,4 @@ public class SpotifyWebApiUtils {
         }
         return newURL;
     }
-
-
-
-
 }

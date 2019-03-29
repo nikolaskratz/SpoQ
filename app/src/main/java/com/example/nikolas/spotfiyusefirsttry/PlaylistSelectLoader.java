@@ -11,25 +11,28 @@ public class PlaylistSelectLoader extends AsyncTaskLoader<List<Playlist>> {
     private static final String TAG = "LoaderDebug";
 
     private String url;
+    private String authToken;
 
-    public PlaylistSelectLoader(Context context, String url) {
+    public PlaylistSelectLoader(Context context, String url, String authToken) {
         super(context);
         this.url = url;
+        this.authToken = authToken;
     }
 
     @Override
     public List<Playlist> loadInBackground() {
-        Log.d(TAG, "loadInBackground: ");
-        if (url == null) {
+        if (url == null || authToken == null) {
             return null;
         }
 
-       // List<Playlist> playlists = QueryUtils.fetchUSGSdata(url);
-        return null;
+        List<Playlist> playlists = SpotifyWebApiUtils.getFeaturedPlaylists(url, authToken);
+
+        Log.d(TAG, "loadInBackground: " + playlists);
+        return playlists;
     }
 
     @Override
     protected void onStartLoading() {
-        super.onStartLoading();
+        forceLoad();
     }
 }
