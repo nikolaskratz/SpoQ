@@ -14,6 +14,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -75,6 +76,11 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
     @Override
     public void onLoadFinished(Loader<List<Playlist>> loader, List<Playlist> data) {
         Log.d(TAG, "onLoadFinished: " + data.size());
+
+        GridView playlistAdapter = (GridView) findViewById(R.id.playlistGridView);
+        PlaylistSelectAdapter playlistSelectAdapter =  new  PlaylistSelectAdapter(this, data);
+        playlistAdapter.setAdapter(playlistSelectAdapter);
+
     }
 
     @Override
