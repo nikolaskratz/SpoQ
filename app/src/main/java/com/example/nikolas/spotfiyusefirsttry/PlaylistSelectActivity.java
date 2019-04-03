@@ -99,13 +99,14 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
                 //Object result = parent.getItemAtPosition(position);
                 Log.d(TAG, "onItemClick: " + data.get(position).getPlaylistName());
 
-//                playlistID = data.get(position).getPlaylistId();
-//
-//                Intent intent = new Intent(PlaylistSelectActivity.this, PlayQuiz.class);
-//                intent.putExtra("me",getIntent().getExtras().getString("me"));
-//                intent.putExtra("vs",getIntent().getExtras().getString("vs"));
-//                startActivity(intent);
-//                finish();
+                playlistID = data.get(position).getPlaylistId();
+                playlistUser = "spotify";
+
+                Intent intent = new Intent(PlaylistSelectActivity.this, PlayQuiz.class);
+                intent.putExtra("me",getIntent().getExtras().getString("me"));
+                intent.putExtra("vs",getIntent().getExtras().getString("vs"));
+                startActivity(intent);
+                finish();
             }
         });
 
