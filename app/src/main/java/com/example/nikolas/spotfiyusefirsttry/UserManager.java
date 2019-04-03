@@ -18,8 +18,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-
-public class UserManager extends Application implements Subject {
+public  class UserManager extends Application implements Subject {
 
     //private static final UserManager ourInstance = new UserManager();
     private static  UserManager ourInstance;
@@ -41,6 +40,7 @@ public class UserManager extends Application implements Subject {
     private String userID = userAuth.getCurrentUser().getUid();
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
+
     //reference to User object in firebase
     DatabaseReference myRef = database.getReference("Users").child(userID);
 

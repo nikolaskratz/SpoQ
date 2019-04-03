@@ -3,9 +3,13 @@ package com.example.nikolas.spotfiyusefirsttry;
 import android.accounts.AccountManager;
 import android.content.Intent;
 import android.content.Loader;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.app.LoaderManager;
+import android.support.annotation.ColorInt;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -13,8 +17,10 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -51,14 +57,18 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
     private static final String FEATURED_PLAYLIST_URL = "https://api.spotify.com/v1/browse/featured-playlists?limit=9";
 
     public static PlaylistSelectActivity playlistSelect;
+    private ProgressBar progressBar;
 
     private String authToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_playlist_select);
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBarPlaylistSelection);
+        progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color.editTextBackground), PorterDuff.Mode.SRC_IN);
+
         playlistSelect = this;
 
         setUpAuthentication();
@@ -77,9 +87,27 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
     public void onLoadFinished(Loader<List<Playlist>> loader, List<Playlist> data) {
         Log.d(TAG, "onLoadFinished: " + data.size());
 
-        GridView playlistAdapter = (GridView) findViewById(R.id.playlistGridView);
+        progressBar.setVisibility(View.GONE);
+
+        GridView playlistGridView = (GridView) findViewById(R.id.playlistGridView);
         PlaylistSelectAdapter playlistSelectAdapter =  new  PlaylistSelectAdapter(this, data);
-        playlistAdapter.setAdapter(playlistSelectAdapter);
+        playlistGridView.setAdapter(playlistSelectAdapter);
+
+        playlistGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Object result = parent.getItemAtPosition(position);
+                Log.d(TAG, "onItemClick: " + data.get(position).getPlaylistName());
+
+//                playlistID = data.get(position).getPlaylistId();
+//
+//                Intent intent = new Intent(PlaylistSelectActivity.this, PlayQuiz.class);
+//                intent.putExtra("me",getIntent().getExtras().getString("me"));
+//                intent.putExtra("vs",getIntent().getExtras().getString("vs"));
+//                startActivity(intent);
+//                finish();
+            }
+        });
 
     }
 
@@ -137,7 +165,7 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
         SpotifyApi api = new SpotifyApi();
         api.setAccessToken(authToken);
         SpotifyService spotify = api.getService();
-        Log.e("getPlaylistTracksTest", "authToken: "+authToken);
+        Log.e("getPlaylistTracksTest", "authToken: "+ authToken);
         spotify.getPlaylistTracks(playlistUser, playlistID, new Callback<Pager<PlaylistTrack>>() {
 
             @Override

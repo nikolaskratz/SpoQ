@@ -40,13 +40,13 @@ public class SpotifyWebApiUtils {
         // make HTTP call to get the data
         try {
             featuredPlaylistsJSON = makeHttpRequestForPlaylists(urlForToken, authToken);
+            Log.d(TAG, "getFeaturedPlaylists: " + featuredPlaylistsJSON);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         ArrayList<Playlist> playlistList = new ArrayList<Playlist>();
         playlistList = parseFeaturedPlaylists(featuredPlaylistsJSON);
-        //Log.d(TAG, "getFeaturedPlaylists: " + parseFeaturedPlaylists(featuredPlaylistsJSON));
         return playlistList;
     }
 
