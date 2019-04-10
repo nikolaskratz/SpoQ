@@ -8,9 +8,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="editTextBackground">@color/editTextBackground</item>
-        <item name="android:textColor">@color/editTextBackground</item>
-
+        <item name="editTextBackground">@color/searchViewBackground</item>
+        <item name="android:textColor">@color/searchViewBackground</item>
     </style>
 
     <style name="QuizButton" parent="@android:style/Widget.Button">
@@ -28,9 +27,6 @@
         <item name="android:windowTitleStyle">@style/QRDTitle</item>
         <item name="android:textColorPrimary">@android:color/white</item>
     </style>
-
-
-
 
     <style name="QRDTitle">
         <item name="android:textColor">@color/SongButtonColor</item>
