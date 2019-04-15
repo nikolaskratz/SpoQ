@@ -33,18 +33,18 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
 
     private static final String TAG = "PlaylistSelectDebug";
 
-    private static final String QUERY_AUTH_TOKEN = "https://accounts.spotify.com/authorize?client_id=2b034014a25644488ec9b5e285abf490&response_type=code&redirect_uri=testschema://callback";
-
-    TextView textView;
     String playlistID;
     String playlistUser;
     PlaylistInfo playlistInfo = new PlaylistInfo();
     private static final String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
     private static final String REDIRECT_URI = "testschema://callback";
     private static final int REQUEST_CODE = 1337;
+
     private static final int PLAYLIST_LOADER_ID = 1;
+    private static final int SEARCH_PLAYLIST_LOADER_ID = 2;
 
     private static final String FEATURED_PLAYLIST_URL = "https://api.spotify.com/v1/browse/featured-playlists?limit=9";
+    private static String searchPlaylistURL = "https://api.spotify.com/v1/search";
 
     public static PlaylistSelectActivity playlistSelect;
     private ProgressBar progressBar;
@@ -63,20 +63,56 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
 
         searchBar = (SearchView) findViewById(R.id.sv_search_playlist);
         // enables clicking on the whole bar instead on the icon to activate it
-        searchBar.setOnClickListener(new View.OnClickListener() {
+        searchBar.setIconified(false);
+
+        searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onClick(View v) {
-                searchBar.setIconified(false);
+            public boolean onQueryTextSubmit(String query) {
+                Log.d(TAG, "onQueryTextSubmit: " + query);
+                searchPlaylistURL = addSearchParamToQuery(searchPlaylistURL, query);
+
+                LoaderManager loaderManager = getLoaderManager();
+                loaderManager.initLoader(SEARCH_PLAYLIST_LOADER_ID, null, playlistSelect);
+                // Start query
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
             }
         });
 
         setUpAuthentication();
     }
 
+    private String addSearchParamToQuery(String baseURL, String param) {
+
+        if (param == null) {
+            return null;
+        }
+
+        param = param.replace(" ","%20");
+
+        return baseURL + "?q=" + param + "&type=playlist" + "&limit=5";
+    }
+
     // implemenation of LoadManager interface for new playlistLoader
     @Override
     public Loader<List<Playlist>> onCreateLoader(int id, Bundle args) {
-        return new PlaylistSelectLoader(this, FEATURED_PLAYLIST_URL, authToken);
+
+        PlaylistSelectLoader playlistSelectLoader = null;
+
+        switch (id){
+            case PLAYLIST_LOADER_ID:
+                playlistSelectLoader = new PlaylistSelectLoader(this, FEATURED_PLAYLIST_URL, authToken);
+                break;
+            case SEARCH_PLAYLIST_LOADER_ID:
+                playlistSelectLoader = new PlaylistSelectLoader(this,searchPlaylistURL,authToken);
+                break;
+        }
+
+        return playlistSelectLoader;
     }
 
     @Override
@@ -129,7 +165,7 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
         // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            //Log.i(TAG, "reached auth, response: "+response.getType());
+            //Log.i(TAG, "reached auth, response: " + response.getType());
 
             switch (response.getType()) {
                 // Response was successful and contains auth token

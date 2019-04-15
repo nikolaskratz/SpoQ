@@ -27,11 +27,12 @@ public class SpotifyWebApiUtils {
     private static final int REQUEST_CODE = 1337;
 
     // testing with full response
-    private static final String  QUERY_AUTH_TOKEN = "https://accounts.spotify.com/authorize?client_id=2b034014a25644488ec9b5e285abf490&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&scope=streaming";
+    private static final String QUERY_AUTH_TOKEN = "https://accounts.spotify.com/authorize?client_id=2b034014a25644488ec9b5e285abf490&response_type=code&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&scope=streaming";
 
-    public SpotifyWebApiUtils() {}
+    public SpotifyWebApiUtils() {
+    }
 
-    public static ArrayList<Playlist> getFeaturedPlaylists (String requestUrl , String authToken) {
+    public static ArrayList<Playlist> getFeaturedPlaylists(String requestUrl, String authToken) {
         String featuredPlaylistsJSON = "";
 
         // create URL object from link in a string format
@@ -39,7 +40,7 @@ public class SpotifyWebApiUtils {
 
         // make HTTP call to get the data
         try {
-            featuredPlaylistsJSON = makeHttpRequestForPlaylists(urlForToken, authToken);
+            featuredPlaylistsJSON = makeHttpSpotifyRequest(urlForToken, authToken);
             Log.d(TAG, "getFeaturedPlaylists: " + featuredPlaylistsJSON);
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,14 +59,13 @@ public class SpotifyWebApiUtils {
             JSONObject root = new JSONObject(featuredPlaylistsJSON);
             JSONArray playlistsList = root.optJSONObject("playlists").optJSONArray("items");
 
-            for(int i = 0; i < playlistsList.length(); i++){
+            for (int i = 0; i < playlistsList.length(); i++) {
+
                 JSONObject playlistFeatures = playlistsList.getJSONObject(i);
 
                 String playlistID = playlistFeatures.optString("id");
-
                 String playlistName = playlistFeatures.optString("name");
-
-                JSONObject image = playlistFeatures.getJSONArray("images").getJSONObject(0);;
+                JSONObject image = playlistFeatures.getJSONArray("images").getJSONObject(0);
 
                 String playlistCoverUrl = image.optString("url");
 
@@ -77,7 +77,7 @@ public class SpotifyWebApiUtils {
                     e.printStackTrace();
                 }
 
-                playlists.add(new Playlist(playlistName,bmp,playlistID));
+                playlists.add(new Playlist(playlistName, bmp, playlistID));
             }
 
         } catch (JSONException e) {
@@ -87,12 +87,16 @@ public class SpotifyWebApiUtils {
     }
 
     //TODO refactor this function to more generic
-    private static String makeHttpRequestForPlaylists(URL requestURL, String authToken) throws IOException{
-        String serverResponse = "";
+    private static String makeHttpSpotifyRequest(URL requestURL, String authToken) throws IOException {
 
-        if(requestURL == null) {
-            Log.e(TAG, "URL is empty.");
-            return serverResponse;
+        String serverResponse = "Problem to get the response from server: ";
+
+        if (requestURL == null) {
+            Log.e(TAG, "URL is missing.");
+            return serverResponse + "Missing URL";
+        } else if (authToken == null) {
+            Log.e(TAG, "AuthToken is missing.");
+            return serverResponse + "Missing token";
         }
 
         HttpURLConnection urlConnection = null;
@@ -100,9 +104,9 @@ public class SpotifyWebApiUtils {
 
         try {
             urlConnection = (HttpURLConnection) requestURL.openConnection();
-            urlConnection.setRequestProperty("Accept","application/json");
-            urlConnection.setRequestProperty("Content-Type","application/json");
-            urlConnection.setRequestProperty("Authorization: ","Bearer " + authToken);
+            urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            urlConnection.setRequestProperty("Authorization: ", "Bearer " + authToken);
             urlConnection.setReadTimeout(10000);
             urlConnection.setConnectTimeout(15000);
             urlConnection.setRequestMethod("GET");
@@ -113,58 +117,17 @@ public class SpotifyWebApiUtils {
             if (urlConnection.getResponseCode() == 200) {
                 inputStream = urlConnection.getInputStream();
                 serverResponse = readFromStream(inputStream);
-            }
-            else {
+            } else {
                 Log.e(TAG, "Problem with the response, Response code:  " + urlConnection.getResponseCode());
             }
 
         } catch (IOException e) {
-            Log.e(TAG, "Problem with retrieving JSON response ", e );
+            Log.e(TAG, "Problem with retrieving JSON response ", e);
         } finally {
-            if (urlConnection != null){
+            if (urlConnection != null) {
                 urlConnection.disconnect();
             }
-            if (inputStream != null){
-                inputStream.close();
-            }
-        }
-        return serverResponse;
-    }
-
-    // redundant method
-    private static String makeHttpRequest(URL requestURL) throws IOException {
-        String serverResponse = "";
-
-        if(requestURL == null) {
-            Log.e(TAG, "URL is empty.");
-            return serverResponse;
-        }
-
-        HttpURLConnection urlConnection = null;
-        InputStream inputStream = null;
-
-        try {
-            urlConnection = (HttpURLConnection) requestURL.openConnection();
-            urlConnection.setReadTimeout(10000);
-            urlConnection.setConnectTimeout(15000);
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-
-            if (urlConnection.getResponseCode() == 200) {
-                inputStream = urlConnection.getInputStream();
-                serverResponse = readFromStream(inputStream);
-            }
-            else {
-                Log.e(TAG, "Problem with the response, Response code:  " + urlConnection.getResponseCode());
-            }
-
-        } catch (IOException e) {
-            Log.e(TAG, "Problem with retrieving JSON response ", e );
-        } finally {
-            if (urlConnection != null){
-                urlConnection.disconnect();
-            }
-            if (inputStream != null){
+            if (inputStream != null) {
                 inputStream.close();
             }
         }
@@ -173,20 +136,21 @@ public class SpotifyWebApiUtils {
 
     /**
      * Method generating a String from http request (input stream = bytes of data)
+     *
      * @param inputStream input stream from http request
      * @return returns a string, which is a complete json response from the server
-     * @throws IOException  throws exception which is handled in the first invoke method
+     * @throws IOException throws exception which is handled in the first invoke method
      */
 
     private static String readFromStream(InputStream inputStream) throws IOException {
         StringBuilder output = new StringBuilder();
-        if(inputStream != null ){
+        if (inputStream != null) {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
             BufferedReader reader = new BufferedReader(inputStreamReader);
             String line = reader.readLine();
-            while (line != null){
+            while (line != null) {
                 output.append(line);
-                line =reader.readLine();
+                line = reader.readLine();
             }
         }
         return output.toString();
@@ -194,6 +158,7 @@ public class SpotifyWebApiUtils {
 
     /**
      * Basic conversion from String to URL object
+     *
      * @param requestURLString String form of the HTTP address
      * @return returns URL object with the link
      */

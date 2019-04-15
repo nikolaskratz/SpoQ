@@ -15,6 +15,7 @@ public class PlaylistSelectLoader extends AsyncTaskLoader<List<Playlist>> {
 
     public PlaylistSelectLoader(Context context, String url, String authToken) {
         super(context);
+        Log.d(TAG, "PlaylistSelectLoader: " + url);
         this.url = url;
         this.authToken = authToken;
     }
