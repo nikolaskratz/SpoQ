@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.graphics.PorterDuff;
 import android.app.LoaderManager;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -49,8 +50,17 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
     public static PlaylistSelectActivity playlistSelect;
     private ProgressBar progressBar;
     private SearchView searchBar;
+    private ConstraintLayout topSelectActiityLayout;
 
     private String authToken;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // takes off the focus on searchView
+        View current = getCurrentFocus();
+        if (current != null) current.clearFocus();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +102,7 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
             return null;
         }
 
-        param = param.replace(" ","%20");
+        param = param.replace(" ", "%20");
 
         return baseURL + "?q=" + param + "&type=playlist" + "&limit=5";
     }
@@ -103,12 +113,12 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
 
         PlaylistSelectLoader playlistSelectLoader = null;
 
-        switch (id){
+        switch (id) {
             case PLAYLIST_LOADER_ID:
                 playlistSelectLoader = new PlaylistSelectLoader(this, FEATURED_PLAYLIST_URL, authToken);
                 break;
             case SEARCH_PLAYLIST_LOADER_ID:
-                playlistSelectLoader = new PlaylistSelectLoader(this,searchPlaylistURL,authToken);
+                playlistSelectLoader = new PlaylistSelectLoader(this, searchPlaylistURL, authToken);
                 break;
         }
 
@@ -174,7 +184,6 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
 
                     LoaderManager loaderManager = getLoaderManager();
                     loaderManager.initLoader(PLAYLIST_LOADER_ID, null, this);
-
                     break;
 
                 // Auth flow returned an error
