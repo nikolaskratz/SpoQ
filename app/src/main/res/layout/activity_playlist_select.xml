@@ -19,23 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-    <GridView
-        android:id="@+id/playlistGridView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:gravity="center"
-        android:layout_marginTop="16dp"
-        android:horizontalSpacing="8dp"
-        android:numColumns="3"
-        android:paddingBottom="40dp"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/sv_search_playlist"
-        app:layout_constraintStart_toStartOf="@+id/sv_search_playlist"
-        app:layout_constraintTop_toBottomOf="@+id/sv_search_playlist" />
-
     <ProgressBar
         android:id="@+id/progressBarPlaylistSelection"
         style="?android:attr/progressBarStyle"
@@ -47,9 +30,24 @@
         app:layout_constraintTop_toTopOf="@+id/ThumbnailPlaylistSelectActivity" />
 
     <SearchView
+        android:id="@+id/sv_search_playlist"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/edit_text_background"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:id="@+id/sv_search_playlist"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ThumbnailPlaylistSelectActivity" />
+
+    <GridView
+        android:id="@+id/playlistGridView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -57,9 +55,45 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:background="@drawable/edit_text_background"
+        android:gravity="center"
+        android:horizontalSpacing="8dp"
+        android:numColumns="3"
+        android:paddingBottom="40dp"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView">
+    </GridView>
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ThumbnailPlaylistSelectActivity" />
+        app:layout_constraintTop_toBottomOf="@+id/sv_search_playlist">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <GridView
+                android:id="@+id/playlistSearchGridView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </GridView>
+        </LinearLayout>
+    </HorizontalScrollView>
+
 
 </android.support.constraint.ConstraintLayout>

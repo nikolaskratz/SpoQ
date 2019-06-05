@@ -1,5 +1,6 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.Loader;
 import android.graphics.PorterDuff;
@@ -47,17 +48,18 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
     private static final String FEATURED_PLAYLIST_URL = "https://api.spotify.com/v1/browse/featured-playlists?limit=9";
     private static String searchPlaylistURL = "https://api.spotify.com/v1/search";
 
+    GridView playlistGridView;
+
     public static PlaylistSelectActivity playlistSelect;
     private ProgressBar progressBar;
     private SearchView searchBar;
-    private ConstraintLayout topSelectActiityLayout;
 
     private String authToken;
 
     @Override
     protected void onResume() {
         super.onResume();
-        // takes off the focus on searchView
+        // takes off the focus from searchView
         View current = getCurrentFocus();
         if (current != null) current.clearFocus();
     }
@@ -75,15 +77,20 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
         // enables clicking on the whole bar instead on the icon to activate it
         searchBar.setIconified(false);
 
+        playlistGridView = (GridView) findViewById(R.id.playlistGridView);
+
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(playlistGridView,"translationY", 400);
+
         searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                objectAnimator.setDuration(1000);
+                objectAnimator.start();
                 Log.d(TAG, "onQueryTextSubmit: " + query);
                 searchPlaylistURL = addSearchParamToQuery(searchPlaylistURL, query);
 
                 LoaderManager loaderManager = getLoaderManager();
                 loaderManager.initLoader(SEARCH_PLAYLIST_LOADER_ID, null, playlistSelect);
-                // Start query
                 return false;
             }
 
@@ -101,7 +108,6 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
         if (param == null) {
             return null;
         }
-
         param = param.replace(" ", "%20");
 
         return baseURL + "?q=" + param + "&type=playlist" + "&limit=5";
@@ -131,14 +137,13 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
 
         progressBar.setVisibility(View.GONE);
 
-        GridView playlistGridView = (GridView) findViewById(R.id.playlistGridView);
         PlaylistSelectAdapter playlistSelectAdapter = new PlaylistSelectAdapter(this, data);
         playlistGridView.setAdapter(playlistSelectAdapter);
 
         playlistGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Object result = parent.getItemAtPosition(position);
+
                 Log.d(TAG, "onItemClick: " + data.get(position).getPlaylistName());
 
                 playlistID = data.get(position).getPlaylistId();
@@ -151,7 +156,6 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
                 finish();
             }
         });
-
     }
 
     @Override
