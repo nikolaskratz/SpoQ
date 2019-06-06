@@ -48,7 +48,8 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
     private static final String FEATURED_PLAYLIST_URL = "https://api.spotify.com/v1/browse/featured-playlists?limit=9";
     private static String searchPlaylistURL = "https://api.spotify.com/v1/search";
 
-    GridView playlistGridView;
+    private GridView playlistGridView;
+    private GridView playlistSearchGridView;
 
     public static PlaylistSelectActivity playlistSelect;
     private ProgressBar progressBar;
@@ -78,14 +79,11 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
         searchBar.setIconified(false);
 
         playlistGridView = (GridView) findViewById(R.id.playlistGridView);
-
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(playlistGridView,"translationY", 400);
+        playlistSearchGridView = (GridView) findViewById(R.id.playlistSearchGridView);
 
         searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                objectAnimator.setDuration(1000);
-                objectAnimator.start();
                 Log.d(TAG, "onQueryTextSubmit: " + query);
                 searchPlaylistURL = addSearchParamToQuery(searchPlaylistURL, query);
 
@@ -133,29 +131,63 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
 
     @Override
     public void onLoadFinished(Loader<List<Playlist>> loader, List<Playlist> data) {
-        Log.d(TAG, "onLoadFinished: " + data.size());
+        //Log.d(TAG, "onLoadFinished:(data_size) -> " + data.size());
 
         progressBar.setVisibility(View.GONE);
 
-        PlaylistSelectAdapter playlistSelectAdapter = new PlaylistSelectAdapter(this, data);
-        playlistGridView.setAdapter(playlistSelectAdapter);
+        Log.d(TAG, "onLoadFinished: ID_Loader -> " + loader.getId());
 
-        playlistGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        switch(loader.getId()) {
+            // if the default spotify playlist loader returns, call this adapter
+            case PLAYLIST_LOADER_ID:
+                PlaylistSelectAdapter playlistSelectAdapterRelated = new PlaylistSelectAdapter(this, data);
+                playlistGridView.setAdapter(playlistSelectAdapterRelated);
 
-                Log.d(TAG, "onItemClick: " + data.get(position).getPlaylistName());
+                //attach onClick listener to the adapter
+                playlistGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                playlistID = data.get(position).getPlaylistId();
-                playlistUser = "spotify";
+                        Log.d(TAG, "onItemClick: " + data.get(position).getPlaylistName());
 
-                Intent intent = new Intent(PlaylistSelectActivity.this, PlayQuiz.class);
-                intent.putExtra("me", getIntent().getExtras().getString("me"));
-                intent.putExtra("vs", getIntent().getExtras().getString("vs"));
-                startActivity(intent);
-                finish();
-            }
-        });
+                        playlistID = data.get(position).getPlaylistId();
+                        playlistUser = "spotify";
+
+                        Intent intent = new Intent(PlaylistSelectActivity.this, PlayQuiz.class);
+                        intent.putExtra("me", getIntent().getExtras().getString("me"));
+                        intent.putExtra("vs", getIntent().getExtras().getString("vs"));
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                break;
+
+            case SEARCH_PLAYLIST_LOADER_ID:
+                //bring back playlistSearchView
+                playlistSearchGridView.setVisibility(View.VISIBLE);
+
+                Log.d(TAG, "creating adapter for searched" );
+                PlaylistSelectAdapter playlistSelectAdapterSearched = new PlaylistSelectAdapter(this, data);
+                playlistSearchGridView.setAdapter(playlistSelectAdapterSearched);
+                //attach onClick listener to the adapter
+                playlistSearchGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                        Log.d(TAG, "onItemClick: " + data.get(position).getPlaylistName());
+
+                        playlistID = data.get(position).getPlaylistId();
+                        playlistUser = "spotify";
+
+                        Intent intent = new Intent(PlaylistSelectActivity.this, PlayQuiz.class);
+                        intent.putExtra("me", getIntent().getExtras().getString("me"));
+                        intent.putExtra("vs", getIntent().getExtras().getString("vs"));
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                break;
+        }
     }
 
     @Override
@@ -203,7 +235,6 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
             }
         }
     }
-
     public void getPlaylistTracks(String playlistID, String playlistUser, final GamePlayManager gamePlayManager) {
         Log.e("getPlaylistTracksTest", "started getPlaylistTracksTest");
         SpotifyApi api = new SpotifyApi();
