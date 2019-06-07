@@ -1,11 +1,9 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.Loader;
 import android.graphics.PorterDuff;
 import android.app.LoaderManager;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,7 +13,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -33,6 +30,8 @@ import retrofit.client.Response;
 
 public class PlaylistSelectActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Playlist>> {
 
+    // TODO: 6/7/2019 fix scrolling -- need to implelent recycler viewer with layout manager
+    
     private static final String TAG = "PlaylistSelectDebug";
 
     String playlistID;
@@ -46,7 +45,7 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
     private static final int SEARCH_PLAYLIST_LOADER_ID = 2;
 
     private static final String FEATURED_PLAYLIST_URL = "https://api.spotify.com/v1/browse/featured-playlists?limit=9";
-    private static String searchPlaylistURL = "https://api.spotify.com/v1/search";
+    private static final String SEARCH_PLAYLIST_URL = "https://api.spotify.com/v1/search";
 
     private GridView playlistGridView;
     private GridView playlistSearchGridView;
@@ -57,6 +56,7 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
 
     private String authToken;
 
+    String searchPlaylistUrlParam;
     @Override
     protected void onResume() {
         super.onResume();
@@ -75,6 +75,7 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color.searchViewBackground), PorterDuff.Mode.SRC_IN);
 
         searchBar = (SearchView) findViewById(R.id.sv_search_playlist);
+
         // enables clicking on the whole bar instead on the icon to activate it
         searchBar.setIconified(false);
 
@@ -84,11 +85,12 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
         searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d(TAG, "onQueryTextSubmit: " + query);
-                searchPlaylistURL = addSearchParamToQuery(searchPlaylistURL, query);
+                searchPlaylistUrlParam = addSearchParamToSearchPlaylistsQuery(SEARCH_PLAYLIST_URL, query);
 
                 LoaderManager loaderManager = getLoaderManager();
-                loaderManager.initLoader(SEARCH_PLAYLIST_LOADER_ID, null, playlistSelect);
+
+                //restarting query
+                loaderManager.restartLoader(SEARCH_PLAYLIST_LOADER_ID, null, playlistSelect);
                 return false;
             }
 
@@ -101,14 +103,14 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
         setUpAuthentication();
     }
 
-    private String addSearchParamToQuery(String baseURL, String param) {
+    private String addSearchParamToSearchPlaylistsQuery(String baseURL, String param) {
 
         if (param == null) {
             return null;
         }
         param = param.replace(" ", "%20");
 
-        return baseURL + "?q=" + param + "&type=playlist" + "&limit=5";
+        return baseURL + "?q=" + param + "&type=playlist" + "&limit=6";
     }
 
     // implemenation of LoadManager interface for new playlistLoader
@@ -122,7 +124,7 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
                 playlistSelectLoader = new PlaylistSelectLoader(this, FEATURED_PLAYLIST_URL, authToken);
                 break;
             case SEARCH_PLAYLIST_LOADER_ID:
-                playlistSelectLoader = new PlaylistSelectLoader(this, searchPlaylistURL, authToken);
+                playlistSelectLoader = new PlaylistSelectLoader(this, searchPlaylistUrlParam, authToken);
                 break;
         }
 
@@ -131,13 +133,11 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
 
     @Override
     public void onLoadFinished(Loader<List<Playlist>> loader, List<Playlist> data) {
-        //Log.d(TAG, "onLoadFinished:(data_size) -> " + data.size());
 
         progressBar.setVisibility(View.GONE);
 
-        Log.d(TAG, "onLoadFinished: ID_Loader -> " + loader.getId());
+        switch (loader.getId()) {
 
-        switch(loader.getId()) {
             // if the default spotify playlist loader returns, call this adapter
             case PLAYLIST_LOADER_ID:
                 PlaylistSelectAdapter playlistSelectAdapterRelated = new PlaylistSelectAdapter(this, data);
@@ -147,8 +147,6 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
                 playlistGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                        Log.d(TAG, "onItemClick: " + data.get(position).getPlaylistName());
 
                         playlistID = data.get(position).getPlaylistId();
                         playlistUser = "spotify";
@@ -166,9 +164,13 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
                 //bring back playlistSearchView
                 playlistSearchGridView.setVisibility(View.VISIBLE);
 
-                Log.d(TAG, "creating adapter for searched" );
                 PlaylistSelectAdapter playlistSelectAdapterSearched = new PlaylistSelectAdapter(this, data);
                 playlistSearchGridView.setAdapter(playlistSelectAdapterSearched);
+
+
+                Log.d(TAG, "data inspect: " + data.get(0).getPlaylistName() );
+                playlistSelectAdapterSearched.notifyDataSetChanged();
+
                 //attach onClick listener to the adapter
                 playlistSearchGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -235,6 +237,8 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
             }
         }
     }
+
+    // used in PlayQuiz class
     public void getPlaylistTracks(String playlistID, String playlistUser, final GamePlayManager gamePlayManager) {
         Log.e("getPlaylistTracksTest", "started getPlaylistTracksTest");
         SpotifyApi api = new SpotifyApi();
