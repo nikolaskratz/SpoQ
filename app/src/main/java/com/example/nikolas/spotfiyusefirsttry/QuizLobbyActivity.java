@@ -1,6 +1,7 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +31,7 @@ public class QuizLobbyActivity extends AppCompatActivity implements  Observer{
         UserManager.getInstance().register(this);
         this.friends = UserManager.getInstance().getUserInfo().getFriends();
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         setContentView(R.layout.activity_quiz_lobby);
         keys = new ArrayList<String>(friends.keySet());
 

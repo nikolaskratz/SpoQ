@@ -2,6 +2,7 @@ package com.example.nikolas.spotfiyusefirsttry;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Handler;
@@ -91,6 +92,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_quiz);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         playlistSelect = PlaylistSelectActivity.getPlaylistSelect();
         playQuiz=this;
         timerTextView = (TextView) findViewById(R.id.timer);

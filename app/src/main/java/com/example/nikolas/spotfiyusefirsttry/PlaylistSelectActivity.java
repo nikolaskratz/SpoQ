@@ -2,6 +2,7 @@ package com.example.nikolas.spotfiyusefirsttry;
 
 import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.ActivityInfo;
 import android.graphics.PorterDuff;
 import android.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
@@ -70,6 +71,7 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_select);
         playlistSelect = this;
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBarPlaylistSelection);
         progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color.searchViewBackground), PorterDuff.Mode.SRC_IN);
