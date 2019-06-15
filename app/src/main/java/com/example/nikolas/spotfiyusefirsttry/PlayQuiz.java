@@ -8,6 +8,9 @@ import android.os.Handler;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,8 +28,10 @@ import com.google.gson.Gson;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.android.appremote.api.UserApi;
 import com.spotify.protocol.client.CallResult;
 import com.spotify.protocol.client.Subscription;
+import com.spotify.protocol.types.Capabilities;
 import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
 
@@ -105,6 +110,8 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     public void onConnected(SpotifyAppRemote spotifyAppRemote) {
 
                         mSpotifyAppRemote = spotifyAppRemote;
+                        checkSubscriptionStatus(mSpotifyAppRemote);
+
                         boolean invite= getIntent().getBooleanExtra("invite",false);
                         if(invite) {
                             receiveQuiz();
@@ -523,5 +530,24 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
     public void showCover(){
         final ImageView hidingCover = (ImageView) findViewById(R.id.spotifyBlur);
         hidingCover.setImageAlpha(0);
+    }
+
+    //checking if user is premium or not
+    public void checkSubscriptionStatus(SpotifyAppRemote spotifyAppRemote) {
+        UserApi userApi= spotifyAppRemote.getUserApi();
+        userApi.getCapabilities().setResultCallback(new CallResult.ResultCallback<Capabilities>() {
+            @Override
+            public void onResult(Capabilities capabilities) {
+                if(capabilities.canPlayOnDemand){
+                    Log.d(TAG,"can play on demand");
+                } else {
+                    Log.d(TAG, "not play on demand");
+                    Intent intent = new Intent(PlayQuiz.this, MainAppActivity.class);
+                    intent.putExtra("premium", false);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
     }
 }
