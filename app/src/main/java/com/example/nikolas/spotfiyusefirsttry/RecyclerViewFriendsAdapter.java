@@ -147,11 +147,10 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
 
             viewHolderDetailed.userNameDet.setText(friends.get(key).getNickname());
 
-            if (friends.get(friends.get(key).getProfilePicture()).equals("default")) {
+            if (friends.get(key).getProfilePicture().equals("default")) {
                 viewHolderDetailed.profilePictureDet.setImageResource(R.drawable.avatar);
             }
             else {
-
                 byte[] byteArray = Base64.decode(friends.get(key).getProfilePicture(), 0);
                 bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                 viewHolderDetailed.profilePictureDet.setImageBitmap(bmp);
