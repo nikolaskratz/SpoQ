@@ -104,10 +104,15 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
                 Map.Entry<String, Friend> pair = iter.next();
                 viewHolderDefault.userName.setText(pair.getKey());
 
-                byte[] byteArray = Base64.decode(friends.get(pair.getKey()).getProfilePicture(), 0);
-                bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                if (friends.get(pair.getKey()).getProfilePicture().equals("default")) {
+                    viewHolderDefault.profilePicture.setImageResource(R.drawable.avatar);
+                }
+                else {
+                    byte[] byteArray = Base64.decode(friends.get(pair.getKey()).getProfilePicture(), 0);
+                    bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                    viewHolderDefault.profilePicture.setImageBitmap(bmp);
+                }
 
-                viewHolderDefault.profilePicture.setImageBitmap(bmp);
             }
         }
         //fill detailed view with data -> after choosing a friend, showing respective details
@@ -142,9 +147,15 @@ public class RecyclerViewFriendsAdapter extends RecyclerView.Adapter<RecyclerVie
 
             viewHolderDetailed.userNameDet.setText(friends.get(key).getNickname());
 
-            byte[] byteArray = Base64.decode(friends.get(key).getProfilePicture(),0);
-            bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-            viewHolderDetailed.profilePictureDet.setImageBitmap(bmp);
+            if (friends.get(friends.get(key).getProfilePicture()).equals("default")) {
+                viewHolderDetailed.profilePictureDet.setImageResource(R.drawable.avatar);
+            }
+            else {
+
+                byte[] byteArray = Base64.decode(friends.get(key).getProfilePicture(), 0);
+                bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                viewHolderDetailed.profilePictureDet.setImageBitmap(bmp);
+            }
         }
     }
 

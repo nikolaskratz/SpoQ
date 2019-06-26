@@ -2,9 +2,12 @@ package com.example.nikolas.spotfiyusefirsttry;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +29,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class StatisticsFragment extends Fragment {
 
     private static final String TAG = "stats_fragment" ;
+    CircleImageView profilePictureView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,15 +42,22 @@ public class StatisticsFragment extends Fragment {
         TextView userNickname = (TextView) view.findViewById(R.id.nickname_stats);
         userNickname.setText(UserManager.getInstance().userInfo.getNickname());
 
-        CircleImageView profilePicture = (CircleImageView) view.findViewById(R.id.profile_image_stats);
+        profilePictureView = (CircleImageView) view.findViewById(R.id.profile_image_stats);
 
-        //byte[] byteArray = Base64.decode(UserManager.getInstance().userInfo.getProfileImg(),0);
-        //Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        //profilePicture.setImageBitmap(bmp);
+        //set default picture
+        profilePictureView.setImageDrawable(getResources().getDrawable(R.drawable.avatar));
 
-//        TextView totalPoints = (TextView) view.findViewById(R.id.total_points_stats);
-//        totalPoints.setText(String.valueOf(UserManager.getInstance().userInfo.getPoints()));
-//        Log.d(TAG, "onCreateView: " + UserManager.getInstance().userInfo.getPoints());
+        //reference to the profile picture
+        String profilePicture = UserManager.getInstance().userInfo.getProfileImg();
+
+        // set to default picture
+        if(profilePicture != null) {
+            if(!profilePicture.equals("default")) {
+                byte[] byteArray = Base64.decode(UserManager.getInstance().userInfo.getProfileImg(),0);
+                Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                profilePictureView.setImageBitmap(bmp);
+            }
+        }
 
         putStats(view);
         feedback(view);

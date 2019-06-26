@@ -163,15 +163,15 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
                 break;
 
             case SEARCH_PLAYLIST_LOADER_ID:
+
                 //bring back playlistSearchView
                 playlistSearchGridView.setVisibility(View.VISIBLE);
 
                 PlaylistSelectAdapter playlistSelectAdapterSearched = new PlaylistSelectAdapter(this, data);
                 playlistSearchGridView.setAdapter(playlistSelectAdapterSearched);
 
-
-                //Log.d(TAG, "data inspect: " + data.get(0).getPlaylistName() );
-                if(!(data.size()<=0)){
+                // if there is 0 results don't update the adapter
+                if(data.size()>0){
                     playlistSelectAdapterSearched.notifyDataSetChanged();
                 }
 
