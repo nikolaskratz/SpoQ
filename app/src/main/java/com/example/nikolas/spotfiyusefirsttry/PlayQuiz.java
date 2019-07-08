@@ -24,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.spotify.android.appremote.api.ConnectionParams;
@@ -100,16 +101,6 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         Log.d(TAG, "onCreate: TEST ");
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-
-        if(!hasFocus) {
-            pauseTrack();
-            Intent intent = new Intent(this, MainAppActivity.class);
-            startActivity(intent);
-            this.finish();
-        }
-    }
 
     @Override
     protected void onStart() {
@@ -564,5 +555,44 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                 }
             }
         });
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+
+        if(!hasFocus) {
+            pauseTrack();
+            Intent intent = new Intent(this, MainAppActivity.class);
+            intent.putExtra("cheater", true);
+            cheaterHandling();
+            startActivity(intent);
+            this.finish();
+        }
+    }
+
+    void cheaterHandling() {
+        boolean invite= getIntent().getBooleanExtra("invite",false);
+        if(quizGame!=null && invite) {
+            QuizResult quizResult = quizGame.getQuizResult();
+            quizResult.setPointsP2(0);
+            String vs = getIntent().getExtras().getString("vs");
+            String me = getIntent().getExtras().getString("me");
+            String playlistID = quizGame.getQuizList().get(0).getPlaylistID();
+            String quizIDrev = vs + "-" + me + "-" + playlistID;
+            DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Quiz").child
+                    (quizIDrev);
+            myRef.child("quizResult").setValue(quizResult);
+
+            DatabaseReference myRef2 = FirebaseDatabase.getInstance().getReference("Users").child(me);
+            myRef2.child("results").child(quizIDrev).setValue(quizResult);
+            myRef2.child("results").child(quizIDrev).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
+            DatabaseReference myRef3 = FirebaseDatabase.getInstance().getReference("Users").child(vs);
+            myRef3.child("results").child(quizIDrev).setValue(quizResult);
+            myRef3.child("results").child(quizIDrev).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
+            FirebaseDatabase.getInstance().getReference("Users").child(me)
+                    .child("games").child(quizIDrev).removeValue();
+        }
     }
 }

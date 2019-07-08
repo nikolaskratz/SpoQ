@@ -17,6 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +61,8 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
         mViewPager = (ViewPager) findViewById(R.id.containerViewPager);
         setViewPager(mViewPager);
 
-
     }
+
 
     private void setViewPager(ViewPager viewPager) {
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());
