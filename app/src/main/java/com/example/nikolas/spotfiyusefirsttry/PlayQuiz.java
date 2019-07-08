@@ -96,6 +96,19 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         playlistSelect = PlaylistSelectActivity.getPlaylistSelect();
         playQuiz=this;
         timerTextView = (TextView) findViewById(R.id.timer);
+
+        Log.d(TAG, "onCreate: TEST ");
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+
+        if(!hasFocus) {
+            pauseTrack();
+            Intent intent = new Intent(this, MainAppActivity.class);
+            startActivity(intent);
+            this.finish();
+        }
     }
 
     @Override
