@@ -40,7 +40,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private EditText verifyPasswordEt;
     private ImageView profileImage;
 
-    // TODO: 2/3/2019 this sting must have default vale => default profile picture should be loaded from this
     private String profileImageString;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private Intent CropIntent;
@@ -144,6 +143,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         verifyPasswordEt = findViewById(R.id.sign_up_password2_et);
 
         profileImage = findViewById(R.id.profile_image);
+        //preview of a default profile picture
+        profileImage.setImageDrawable(getResources().getDrawable(R.drawable.avatar));
 
         findViewById(R.id.sign_up_submit_b).setOnClickListener(this);
         findViewById(R.id.profile_image).setOnClickListener(this);
@@ -262,7 +263,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         if  (firebaseuser == null) return;
 
         //TEMPORARY
-        if(profileImageString == null) profileImageString = "default";
+        if(profileImageString == null){
+            profileImageString = "default";
+        }
 
         //get user ID from firebase auth.
         String uid = firebaseuser.getUid();

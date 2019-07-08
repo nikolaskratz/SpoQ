@@ -37,7 +37,7 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
 
     String playlistID;
     String playlistUser;
-    PlaylistInfo playlistInfo = new PlaylistInfo();
+
     private static final String CLIENT_ID = "2b034014a25644488ec9b5e285abf490";
     private static final String REDIRECT_URI = "testschema://callback";
     private static final int REQUEST_CODE = 1337;
@@ -74,7 +74,8 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBarPlaylistSelection);
-        progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color.searchViewBackground), PorterDuff.Mode.SRC_IN);
+        progressBar.getIndeterminateDrawable().setColorFilter(ContextCompat.
+                getColor(this, R.color.searchViewBackground), PorterDuff.Mode.SRC_IN);
 
         searchBar = (SearchView) findViewById(R.id.sv_search_playlist);
 
@@ -129,7 +130,6 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
                 playlistSelectLoader = new PlaylistSelectLoader(this, searchPlaylistUrlParam, authToken);
                 break;
         }
-
         return playlistSelectLoader;
     }
 
@@ -163,15 +163,17 @@ public class PlaylistSelectActivity extends AppCompatActivity implements LoaderM
                 break;
 
             case SEARCH_PLAYLIST_LOADER_ID:
+
                 //bring back playlistSearchView
                 playlistSearchGridView.setVisibility(View.VISIBLE);
 
                 PlaylistSelectAdapter playlistSelectAdapterSearched = new PlaylistSelectAdapter(this, data);
                 playlistSearchGridView.setAdapter(playlistSelectAdapterSearched);
 
-
-                Log.d(TAG, "data inspect: " + data.get(0).getPlaylistName() );
-                playlistSelectAdapterSearched.notifyDataSetChanged();
+                // if there is 0 results don't update the adapter
+                if(data.size()>0){
+                    playlistSelectAdapterSearched.notifyDataSetChanged();
+                }
 
                 //attach onClick listener to the adapter
                 playlistSearchGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
