@@ -73,6 +73,7 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
         getInvites();
         getResults();
         checkSubscription();
+        cheated();
 
         view.findViewById(R.id.welcomeMenu_playWithFriend_bt).setOnClickListener(this);
         view.findViewById(R.id.signout_button).setOnClickListener(this);
@@ -392,6 +393,19 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
         if(!premium) {
             FragmentManager fm = getFragmentManager();
             QuizResultDialog quizResultDialog = QuizResultDialog.newInstance(new String[]{"Error","This app only works with a premium subscription",""});
+            quizResultDialog.show(fm, "title");
+        }
+    }
+
+    //check if cheated
+    public void cheated() {
+        boolean cheated = false;
+        if(getActivity().getIntent().getExtras()!=null){
+            cheated = getActivity().getIntent().getExtras().getBoolean("cheater");
+        }
+        if(cheated) {
+            FragmentManager fm = getFragmentManager();
+            QuizResultDialog quizResultDialog = QuizResultDialog.newInstance(new String[]{"Cheater","You cheated and lost this quiz game!",""});
             quizResultDialog.show(fm, "title");
         }
     }
