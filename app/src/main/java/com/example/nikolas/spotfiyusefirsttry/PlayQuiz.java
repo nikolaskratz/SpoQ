@@ -393,7 +393,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
             @Override
             public void run() {
-                if (gamesPlayed++ < 2) {
+                if (gamesPlayed++ < 4) {
                     try {
                         Thread.sleep(700);
                     } catch (InterruptedException e) {
