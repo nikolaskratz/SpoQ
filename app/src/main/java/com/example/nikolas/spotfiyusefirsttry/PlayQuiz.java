@@ -217,7 +217,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
             @Override
             public void run() {
                 TextView questionCount = findViewById(R.id.questionNumber);
-                questionCount.setText("Question " + (gamesPlayed + 1) + "/3");
+                questionCount.setText("Question " + (gamesPlayed + 1) + "/5");
             }
         });
 
@@ -393,7 +393,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
             @Override
             public void run() {
-                if (gamesPlayed++ < 2) {
+                if (gamesPlayed++ < 4) {
                     try {
                         Thread.sleep(700);
                     } catch (InterruptedException e) {
