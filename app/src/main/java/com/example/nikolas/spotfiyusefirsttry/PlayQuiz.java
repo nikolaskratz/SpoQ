@@ -45,6 +45,9 @@ import kaaes.spotify.webapi.android.models.PlaylistTrack;
 
 public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
+    private boolean initialActivityState = false;
+    private boolean summaryActivityState = false;
+
     PlaylistSelectActivity playlistSelect;
     private static PlayQuiz playQuiz;
     private SpotifyAppRemote mSpotifyAppRemote;
@@ -99,7 +102,6 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
         playQuiz = this;
         timerTextView = (TextView) findViewById(R.id.timer);
 
-        Log.d(TAG, "onCreate: TEST ");
     }
 
 
@@ -412,6 +414,7 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    summaryActivityState = true;
                     setTotalTime(minutes, seconds, (int) millis, correct);
                     Intent intent = new Intent(PlayQuiz.this, QuizSummary.class);
                     intent.putExtra("Minutes", minutesTotal);
@@ -565,7 +568,18 @@ public class PlayQuiz extends AppCompatActivity implements GamePlayManager {
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
+        // condition canceling behaviour of onWindowFocusChanged when the activity is starting
+        if (!initialActivityState) {
+            initialActivityState = true;
+            return;
+        }
 
+        // condition when the activity is about to finish
+        if (summaryActivityState){
+            return;
+        }
+
+        Log.d(TAG, "onWindowFocusChanged!!!: ");
         if (!hasFocus) {
             pauseTrack();
             Intent intent = new Intent(this, MainAppActivity.class);
