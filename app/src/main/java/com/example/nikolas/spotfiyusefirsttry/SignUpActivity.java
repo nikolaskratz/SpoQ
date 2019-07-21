@@ -237,6 +237,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             FirebaseUser user = mAuth.getCurrentUser();
                             addUserToFirebase(user, nickname, email);
 
+
                             updateUI();
                         } else {
                                 //Firebase validation
@@ -281,6 +282,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         //add new IdentityREV
         mDatabase = FirebaseDatabase.getInstance().getReference("IdentitiesREV");
         mDatabase.child(uid).setValue(nickname);
+
+        //add default Stats
+        mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+        mDatabase.child(uid).child("Stats").child("totalPoints").setValue(0);
+        mDatabase.child(uid).child("Stats").child("totalGames").setValue(0);
 
 
     }
