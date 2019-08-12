@@ -8,6 +8,9 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.InputType;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -54,9 +57,17 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         String pass1 = passwordEt.getText().toString();
         String pass2 = verifyPasswordEt.getText().toString();
 
+        nicknameEt.setFilters(new InputFilter[] {
+                new InputFilter.AllCaps() {
+                    @Override
+                    public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                        return String.valueOf(source).toLowerCase();
+                    }
+                }
+        });
+
         // NICKNAME
         // if user exists is an async task. The logic is the onFocusChanged Listener.
-        
         if (containsWhitespace(nickname)) {
             nicknameEt.setError("Whitespaces not allowed.");
             valid = false;

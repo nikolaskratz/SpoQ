@@ -1,5 +1,6 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -60,9 +62,18 @@ public class FriendsFragment extends Fragment implements  Observer {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
+
+
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                     valueEt = searchEt.getText().toString();
+                    InputMethodManager in = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (in != null) {
+                        in.hideSoftInputFromWindow(searchEt.getApplicationWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+                    }
+                    valueEt = searchEt.getText().toString();
+                    if(valueEt.length() == 0) {
+                        return false;
+                    }
 
                     FirebaseOperator.getInstance().readData(database.getReference().child("Identities").child(valueEt), new OnGetDataListener() {
 
