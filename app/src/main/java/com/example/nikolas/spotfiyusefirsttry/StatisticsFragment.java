@@ -1,9 +1,10 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
-import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
@@ -11,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,14 +23,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class StatisticsFragment extends Fragment {
 
     private static final String TAG = "stats_fragment" ;
+    CircleImageView profilePictureView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,21 +42,69 @@ public class StatisticsFragment extends Fragment {
         TextView userNickname = (TextView) view.findViewById(R.id.nickname_stats);
         userNickname.setText(UserManager.getInstance().userInfo.getNickname());
 
-        CircleImageView profilePicture = (CircleImageView) view.findViewById(R.id.profile_image_stats);
+        profilePictureView = (CircleImageView) view.findViewById(R.id.profile_image_stats);
 
-        //byte[] byteArray = Base64.decode(UserManager.getInstance().userInfo.getProfileImg(),0);
-        //Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        //profilePicture.setImageBitmap(bmp);
+        //set default picture
+        profilePictureView.setImageDrawable(getResources().getDrawable(R.drawable.avatar));
 
-//        TextView totalPoints = (TextView) view.findViewById(R.id.total_points_stats);
-//        totalPoints.setText(String.valueOf(UserManager.getInstance().userInfo.getPoints()));
-//        Log.d(TAG, "onCreateView: " + UserManager.getInstance().userInfo.getPoints());
+        //reference to the profile picture
+        String profilePicture = UserManager.getInstance().userInfo.getProfileImg();
+
+        // set to default picture
+        if(profilePicture != null) {
+            if(!profilePicture.equals("default")) {
+                byte[] byteArray = Base64.decode(UserManager.getInstance().userInfo.getProfileImg(),0);
+                Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                profilePictureView.setImageBitmap(bmp);
+            }
+        }
 
         putStats(view);
+        feedback(view);
 
         return view;
     }
 
+
+    void feedback(View view){
+        Button feedbackBtn = (Button) view.findViewById(R.id.feedback_bt_stats);
+        feedbackBtn.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Feedback");
+
+                final EditText input = new EditText(getContext());
+                builder.setView(input);
+
+                builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendFeedback(input.getText().toString());
+                    }
+                });
+
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+                Button b = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                Drawable buttonDrwbl = getResources().getDrawable(R.drawable.feedback_dialog_button);
+                b.setBackground(buttonDrwbl);
+                b.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+
+                int textViewId = dialog.getContext().getResources().getIdentifier("android:id/alertTitle", null, null);
+                TextView tv = (TextView) dialog.findViewById(textViewId);
+                tv.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+
+            }
+        });
+    }
+
+    void sendFeedback(String feedbackTxt){
+        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Feedback");
+        myRef.child(userID).setValue(feedbackTxt);
+    }
 
     void putStats(View view) {
         TextView totalPointsView = (TextView) view.findViewById(R.id.total_points_stats);

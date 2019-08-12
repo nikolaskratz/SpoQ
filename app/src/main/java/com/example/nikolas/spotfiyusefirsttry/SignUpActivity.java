@@ -2,6 +2,7 @@ package com.example.nikolas.spotfiyusefirsttry;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -143,7 +144,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference("Users");
 
@@ -153,6 +154,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         verifyPasswordEt = findViewById(R.id.sign_up_password2_et);
 
         profileImage = findViewById(R.id.profile_image);
+        //preview of a default profile picture
+        profileImage.setImageDrawable(getResources().getDrawable(R.drawable.avatar));
 
         findViewById(R.id.sign_up_submit_b).setOnClickListener(this);
         findViewById(R.id.profile_image).setOnClickListener(this);
@@ -245,6 +248,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                             FirebaseUser user = mAuth.getCurrentUser();
                             addUserToFirebase(user, nickname, email);
 
+
                             updateUI();
                         } else {
                                 //Firebase validation
@@ -271,7 +275,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         if  (firebaseuser == null) return;
 
         //TEMPORARY
-        if(profileImageString == null) profileImageString = "default";
+        if(profileImageString == null){
+            profileImageString = "default";
+        }
 
         //get user ID from firebase auth.
         String uid = firebaseuser.getUid();
@@ -287,6 +293,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         //add new IdentityREV
         mDatabase = FirebaseDatabase.getInstance().getReference("IdentitiesREV");
         mDatabase.child(uid).setValue(nickname);
+
+        //add default Stats
+        mDatabase = FirebaseDatabase.getInstance().getReference("Users");
+        mDatabase.child(uid).child("Stats").child("totalPoints").setValue(0);
+        mDatabase.child(uid).child("Stats").child("totalGames").setValue(0);
 
 
     }

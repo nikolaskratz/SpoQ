@@ -1,5 +1,6 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
+import android.content.pm.ActivityInfo;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ public class PasswordRecoveryActivity extends AppCompatActivity implements View.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_recovery);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         mAuth = FirebaseAuth.getInstance();
         emailEt = findViewById(R.id.pass_rec_et);

@@ -33,6 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+import com.spotify.protocol.types.PlayerRestrictions;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -71,11 +72,15 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
 
         getInvites();
         getResults();
+        checkSubscription();
+        cheated();
 
         view.findViewById(R.id.welcomeMenu_playWithFriend_bt).setOnClickListener(this);
         view.findViewById(R.id.signout_button).setOnClickListener(this);
 
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+
 
         return view;
     }
@@ -377,5 +382,31 @@ public class WelcomeMenuFragment extends Fragment implements View.OnClickListene
             content[2] = results.get(position).getP1Name()+" scored: "+results.get(position).getPointsP1()+" points";
         }
         return content;
+    }
+
+    //check if premium
+    public void checkSubscription(){
+        boolean premium = true;
+        if(getActivity().getIntent().getExtras()!=null){
+            premium = getActivity().getIntent().getExtras().getBoolean("premium");
+        }
+        if(!premium) {
+            FragmentManager fm = getFragmentManager();
+            QuizResultDialog quizResultDialog = QuizResultDialog.newInstance(new String[]{"Error","This app only works with a premium subscription",""});
+            quizResultDialog.show(fm, "title");
+        }
+    }
+
+    //check if cheated
+    public void cheated() {
+        boolean cheated = false;
+        if(getActivity().getIntent().getExtras()!=null){
+            cheated = getActivity().getIntent().getExtras().getBoolean("cheater");
+        }
+        if(cheated) {
+            FragmentManager fm = getFragmentManager();
+            QuizResultDialog quizResultDialog = QuizResultDialog.newInstance(new String[]{"Cheater","You cheated and lost this quiz game!",""});
+            quizResultDialog.show(fm, "title");
+        }
     }
 }

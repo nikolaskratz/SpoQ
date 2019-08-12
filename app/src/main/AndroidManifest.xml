@@ -25,6 +25,7 @@
             android:name=".MainAppActivity"
             android:label="@string/title_activity_main_app"
             android:theme="@style/MyTheme"></activity>
+
         <activity android:name=".QuizSummary" />
         <activity android:name=".SignInActivity">
             <intent-filter>

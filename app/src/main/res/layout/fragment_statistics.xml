@@ -27,7 +27,6 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:src="@drawable/spotifyicon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titile_stats"
@@ -97,7 +96,7 @@
         app:layout_constraintTop_toBottomOf="@+id/total_points_stats" />
 
     <Button
-        android:id="@+id/settings_bt_stats"
+        android:id="@+id/feedback_bt_stats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -105,7 +104,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="32dp"
-        android:text="Settings"
+        android:background="@drawable/layout_border_filled"
+        android:text="Feedback"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -137,7 +137,7 @@
         android:layout_margin="40dp"
         android:layout_marginTop="120dp"
         android:background="@android:color/white"
-        app:layout_constraintBottom_toTopOf="@+id/settings_bt_stats"
+        app:layout_constraintBottom_toTopOf="@+id/feedback_bt_stats"
         app:layout_constraintTop_toBottomOf="@+id/textView9"
         tools:layout_editor_absoluteX="40dp" />
 

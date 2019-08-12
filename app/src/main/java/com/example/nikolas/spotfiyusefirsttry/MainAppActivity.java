@@ -1,6 +1,7 @@
 package com.example.nikolas.spotfiyusefirsttry;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +49,7 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         // start querying firebase for user info
         UserManager.getInstance().databaseQuery();
 
@@ -56,8 +61,8 @@ public class MainAppActivity extends AppCompatActivity implements View.OnClickLi
         mViewPager = (ViewPager) findViewById(R.id.containerViewPager);
         setViewPager(mViewPager);
 
-
     }
+
 
     private void setViewPager(ViewPager viewPager) {
         SectionsPagerAdapter adapter = new SectionsPagerAdapter(getSupportFragmentManager());

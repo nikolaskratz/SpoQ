@@ -2,6 +2,7 @@ package com.example.nikolas.spotfiyusefirsttry;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -31,4 +32,5 @@ public class QuizResultDialog extends DialogFragment {
         builder.setMessage(msg1+"\n"+msg2);
         return builder.create();
     }
+
 }
